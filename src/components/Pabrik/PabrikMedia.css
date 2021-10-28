@@ -1,0 +1,48 @@
+@media screen and (min-width: 601px) {
+}
+
+/* If the screen size is 600px wide or less, set the font-size of <div> to 30px */
+@media screen and (max-width: 600px) {
+  .lingkaran.pabrik {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  span.pabrik {
+    font-size: 12px;
+  }
+
+  h1.pabrik {
+    font-size: 20px;
+  }
+
+  h2.pabrik {
+    margin-top: 5%;
+    font-size: 1rem;
+  }
+
+  .container.pabrik {
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
+  .component.pabrik {
+    padding: 7%;
+    margin-bottom: 30%;
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
+  button.pabrik {
+    height: 40px;
+    width: 40%;
+  }
+
+  .cancelButton.pabrik {
+    font-size: 12px;
+  }
+
+  .submitButton.pabrik {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,28 @@
+.header {
+  padding: 1%;
+  background-color: white;
+  display: grid;
+  margin: auto;
+  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  grid-template-areas: "logo daftarJenis daftarSupplier daftarBatch daftarProduk";
+  grid-template-columns: 4fr 2fr 2fr 2fr 2fr;
+}
+
+.headerLogo {
+  padding-left: 1%;
+  grid-area: logo;
+}
+
+.headerUnit {
+  margin: auto;
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: grey;
+}
+
+a.active {
+  color: rgb(41, 39, 39);
+}
