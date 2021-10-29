@@ -56,21 +56,21 @@ export default class ListProduction extends Component {
     const web3 = new Web3(provider);
     provider.engine.stop();
 
-    const getWallet = async () => {
-      web3.eth.getAccounts(function(err, accounts){
-          if (err != null) {
-              // alert("An error occurred: "+err);
-          } else if (accounts.length == 0) {
-              alert("User is not logged in to MetaMask");
-          } else {
-              this.setState({
-                account: accounts[0],
-              });
-          }
-      });
-    };
+    // const getWallet = async () => {
+    //   web3.eth.getAccounts(function(err, accounts){
+    //       if (err != null) {
+    //           // alert("An error occurred: "+err);
+    //       } else if (accounts.length == 0) {
+    //           alert("User is not logged in to MetaMask");
+    //       } else {
+    //           this.setState({
+    //             account: accounts[0],
+    //           });
+    //       }
+    //   });
+    // };
 
-    getWallet();
+    // getWallet();
 
     UserService.getListProduction().then(
       (response) => {

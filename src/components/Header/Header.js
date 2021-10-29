@@ -34,7 +34,7 @@ const Header = props => {
         <CNavLink to="/Stock">Stock</CNavLink>
           <CDropdown inNav>
             <CDropdownToggle color="primary">Sugar</CDropdownToggle>
-              {(() => {
+              {/* {(() => {
                 if (userRole === 'production') {
                   return (
                     <CDropdownMenu>
@@ -62,7 +62,12 @@ const Header = props => {
                     </CDropdownMenu>
                   )
                 }
-              })()}
+              })()} */}
+            <CDropdownMenu>
+              <CDropdownItem to="/Production">Production</CDropdownItem>
+              <CDropdownItem to="/Logistic">Logistics</CDropdownItem>
+              <CDropdownItem to="/Sales">Sales</CDropdownItem>
+            </CDropdownMenu>
           </CDropdown>
         </CNavbarNav>
         <CNavbarNav>
@@ -86,24 +91,42 @@ const Header = props => {
                     <CDropdownItem to="/User-management/add-user">Add User</CDropdownItem>
                   </CDropdownMenu>
                 </CDropdown>
+                <CNavLink href="/">List Request Data</CNavLink>
+              </CNavbarNav>
+            )
+          } else {
+            return (
+              <CNavbarNav>
+                <CNavLink href="/">Request Data</CNavLink>
               </CNavbarNav>
             )
           }
         })()}
-        <CNavbarNav className="ml-auto">
-          <CDropdown inNav>
-            <CDropdownToggle color="primary">
-              {userName}
-            </CDropdownToggle>
-            <CDropdownMenu>
-              {/* <CDropdownItem>Account</CDropdownItem>
-              <CDropdownItem>Settings</CDropdownItem> */}
-              <CDropdownItem href="/login" onClick={() => props.logoutClick()}>
-                LogOut
-              </CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </CNavbarNav>
+
+        {(() => {
+          if (userName && userRole) {
+            return (
+              <CNavbarNav className="ml-auto">
+                <CDropdown inNav>
+                  <CDropdownToggle color="primary">
+                    {userName}
+                  </CDropdownToggle>
+                  <CDropdownMenu>
+                    <CDropdownItem href="/login" onClick={() => props.logoutClick()}>
+                      LogOut
+                    </CDropdownItem>
+                  </CDropdownMenu>
+                </CDropdown>
+              </CNavbarNav>
+            )
+          } else {
+            return (
+              <CNavbarNav className="ml-auto">
+                <CNavLink href="/Login">Login</CNavLink>
+              </CNavbarNav>
+            )
+          }
+        })()}
       </CCollapse>
     </CNavbar>
   );

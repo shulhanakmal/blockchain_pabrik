@@ -6,6 +6,8 @@ import DaftarProductionForm from "./DaftarProductionForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
 import Web3 from "web3";
+import Web3Modal from "web3modal";
+import { ethers } from 'ethers';
 import { AddProduct } from "../../../abi/productionPrs";
 import { AddProduct as AddRs} from "../../../abi/productionSfrs";
 import { AddLogistics } from "../../../abi/logisticsSbsfrs";
@@ -71,63 +73,57 @@ const DaftarProduction = () => {
 
     UserService.addProduction(formData).then(
       async (response) => {
+
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
         setLoading(true);
         // insert rs
-        const accounts = await window.ethereum.enable();
-        const akun = accounts[0];
-        const storageContract = new web3.eth.Contract(AddProduct, "0xEBd34C9958E1e921a2359DEd83b9e7945Af720E4");
-        const gas = await storageContract.methods.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).estimateGas();
-        var post = await storageContract.methods.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).send({
-          from: akun,
-          gas,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
+
         const updateData = new FormData();
-        updateData.append('id', response.data.data.id);
-        updateData.append('transaction', post.transactionHash);
-        updateData.append('wallet', post.from);
-        updateData.append('flag', 'processedRs');
-        UserService.addProdcutionTransactionHash(updateData);
-        setHash("");
-        // end insert rs
+        // input production prs
+          let contract = new ethers.Contract(process.env.ADDRESS_PRS, AddProduct, signer)
+          let transaction = await contract.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
+
+          updateData.append('id', response.data.data.id);
+          updateData.append('flag', 'processedRs');
+          UserService.addProdcutionTransactionHash(updateData);
+          setHash("");
+        // end insert prs
 
         // insert sugar rs
-        const storageContractRs = new web3.eth.Contract(AddRs, "0x855DeEff0EC2169F3798075e7c402389B88bFF11");
-        const gasRs = await storageContractRs.methods.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString).estimateGas();
-        var postRs = await storageContractRs.methods.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString).send({
-          from: akun,
-          gasRs,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
-        const updateDataRs = new FormData();
-        updateDataRs.append('id', response.data.data.id);
-        updateDataRs.append('transaction', postRs.transactionHash);
-        updateDataRs.append('wallet', postRs.from);
-        updateDataRs.append('flag', 'sugarFromRs');
-        UserService.addProdcutionTransactionHash(updateDataRs);
-        setHash("");
+        const updateDataRS = new FormData();
+          let contractRS = new ethers.Contract(process.env.ADDRESS_SFRS, AddRs, signer)
+          let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+            updateDataRS.append('transaction', transactionRS.hash);
+            updateDataRS.append('wallet', transactionRS.from);
+            setHash(transactionRS.hash);
+          await transactionRS.wait()
+
+          updateDataRS.append('id', response.data.input.id);
+          updateDataRS.append('flag', 'sugarFromRs');
+          UserService.addProdcutionTransactionHash(updateDataRS);
+          setHash("");
         // end insert sugar rs
 
         // insert logistik
-        const storageContractLogistik = new web3.eth.Contract(AddLogistics, "0x8fdb2D0eaD144FAc0f977747C5AB93Ad03eC2904");
-        const gasLogistik = await storageContractLogistik.methods.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString).estimateGas();
-        var postLogistik = await storageContractLogistik.methods.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString).send({
-          from: akun,
-          gasLogistik,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
-        const updateDataLogistik = new FormData();
-        updateDataLogistik.append('id', response.data.data.id);
-        updateDataLogistik.append('transaction', postLogistik.transactionHash);
-        updateDataLogistik.append('wallet', postLogistik.from);
-        updateDataLogistik.append('flag', 'stockBulkSugarFromRs');
-        UserService.addLogisticsTransactionHash(updateDataLogistik);
+        const updateDataL = new FormData();
+          let contractL = new ethers.Contract(process.env.ADDRESS_SBSFRS, AddLogistics, signer)
+          let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+            updateDataL.append('transaction', transactionL.hash);
+            updateDataL.append('wallet', transactionL.from);
+            setHash(transactionL.hash);
+          await transactionL.wait()
+
+          updateDataL.append('id', response.data.logistik.id);
+          updateDataL.append('flag', 'stockBulkSugarFromRs');
+          UserService.addLogisticsTransactionHash(updateDataL);
         // end insert logistik
         setLoading(false);
         showResults("Dimasukkan");

@@ -1,3 +1,4 @@
+pragma experimental ABIEncoderV2;
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.5.8 <=0.8.4;
 
@@ -5,7 +6,7 @@ contract AddStock {
 
     mapping (uint => Stock) stok;
     mapping (string => Stock) tgl;
-    mapping (string => Stock) dibuat;
+    mapping (string => Stock) proces;
     struct Stock {
         uint stockid;
         string date;
@@ -22,7 +23,7 @@ contract AddStock {
     function addStock(uint stockid, string memory date, string memory cane, string memory rs, string memory proses, string memory volume, string memory created) public {   
         stok[stockid] = Stock(stockid, date, cane, rs, proses, volume, created, true);
         tgl[date] = Stock(stockid, date, cane, rs, proses, volume, created, true);
-        dibuat[created] = Stock(stockid, date, cane, rs, proses, volume, created, true);
+        proces[proses] = Stock(stockid, date, cane, rs, proses, volume, created, true);
     }
     function getDataStokId(uint stockid) view public returns (uint, string memory, string memory, string memory, string memory, string memory, string memory) {
         require(stok[stockid].init);
@@ -36,10 +37,10 @@ contract AddStock {
         StockStruct = tgl[date];
         return(StockStruct.stockid, StockStruct.date, StockStruct.cane, StockStruct.rs, StockStruct.proses, StockStruct.volume, StockStruct.created);
     }
-    function getDataStokByDateCreated(string memory created) view public returns (uint, string memory, string memory, string memory, string memory, string memory, string memory) {
-        require(dibuat[created].init);
+    function getDataStokByProses(string memory proses) view public returns (uint, string memory, string memory, string memory, string memory, string memory, string memory) {
+        require(proces[proses].init);
         Stock memory StockStruct;
-        StockStruct = dibuat[created];
+        StockStruct = proces[proses];
         return(StockStruct.stockid, StockStruct.date, StockStruct.cane, StockStruct.rs, StockStruct.proses, StockStruct.volume, StockStruct.created);
     }
     function getStok() public view returns (Stock[] memory) {

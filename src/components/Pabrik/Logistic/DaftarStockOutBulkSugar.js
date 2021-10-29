@@ -5,6 +5,8 @@ import DaftarLogisticSOBSForm from "./DaftarLogisticSOBSForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
 import Web3 from "web3";
+import Web3Modal from "web3modal";
+import { ethers } from 'ethers';
 import { AddLogistics } from "../../../abi/logisticsSobs";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
@@ -39,7 +41,7 @@ const DaftarLogistic = () => {
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
-  const contractAddress = "0xdD61c2a97EaFF236B1643e387b966d778A8600a2";
+  const contractAddress = process.env.REACT_APP_ADDRESS_SOBS;
 
   provider.engine.stop();
 
@@ -71,24 +73,26 @@ const DaftarLogistic = () => {
 
     UserService.addLogistic(formData).then(
       async (response) => {
-        const accounts = await window.ethereum.enable();
-        const akun = accounts[0];
-        const storageContract = new web3.eth.Contract(AddLogistics, contractAddress);
-        const gas = await storageContract.methods.addLogisticsSobs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).estimateGas();
-        var post = await storageContract.methods.addLogisticsSobs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).send({
-          from: akun,
-          gas,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
+
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
         const updateData = new FormData();
-        updateData.append('id', response.data.data.id);
-        updateData.append('transaction', post.transactionHash);
-        updateData.append('wallet', post.from);
-        updateData.append('flag', 'stockOutBulkSugar');
-        UserService.addLogisticsTransactionHash(updateData);
-        console.log(post);
+        // input logistik sobs
+          let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
+          let transaction = await contract.addLogisticsSobs(response.data.data.id, response.data.data.date, response.data.data.volume, response.data.data.sugar, 'normal', dateString)
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
+
+          updateData.append('id', response.data.data.id);
+          updateData.append('flag', 'stockOutBulkSugar');
+          UserService.addLogisticsTransactionHash(updateData);
+        // end input sobs
+
         setLoading(false);
         showResults("Dimasukkan");
         setHash("");

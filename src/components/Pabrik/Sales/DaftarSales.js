@@ -5,13 +5,23 @@ import DaftarSalesForm from "./DaftarSalesForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
 import Web3 from "web3";
+import Web3Modal from "web3modal";
+import { ethers } from 'ethers';
 import { AddSales } from "../../../abi/sales";
+import { AddLogistics } from "../../../abi/logisticsSobs";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
 
 require("dotenv").config();
 
 var HDWalletProvider = require("@truffle/hdwallet-provider");
+
+// get date today
+var m = new Date();
+var dateString =
+    m.getUTCFullYear() + "-" +
+    ("0" + (m.getUTCMonth()+1)).slice(-2) + "-" +
+    ("0" + m.getUTCDate()).slice(-2);
 
 
 const DaftarSales = () => {
@@ -34,7 +44,8 @@ const DaftarSales = () => {
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
-  const contractAddress = "0xC974bc711392Faa384C633Eb0b941DbAA133d382";
+  const contractAddress = process.env.REACT_APP_ADDRESS_SALES;
+  const contractAddressLogistics = process.env.REACT_APP_ADDRESS_SOBS;
 
   provider.engine.stop();
 
@@ -70,23 +81,41 @@ const DaftarSales = () => {
     const volume = values.volume;
     UserService.addSales(formData).then(
       async (response) => {
-        const accounts = await window.ethereum.enable();
-        const akun = accounts[0];
-        const storageContract = new web3.eth.Contract(AddSales, contractAddress);
-        const gas = await storageContract.methods.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal').estimateGas();
-        var post = await storageContract.methods.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal').send({
-          from: akun,
-          gas,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
-        const updateData = new FormData();
-        updateData.append('id', response.data.data.id);
-        updateData.append('transaction', post.transactionHash);
-        updateData.append('wallet', post.from);
-        UserService.addSalesTransactionHash(updateData);
-        console.log(post);
+
+        console.log("CEK RESPONSE DATANYA MAL :", response);
+
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
+        // input sales
+          const updateData = new FormData();
+          let contract = new ethers.Contract(contractAddress, AddSales, signer)
+          let transaction = await contract.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal')
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
+
+          updateData.append('id', response.data.data.id);
+          UserService.addSalesTransactionHash(updateData);
+        // end sales
+
+        // input logistik sobs
+          const updateDataL = new FormData();
+          let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
+          let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, response.data.logistik.sugar, 'normal', dateString)
+            updateDataL.append('transaction', transactionL.hash);
+            updateDataL.append('wallet', transactionL.from);
+            setHash(transactionL.hash);
+          await transactionL.wait()
+
+          updateDataL.append('id', response.data.logistik.id);
+          updateDataL.append('flag', 'stockOutBulkSugar');
+          UserService.addLogisticsTransactionHash(updateDataL);
+        // end input sobs
+
         setLoading(false);
         showResults("Dimasukkan");
         setHash("");

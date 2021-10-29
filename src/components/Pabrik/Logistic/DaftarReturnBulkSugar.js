@@ -5,6 +5,8 @@ import DaftarReturnBulkSugarForm from "./DaftarReturnBulkSugarForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
 import Web3 from "web3";
+import Web3Modal from "web3modal";
+import { ethers } from 'ethers';
 import { AddLogistics } from "../../../abi/logisticsRbs";
 import { AddLogistics as AddStockCane } from "../../../abi/logisticsSbsfc";
 import { AddLogistics  as AddStockRS } from "../../../abi/logisticsSbsfrs";
@@ -41,9 +43,9 @@ const DaftarLogistic = () => {
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
-  const contractAddress = "0x0731b010C9AAEb70B9340a9Edeb555119d600C2f";
-  const contractAddressSBSFC = "0xF6c79F860918Fb2AeC4C4A730A7F74cE9f6ab4F9";
-  const contractAddressSBSFRS = "0x8fdb2D0eaD144FAc0f977747C5AB93Ad03eC2904";
+  const contractAddress = process.env.REACT_APP_ADDRESS_RBS;
+  const contractAddressSBSFC = process.env.REACT_APP_ADDRESS_SBSFC;
+  const contractAddressSBSFRS = process.env.REACT_APP_ADDRESS_SBSFRS;
 
   provider.engine.stop();
 
@@ -76,63 +78,52 @@ const DaftarLogistic = () => {
 
     UserService.addLogistic(formData).then(
       async (response) => {
-        console.log('liat response', response);
-        const accounts = await window.ethereum.enable();
-        const akun = accounts[0];
-        const storageContract = new web3.eth.Contract(AddLogistics, contractAddress);
-        const gas = await storageContract.methods.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString).estimateGas();
-        var post = await storageContract.methods.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString).send({
-          from: akun,
-          gas,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
 
-        // simpan hash
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
         const updateData = new FormData();
-        updateData.append('id', response.data.data.id);
-        updateData.append('transaction', post.transactionHash);
-        updateData.append('wallet', post.from);
-        updateData.append('flag', 'returnBulkSugar');
-        UserService.addLogisticsTransactionHash(updateData);
-        console.log(post);
+        // input logistik sobs
+          console.log("CEK ADDRESS MAL :", contractAddress);
+          let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
+          let transaction = await contract.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString)
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
+
+          updateData.append('id', response.data.data.id);
+          updateData.append('flag', 'returnBulkSugar');
+          UserService.addLogisticsTransactionHash(updateData);
+        // end input sobs
 
         // post ke blockchain data return ke stock (stok menambah dari return)
         if(values.sugar === 'cane'){
-          const storageContractSBSFC = new web3.eth.Contract(AddStockCane, contractAddressSBSFC);
-          const gasSBSFC = await storageContractSBSFC.methods.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString).estimateGas();
-          var postSBSFC = await storageContractSBSFC.methods.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString).send({
-            from: akun,
-            gasSBSFC,
-          }, (error, transactionHash) => {
-            console.log([error, transactionHash]);
-          });
-          console.log(postSBSFC);
-          
-          // simpan hash
           const txnCane = new FormData();
-          txnCane.append('id', response.data.data.id);
-          txnCane.append('transaction', postSBSFC.transactionHash);
-          txnCane.append('wallet', postSBSFC.from);
+          let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
+          let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
+            txnCane.append('transaction', transactionC.hash);
+            txnCane.append('wallet', transactionC.from);
+            setHash(transactionC.hash);
+          await transactionC.wait()
+
+          txnCane.append('id', response.data.stock.id);
           txnCane.append('flag', 'stockBulkSugarFromCane');
           UserService.addLogisticsTransactionHash(txnCane);
+          
         } else {
-          const storageContractSBSFRS = new web3.eth.Contract(AddStockRS, contractAddressSBSFRS);
-          const gasSBSFRS = await storageContractSBSFRS.methods.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString).estimateGas();
-          var postSBSFRS = await storageContractSBSFRS.methods.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString).send({
-            from: akun,
-            gasSBSFRS,
-          }, (error, transactionHash) => {
-            console.log([error, transactionHash]);
-          });
-          console.log(postSBSFRS);
 
-          // simpan hash
           const txnRS = new FormData();
-          txnRS.append('id', response.data.data.id);
-          txnRS.append('transaction', postSBSFRS.transactionHash);
-          txnRS.append('wallet', postSBSFRS.from);
+          let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
+          let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
+            txnRS.append('transaction', transactionRS.hash);
+            txnRS.append('wallet', transactionRS.from);
+            setHash(transactionRS.hash);
+          await transactionRS.wait()
+
+          txnRS.append('id', response.data.stock.id);
           txnRS.append('flag', 'stockBulkSugarFromRs');
           UserService.addLogisticsTransactionHash(txnRS);
         }

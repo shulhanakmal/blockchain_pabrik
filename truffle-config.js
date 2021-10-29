@@ -61,7 +61,7 @@ module.exports = {
     ropsten: {
       provider: () => 
         new HDWalletProvider(
-          "control gather add wrap diamond under opera brain doctor keep lesson beef", 
+          "capable wine wing arrive fix fatigue swing mixture letter envelope donate firm", 
           `https://ropsten.infura.io/v3/e3b1137fe3f14629ab52040a102adbdf`
         ),
       network_id: 3,

@@ -64,33 +64,60 @@ class App extends Component {
     const { currentUser } = this.state;
     const { isLoggedIn } = this.props;
 
-    if (!isLoggedIn) {
-      history.push("/login");
-    } else {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if(user !== null) {
-        const exampleJWT = user.token;
-        function getPayload(jwt){
-          return atob(jwt.split(".")[1])
-        }
-        const payload = getPayload(exampleJWT);
-        if (payload.exp < Date.now() / 1000) {
-          localStorage.removeItem("user");
-          history.push("/login");
-        }
-      }
-    }
+    // if (!isLoggedIn) {
+    //   history.push("/login");
+    // } else {
+    //   const user = JSON.parse(localStorage.getItem('user'));
+    //   if(user !== null) {
+    //     const exampleJWT = user.token;
+    //     function getPayload(jwt){
+    //       return atob(jwt.split(".")[1])
+    //     }
+    //     const payload = getPayload(exampleJWT);
+    //     if (payload.exp < Date.now() / 1000) {
+    //       localStorage.removeItem("user");
+    //       history.push("/login");
+    //     }
+    //   }
+    // }
 
     return (
       <Router history={history}>
-        {currentUser && (
+        {/* {currentUser && (
           <div>
             <Header logoutClick={this.logOut} userRole={this.props.user.user_role.role} userName={this.props.user.user_detail.username} />
           </div>
-        )}
+        )} */}
+        {(() => {
+          if (currentUser ) {
+            return (
+              <div>
+                <Header logoutClick={this.logOut} userRole={this.props.user.user_role.role} userName={this.props.user.user_detail.username} />
+              </div>
+            )
+          } else {
+            return (
+              <div>
+                <Header />
+              </div>
+            )
+          }
+        })()}
+
+        {(() => {
+          if (this.props.user && this.props.user.user_role.role ) {
+            return (
+              <Route path="/" exact component={() => <HalamanUtama userRole={this.props.user.user_role.role} />} />
+            )
+          } else {
+            return (
+              <Route path="/" exact component={() => <HalamanUtama />} />
+            )
+          }
+        })()}
+
         <Route path="/login" exact component={Login} />
-        {/* <Route path="/" exact component={HalamanUtama} /> */}
-        <Route path="/" exact component={() => <HalamanUtama userRole={this.props.user.user_role.role} />} />
+        <Route path="/" exact component={() => <HalamanUtama />} />
         <Route path="/Stock" exact component={Stock} />
         <Route path="/SummaryProduction" exact component={SummaryProduction} />
         <Route path="/Production" exact component={ListProduction} />

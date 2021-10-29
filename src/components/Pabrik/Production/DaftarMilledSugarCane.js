@@ -4,6 +4,8 @@ import "../PabrikMedia.css";
 import DaftarProductionForm from "./DaftarProductionForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
+import Web3Modal from "web3modal";
+import { ethers } from 'ethers';
 import Web3 from "web3";
 import { AddProduct } from "../../../abi/productionMsc";
 import { AddProduct as AddCane} from "../../../abi/productionSfc";
@@ -59,65 +61,59 @@ const DaftarProduction = () => {
     UserService.addProduction(formData).then(
       async (response) => {
         console.log('response', response);
+
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
         const accounts = await window.ethereum.enable();
         const akun = accounts[0];
-        // input production msc
-          const storageContract = new web3.eth.Contract(AddProduct, "0xA2E320F53a57EFe583A3ddfB5a29bacDa944f4fd");
-          const gas = await storageContract.methods.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).estimateGas();
-          var post = await storageContract.methods.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).send({
-            from: akun,
-            gas,
-          }, (error, transactionHash) => {
-            console.log([error, transactionHash]);
-            setHash(transactionHash);
-          });
 
-          const updateData = new FormData();
+        const updateData = new FormData();
+        // input production msc
+          let contract = new ethers.Contract(process.env.ADDRESS_MSC, AddProduct, signer)
+          let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
+
           updateData.append('id', response.data.data.id);
-          updateData.append('transaction', post.transactionHash);
-          updateData.append('wallet', post.from);
           updateData.append('flag', 'milledSugarCane');
           UserService.addProdcutionTransactionHash(updateData);
           setHash("");
-          // end input msc
+        // end input msc
 
-          // input sugar cane
-          const storageContractInput = new web3.eth.Contract(AddCane, "0xF7e31a64761a538413333812EC150184fC42b475");
-          const gasInput = await storageContractInput.methods.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString).estimateGas();
-          var postSC = await storageContractInput.methods.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString).send({
-            from: akun,
-            gasInput,
-          }, (error, transactionHash) => {
-            console.log([error, transactionHash]);
-            setHash(transactionHash);
-          });
+        // input sugar cane
+        const updateDataInput = new FormData();
 
-          const updateDataInput = new FormData();
+          let contractSC = new ethers.Contract(process.env.ADDRESS_SFC, AddCane, signer)
+          let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+            updateDataInput.append('transaction', transactionSC.hash);
+            updateDataInput.append('wallet', transactionSC.from);
+            setHash(transactionSC.hash);
+          await transactionSC.wait()
+
           updateDataInput.append('id', response.data.input.id);
-          updateDataInput.append('transaction', postSC.transactionHash);
-          updateDataInput.append('wallet', postSC.from);
           updateDataInput.append('flag', 'sugarCane');
           UserService.addProdcutionTransactionHash(updateDataInput);
           setHash("");
-          // end input sugar cane
+        // end input sugar cane
 
-          // input logistik cane
-          const storageContractLogistik = new web3.eth.Contract(AddLogistics, "0xF6c79F860918Fb2AeC4C4A730A7F74cE9f6ab4F9");
-          const gasLogistik = await storageContractLogistik.methods.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString).estimateGas();
-          var postLogistik = await storageContractLogistik.methods.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString).send({
-            from: akun,
-            gasLogistik,
-          }, (error, transactionHash) => {
-            console.log([error, transactionHash]);
-            setHash(transactionHash);
-          });
+        // input logistik cane
+        const updateDataLogistik = new FormData();
+          let contractL = new ethers.Contract(process.env.ADDRESS_SBSFC, AddLogistics, signer)
+          let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+            setHash(transactionL.hash);
+            updateDataLogistik.append('transaction', transactionL.hash);
+            updateDataLogistik.append('wallet', transactionL.from);
+          await transactionL.wait()
 
-          const updateDataLogistik = new FormData();
           updateDataLogistik.append('id', response.data.logistik.id);
-          updateDataLogistik.append('transaction', postLogistik.transactionHash);
-          updateDataLogistik.append('wallet', postLogistik.from);
           updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
           UserService.addLogisticsTransactionHash(updateDataLogistik);
+
           setLoading(false);
           showResults("Dimasukkan");
           setHash("");

@@ -26,7 +26,8 @@ const HalamanUtama = (props) => {
     //   </div>
     // </Fragment>
     <div>
-      {(() => {
+      <DashboardAdmin />
+      {/* {(() => {
         if (userRole === 'production') {
           return(
             <DashboardProduction />
@@ -44,7 +45,7 @@ const HalamanUtama = (props) => {
             <DashboardAdmin />
           )
         }
-      })()}
+      })()} */}
     </div>
   );
 };

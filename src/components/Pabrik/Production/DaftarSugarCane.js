@@ -5,6 +5,8 @@ import DaftarProductionForm from "./DaftarProductionForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
 import Web3 from "web3";
+import Web3Modal from "web3modal";
+import { ethers } from 'ethers';
 import { AddProduct } from "../../../abi/productionSfc";
 import { AddLogistics } from "../../../abi/logisticsSbsfc";
 import { css } from "@emotion/react";
@@ -61,6 +63,7 @@ const DaftarProduction = () => {
 
   const handleSubmit = (values) => {
     setLoading(true);
+
     const formData = new FormData();
     formData.append('date',tanggal);
     formData.append('volume',values.volume);
@@ -70,42 +73,44 @@ const DaftarProduction = () => {
 
     UserService.addProduction(formData).then(
       async (response) => {
+        
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
         const accounts = await window.ethereum.enable();
         const akun = accounts[0];
-        const storageContract = new web3.eth.Contract(AddProduct, "0xF7e31a64761a538413333812EC150184fC42b475");
-        const gas = await storageContract.methods.addProductionSfc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).estimateGas();
-        var post = await storageContract.methods.addProductionSfc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString).send({
-          from: akun,
-          gas,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
-        const updateData = new FormData();
-        updateData.append('id', response.data.data.id);
-        updateData.append('transaction', post.transactionHash);
-        updateData.append('wallet', post.from);
-        updateData.append('flag', 'sugarCane');
-        UserService.addProdcutionTransactionHash(updateData);
-        setHash("");
+
+        // input production sc
+          const updateData = new FormData();
+          let contract = new ethers.Contract(process.env.ADDRESS_SFC, AddProduct, signer)
+          let transaction = await contract.addProductionSfc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
+
+          updateData.append('id', response.data.data.id);
+          updateData.append('flag', 'sugarCane');
+          UserService.addProdcutionTransactionHash(updateData);
+          setHash("");
+        // end input sc
 
         // input logistik cane
-        const storageContractLogistik = new web3.eth.Contract(AddLogistics, "0xF6c79F860918Fb2AeC4C4A730A7F74cE9f6ab4F9");
-        const gasLogistik = await storageContractLogistik.methods.addLogisticsSbsfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString).estimateGas();
-        var postLogistik = await storageContractLogistik.methods.addLogisticsSbsfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString).send({
-          from: akun,
-          gasLogistik,
-        }, (error, transactionHash) => {
-          console.log([error, transactionHash]);
-          setHash(transactionHash);
-        });
+          const updateDataL = new FormData();
+          let contractL = new ethers.Contract(process.env.ADDRESS_SBSFC, AddLogistics, signer)
+          let transactionL = await contractL.addLogisticsSbsfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+            updateDataL.append('transaction', transactionL.hash);
+            updateDataL.append('wallet', transactionL.from);
+            setHash(transactionL.hash);
+          await transactionL.wait()
 
-        const updateDataLogistik = new FormData();
-        updateDataLogistik.append('id', response.data.input.id);
-        updateDataLogistik.append('transaction', postLogistik.transactionHash);
-        updateDataLogistik.append('wallet', postLogistik.from);
-        updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
-        UserService.addLogisticsTransactionHash(updateDataLogistik);
+          updateDataL.append('id', response.data.input.id);
+          updateDataL.append('flag', 'stockBulkSugarFromCane');
+          UserService.addLogisticsTransactionHash(updateDataL);
+        // end input logistic sc
+        
         setLoading(false);
         showResults("Dimasukkan");
         setHash("");

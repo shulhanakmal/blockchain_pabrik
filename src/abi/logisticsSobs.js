@@ -19,6 +19,11 @@ export const AddLogistics = [
         },
         {
           "internalType": "string",
+          "name": "sugar",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
           "name": "status",
           "type": "string"
         },
@@ -69,6 +74,11 @@ export const AddLogistics = [
           "internalType": "string",
           "name": "",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
         }
       ],
       "payable": false,
@@ -90,6 +100,57 @@ export const AddLogistics = [
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "created",
+          "type": "string"
+        }
+      ],
+      "name": "getDataSobsByDateCreated",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
         },
         {
           "internalType": "string",
