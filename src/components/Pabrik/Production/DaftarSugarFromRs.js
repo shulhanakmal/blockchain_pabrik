@@ -98,7 +98,7 @@ const DaftarProduction = () => {
         // input logistik
 
         const updateDataL = new FormData();
-          let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
+          let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddLogistics, signer)
           let transactionL = await contractL.addLogisticsSbsfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
             updateDataL.append('transaction', transactionL.hash);
             updateDataL.append('wallet', transactionL.from);
