@@ -72,7 +72,7 @@ const DaftarProduction = () => {
 
         const updateData = new FormData();
         // input production msc
-          let contract = new ethers.Contract(process.env.ADDRESS_MSC, AddProduct, signer)
+          let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
           let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
             updateData.append('transaction', transaction.hash);
             updateData.append('wallet', transaction.from);
@@ -88,7 +88,7 @@ const DaftarProduction = () => {
         // input sugar cane
         const updateDataInput = new FormData();
 
-          let contractSC = new ethers.Contract(process.env.ADDRESS_SFC, AddCane, signer)
+          let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
           let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
             updateDataInput.append('transaction', transactionSC.hash);
             updateDataInput.append('wallet', transactionSC.from);
@@ -103,7 +103,7 @@ const DaftarProduction = () => {
 
         // input logistik cane
         const updateDataLogistik = new FormData();
-          let contractL = new ethers.Contract(process.env.ADDRESS_SBSFC, AddLogistics, signer)
+          let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
           let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
             setHash(transactionL.hash);
             updateDataLogistik.append('transaction', transactionL.hash);

@@ -1,13 +1,13 @@
-pragma experimental ABIEncoderV2;
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.8 <=0.8.4;
+pragma solidity ^0.6.4;
+pragma experimental ABIEncoderV2;
 
 contract AddStock {
 
     mapping (uint => Stock) stok;
-    mapping (string => Stock) tgl;
-    mapping (string => Stock) proces;
+
     struct Stock {
+        address walletAddress;
         uint stockid;
         string date;
         string cane;
@@ -17,33 +17,13 @@ contract AddStock {
         string created;
         bool init;
     }
+    Stock[] public arr;
 
-    Stock[] public stokarr;
-
+    function getAllData() public view returns (Stock[] memory) {
+        return arr;
+    }
     function addStock(uint stockid, string memory date, string memory cane, string memory rs, string memory proses, string memory volume, string memory created) public {   
-        stok[stockid] = Stock(stockid, date, cane, rs, proses, volume, created, true);
-        tgl[date] = Stock(stockid, date, cane, rs, proses, volume, created, true);
-        proces[proses] = Stock(stockid, date, cane, rs, proses, volume, created, true);
-    }
-    function getDataStokId(uint stockid) view public returns (uint, string memory, string memory, string memory, string memory, string memory, string memory) {
-        require(stok[stockid].init);
-        Stock memory StockStruct;
-        StockStruct = stok[stockid];
-        return(StockStruct.stockid, StockStruct.date, StockStruct.cane, StockStruct.rs, StockStruct.proses, StockStruct.volume, StockStruct.created);
-    }
-    function getDataStokByDate(string memory date) view public returns (uint, string memory, string memory, string memory, string memory, string memory, string memory) {
-        require(tgl[date].init);
-        Stock memory StockStruct;
-        StockStruct = tgl[date];
-        return(StockStruct.stockid, StockStruct.date, StockStruct.cane, StockStruct.rs, StockStruct.proses, StockStruct.volume, StockStruct.created);
-    }
-    function getDataStokByProses(string memory proses) view public returns (uint, string memory, string memory, string memory, string memory, string memory, string memory) {
-        require(proces[proses].init);
-        Stock memory StockStruct;
-        StockStruct = proces[proses];
-        return(StockStruct.stockid, StockStruct.date, StockStruct.cane, StockStruct.rs, StockStruct.proses, StockStruct.volume, StockStruct.created);
-    }
-    function getStok() public view returns (Stock[] memory) {
-        return stokarr;
+        Stock memory _stok = Stock(msg.sender, stockid, date, cane, rs, proses, volume, created, true);
+        arr.push(_stok);
     }
 }

@@ -75,7 +75,7 @@ export default class Dashboard extends Component {
 
   render() {
     const productionData = [
-      { key: "user", label: "User", _style: { width: "20%" } },
+      // { key: "user", label: "User", _style: { width: "20%" } },
       { key: "wallet", label: "Wallet", _style: { width: "25%" } },
       { key: "jenis_transaksi", label: "transaksi", _style: { width: "20%" } },
       { key: "transaksi_hash", label: "transaksi Hash", _style: { width: "25%" } },
@@ -87,7 +87,7 @@ export default class Dashboard extends Component {
       },
     ];
     const logisticsData = [
-      { key: "user", label: "User", _style: { width: "20%" } },
+      // { key: "user", label: "User", _style: { width: "20%" } },
       { key: "wallet", label: "Wallet", _style: { width: "25%" } },
       { key: "jenis_transaksi", label: "transaksi", _style: { width: "20%" } },
       { key: "transaksi_hash", label: "transaksi Hash", _style: { width: "25%" } },
@@ -99,7 +99,7 @@ export default class Dashboard extends Component {
       },
     ];
     const salesData = [
-      { key: "user", label: "User", _style: { width: "20%" } },
+      // { key: "user", label: "User", _style: { width: "20%" } },
       { key: "wallet", label: "Wallet", _style: { width: "25%" } },
       { key: "jenis_transaksi", label: "transaksi", _style: { width: "20%" } },
       { key: "transaksi_hash", label: "transaksi Hash", _style: { width: "25%" } },

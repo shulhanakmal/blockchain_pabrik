@@ -41,7 +41,7 @@ const DaftarLogistic = () => {
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
-  const contractAddress = process.env.ADDRESS_SBSFRS;
+  const contractAddress = process.env.REACT_APP_ADDRESS_SBSFC;
 
   provider.engine.stop();
 

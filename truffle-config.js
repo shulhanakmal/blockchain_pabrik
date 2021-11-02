@@ -62,6 +62,7 @@ module.exports = {
       provider: () => 
         new HDWalletProvider(
           "capable wine wing arrive fix fatigue swing mixture letter envelope donate firm", 
+          // "control gather add wrap diamond under opera brain doctor keep lesson beef", 
           `https://ropsten.infura.io/v3/e3b1137fe3f14629ab52040a102adbdf`
         ),
       network_id: 3,
@@ -106,6 +107,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
+      version: "^0.6.4",
       // version: "0.5.1",    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.8 <=0.8.4;
+pragma solidity ^0.6.4;
+pragma experimental ABIEncoderV2;
 
 contract AddLogisticsSbsfc {
 
     mapping (uint => LogisticsSbsfc) sbsfc;
-    mapping (string => LogisticsSbsfc) tgl;
-    mapping (string => LogisticsSbsfc) dibuat;
+
     struct LogisticsSbsfc {
+        address walletAddress;
         uint sbsfcid;
         string date;
         string volume;
@@ -14,27 +15,14 @@ contract AddLogisticsSbsfc {
         string created;
         bool init;
     }
+    
+    LogisticsSbsfc[] public arr;
+
+    function getAllData() public view returns (LogisticsSbsfc[] memory) {
+        return arr;
+    }
     function addLogisticsSbsfc(uint sbsfcid, string memory date, string memory volume, string memory status, string memory created) public {   
-        sbsfc[sbsfcid] = LogisticsSbsfc(sbsfcid, date, volume, status, created, true);
-        tgl[date] = LogisticsSbsfc(sbsfcid, date, volume, status, created, true);
-        dibuat[created] = LogisticsSbsfc(sbsfcid, date, volume, status, created, true);
-    }
-    function getDataSbsfcBySbsfcId(uint sbsfcid) view public returns (uint, string memory, string memory, string memory, string memory) {
-        require(sbsfc[sbsfcid].init);
-        LogisticsSbsfc memory LogisticsSbsfcStruct;
-        LogisticsSbsfcStruct = sbsfc[sbsfcid];
-        return(LogisticsSbsfcStruct.sbsfcid, LogisticsSbsfcStruct.date, LogisticsSbsfcStruct.volume, LogisticsSbsfcStruct.status, LogisticsSbsfcStruct.created);
-    }
-    function getDataSbsfcByDate(string memory date) view public returns (uint, string memory, string memory, string memory, string memory) {
-        require(tgl[date].init);
-        LogisticsSbsfc memory LogisticsSbsfcStruct;
-        LogisticsSbsfcStruct = tgl[date];
-        return(LogisticsSbsfcStruct.sbsfcid, LogisticsSbsfcStruct.date, LogisticsSbsfcStruct.volume, LogisticsSbsfcStruct.status, LogisticsSbsfcStruct.created);
-    }
-    function getDataSbsfcByDateCreatted(string memory created) view public returns (uint, string memory, string memory, string memory, string memory) {
-        require(dibuat[created].init);
-        LogisticsSbsfc memory LogisticsSbsfcStruct;
-        LogisticsSbsfcStruct = dibuat[created];
-        return(LogisticsSbsfcStruct.sbsfcid, LogisticsSbsfcStruct.date, LogisticsSbsfcStruct.volume, LogisticsSbsfcStruct.status, LogisticsSbsfcStruct.created);
+        LogisticsSbsfc memory _logisticssbsfc = LogisticsSbsfc(msg.sender, sbsfcid, date, volume, status, created, true);
+        arr.push(_logisticssbsfc);
     }
 }

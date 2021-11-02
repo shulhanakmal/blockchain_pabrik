@@ -19,6 +19,8 @@ import DaftarReturnBulkSugar from "./components/Pabrik/Logistic/DaftarReturnBulk
 import DaftarStockBulkSugarFromCane from "./components/Pabrik/Logistic/DaftarStockBulkSugarFromCane";
 import DaftarStockBulkSugarFromRs from "./components/Pabrik/Logistic/DaftarStockBulkSugarFromRs";
 import DaftarStockOutBulkSugar from "./components/Pabrik/Logistic/DaftarStockOutBulkSugar";
+import RequestData from "./components/RequestData";
+import ListRequestData from "./components/ListRequestData";
 import SummarySales from "./components/Pabrik/Sales/SummarySales";
 import EditSales from "./components/Pabrik/Sales/EditSales";
 import Sales from "./components/Pabrik/Sales/Sales";
@@ -117,7 +119,6 @@ class App extends Component {
         })()}
 
         <Route path="/login" exact component={Login} />
-        <Route path="/" exact component={() => <HalamanUtama />} />
         <Route path="/Stock" exact component={Stock} />
         <Route path="/SummaryProduction" exact component={SummaryProduction} />
         <Route path="/Production" exact component={ListProduction} />
@@ -139,6 +140,8 @@ class App extends Component {
         <Route path="/Sales/tambah-sales" exact component={DaftarSales} />
         <Route path="/User-management/list-user" exact component={ListUser} />
         <Route path="/User-management/add-user" exact component={AddUser} />
+        <Route path="/Request-data" exact component={RequestData} />
+        <Route path="/List-request-data" exact component={ListRequestData} />
       </Router>
     );
   }

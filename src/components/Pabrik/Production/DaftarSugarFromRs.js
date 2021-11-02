@@ -83,7 +83,7 @@ const DaftarProduction = () => {
         const akun = accounts[0];
 
         const updateDataRS = new FormData();
-        let contractRS = new ethers.Contract(process.env.ADDRESS_SFRS, AddProduct, signer)
+        let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddProduct, signer)
         let transaction = await contractRS.addProductionSfrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
           updateDataRS.append('transaction', transaction.hash);
           updateDataRS.append('wallet', transaction.from);
@@ -98,7 +98,7 @@ const DaftarProduction = () => {
         // input logistik
 
         const updateDataL = new FormData();
-          let contractL = new ethers.Contract(process.env.ADDRESS_SBSFRS, AddLogistics, signer)
+          let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
           let transactionL = await contractL.addLogisticsSbsfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
             updateDataL.append('transaction', transactionL.hash);
             updateDataL.append('wallet', transactionL.from);

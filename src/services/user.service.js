@@ -164,6 +164,29 @@ class UserService {
     });
   }
 
+  RequestData(raw) {
+    return axios.post(API_URL + "request-data", raw, {
+      headers: authHeader(),
+    });
+  }
+
+  getRD(signer) {
+    return axios.get(API_URL + "get-request-data/" + signer, { headers: authHeader() });
+  }
+
+  ApproveRequestData(raw) { // raw adalah requestDataId
+    return axios.post(API_URL + "approve-request-data", raw, {
+      headers: authHeader(),
+    });
+  }
+
+  getAdminLRD() {
+    return axios.get(API_URL + "list-request-data", { headers: authHeader() });
+  }
+
+  changeSRD(requestDataControlId) {
+    return axios.get(API_URL + "change-status-request-data/" + requestDataControlId, { headers: authHeader() });
+  }
 }
 
 export default new UserService();

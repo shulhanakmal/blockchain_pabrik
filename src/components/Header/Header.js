@@ -91,13 +91,13 @@ const Header = props => {
                     <CDropdownItem to="/User-management/add-user">Add User</CDropdownItem>
                   </CDropdownMenu>
                 </CDropdown>
-                <CNavLink href="/">List Request Data</CNavLink>
+                <CNavLink href="/List-request-data">List Request Data</CNavLink>
               </CNavbarNav>
             )
           } else {
             return (
               <CNavbarNav>
-                <CNavLink href="/">Request Data</CNavLink>
+                <CNavLink href="/Request-data">Request Data</CNavLink>
               </CNavbarNav>
             )
           }
