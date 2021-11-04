@@ -39,6 +39,7 @@ const DaftarProduction = () => {
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
+  const [catchErr, setErr] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -82,22 +83,29 @@ const DaftarProduction = () => {
         const accounts = await window.ethereum.enable();
         const akun = accounts[0];
 
-        const updateDataRS = new FormData();
-        let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddProduct, signer)
-        let transaction = await contractRS.addProductionSfrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-          updateDataRS.append('transaction', transaction.hash);
-          updateDataRS.append('wallet', transaction.from);
-          setHash(transaction.hash);
-        await transaction.wait()
+        // input sugar rs
+        try{
+          const updateDataRS = new FormData();
+          let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddProduct, signer)
+          let transaction = await contractRS.addProductionSfrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+            updateDataRS.append('transaction', transaction.hash);
+            updateDataRS.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
 
-        updateDataRS.append('id', response.data.data.id);
-        updateDataRS.append('flag', 'sugarFromRs');
-        UserService.addProdcutionTransactionHash(updateDataRS);
-        setHash("");
+          updateDataRS.append('id', response.data.data.id);
+          updateDataRS.append('flag', 'sugarFromRs');
+          UserService.addProdcutionTransactionHash(updateDataRS);
+          setHash("");
+        } catch (e) {
+          console.log(e);
+          setErr(true);
+        }
+        // end input sugar rs
 
         // input logistik
-
-        const updateDataL = new FormData();
+        try{
+          const updateDataL = new FormData();
           let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddLogistics, signer)
           let transactionL = await contractL.addLogisticsSbsfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
             updateDataL.append('transaction', transactionL.hash);
@@ -108,10 +116,20 @@ const DaftarProduction = () => {
           updateDataL.append('id', response.data.input.id);
           updateDataL.append('flag', 'stockBulkSugarFromRs');
           UserService.addLogisticsTransactionHash(updateDataL);
+          setHash("");
+        } catch (e) {
+          console.log(e);
+          setErr(true);
+        }
         // end insert logistik
-        setLoading(false);
-        showResults("Dimasukkan");
-        setHash("");
+
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Dimasukkan");
+        }
       },
       (error) => {
       }

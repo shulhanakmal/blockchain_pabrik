@@ -38,6 +38,7 @@ const DaftarLogistic = () => {
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
+  const [catchErr, setErr] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -78,8 +79,9 @@ const DaftarLogistic = () => {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        const updateData = new FormData();
         // input logistik sbsfc
+        try{
+          const updateData = new FormData();
           let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
           let transaction = await contract.addLogisticsSbsfc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
             updateData.append('transaction', transaction.hash);
@@ -91,10 +93,19 @@ const DaftarLogistic = () => {
           updateData.append('flag', 'stockBulkSugarFromCane');
           UserService.addLogisticsTransactionHash(updateData);
           setHash("");
+        } catch(e) {
+          console.log(e);
+          setErr(true);
+        }
         // end input sbsfc
-        setLoading(false);
-        showResults("Dimasukkan");
-        setHash("");
+        
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Dimasukkan");
+        }
       },
       (error) => {
       }

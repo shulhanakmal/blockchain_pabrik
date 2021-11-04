@@ -34,11 +34,10 @@ const DaftarProduction = () => {
 
   let [loading, setLoading] = useState(false);
   let [color, setColor] = useState("#3c4b64");
-
   let [TxnHash, setHash] = useState("");
-
   const [balance, setBalance] = useState(0);
   const [tanggal, setDate] = useState("");
+  const [catchErr, setErr] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -70,39 +69,49 @@ const DaftarProduction = () => {
         const accounts = await window.ethereum.enable();
         const akun = accounts[0];
 
-        const updateData = new FormData();
         // input production msc
-          let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
-          let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-            updateData.append('transaction', transaction.hash);
-            updateData.append('wallet', transaction.from);
-            setHash(transaction.hash);
-          await transaction.wait()
+          try{
+            const updateData = new FormData();
+            let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
+            let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+              updateData.append('transaction', transaction.hash);
+              updateData.append('wallet', transaction.from);
+              setHash(transaction.hash);
+            await transaction.wait()
 
-          updateData.append('id', response.data.data.id);
-          updateData.append('flag', 'milledSugarCane');
-          UserService.addProdcutionTransactionHash(updateData);
-          setHash("");
+            updateData.append('id', response.data.data.id);
+            updateData.append('flag', 'milledSugarCane');
+            UserService.addProdcutionTransactionHash(updateData);
+            setHash("");
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
         // end input msc
 
         // input sugar cane
-        const updateDataInput = new FormData();
+          try{
+            const updateDataInput = new FormData();
+            let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
+            let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+              updateDataInput.append('transaction', transactionSC.hash);
+              updateDataInput.append('wallet', transactionSC.from);
+              setHash(transactionSC.hash);
+            await transactionSC.wait()
 
-          let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
-          let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
-            updateDataInput.append('transaction', transactionSC.hash);
-            updateDataInput.append('wallet', transactionSC.from);
-            setHash(transactionSC.hash);
-          await transactionSC.wait()
-
-          updateDataInput.append('id', response.data.input.id);
-          updateDataInput.append('flag', 'sugarCane');
-          UserService.addProdcutionTransactionHash(updateDataInput);
-          setHash("");
+            updateDataInput.append('id', response.data.input.id);
+            updateDataInput.append('flag', 'sugarCane');
+            UserService.addProdcutionTransactionHash(updateDataInput);
+            setHash("");
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
         // end input sugar cane
 
         // input logistik cane
-        const updateDataLogistik = new FormData();
+        try{
+          const updateDataLogistik = new FormData();
           let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
           let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
             setHash(transactionL.hash);
@@ -113,10 +122,19 @@ const DaftarProduction = () => {
           updateDataLogistik.append('id', response.data.logistik.id);
           updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
           UserService.addLogisticsTransactionHash(updateDataLogistik);
+          setHash("");
+        } catch(e) {
+          console.log(e);
+          setErr(true);
+        }
 
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
           setLoading(false);
           showResults("Dimasukkan");
-          setHash("");
+        }
       },
       (error) => {
       }

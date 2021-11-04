@@ -41,6 +41,7 @@ const DaftarProduction = () => {
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
+  const [catchErr, setErr] = useState(false);
 
   const handleDate = (date) => {
     setDate(date);
@@ -84,50 +85,71 @@ const DaftarProduction = () => {
 
         const updateData = new FormData();
         // input production prs
-          let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, AddProduct, signer)
-          let transaction = await contract.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-            updateData.append('transaction', transaction.hash);
-            updateData.append('wallet', transaction.from);
-            setHash(transaction.hash);
-          await transaction.wait()
+          try{
+            let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, AddProduct, signer)
+            let transaction = await contract.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+              updateData.append('transaction', transaction.hash);
+              updateData.append('wallet', transaction.from);
+              setHash(transaction.hash);
+            await transaction.wait()
 
-          updateData.append('id', response.data.data.id);
-          updateData.append('flag', 'processedRs');
-          UserService.addProdcutionTransactionHash(updateData);
-          setHash("");
+            updateData.append('id', response.data.data.id);
+            updateData.append('flag', 'processedRs');
+            UserService.addProdcutionTransactionHash(updateData);
+            setHash("");
+          } catch (e) {
+            console.log(e);
+            setErr(true);
+          }
         // end insert prs
 
         // insert sugar rs
-        const updateDataRS = new FormData();
-          let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddRs, signer)
-          let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
-            updateDataRS.append('transaction', transactionRS.hash);
-            updateDataRS.append('wallet', transactionRS.from);
-            setHash(transactionRS.hash);
-          await transactionRS.wait()
+          try{
+            const updateDataRS = new FormData();
+            let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddRs, signer)
+            let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+              updateDataRS.append('transaction', transactionRS.hash);
+              updateDataRS.append('wallet', transactionRS.from);
+              setHash(transactionRS.hash);
+            await transactionRS.wait()
 
-          updateDataRS.append('id', response.data.input.id);
-          updateDataRS.append('flag', 'sugarFromRs');
-          UserService.addProdcutionTransactionHash(updateDataRS);
-          setHash("");
+            updateDataRS.append('id', response.data.input.id);
+            updateDataRS.append('flag', 'sugarFromRs');
+            UserService.addProdcutionTransactionHash(updateDataRS);
+            setHash("");
+          } catch (e) {
+            console.log(e);
+            setErr(true);
+          }
         // end insert sugar rs
 
         // insert logistik
-        const updateDataL = new FormData();
-          let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddLogistics, signer)
-          let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
-            updateDataL.append('transaction', transactionL.hash);
-            updateDataL.append('wallet', transactionL.from);
-            setHash(transactionL.hash);
-          await transactionL.wait()
+          try{
+            const updateDataL = new FormData();
+            let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddLogistics, signer)
+            let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+              updateDataL.append('transaction', transactionL.hash);
+              updateDataL.append('wallet', transactionL.from);
+              setHash(transactionL.hash);
+            await transactionL.wait()
 
-          updateDataL.append('id', response.data.logistik.id);
-          updateDataL.append('flag', 'stockBulkSugarFromRs');
-          UserService.addLogisticsTransactionHash(updateDataL);
+            updateDataL.append('id', response.data.logistik.id);
+            updateDataL.append('flag', 'stockBulkSugarFromRs');
+            UserService.addLogisticsTransactionHash(updateDataL);
+            setHash("");
+          } catch (e) {
+            console.log(e);
+            setErr(true);
+          }
         // end insert logistik
-        setLoading(false);
-        showResults("Dimasukkan");
-        setHash("");
+
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Dimasukkan");
+        }
       },
       (error) => {
       }

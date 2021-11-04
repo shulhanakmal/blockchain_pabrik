@@ -21,6 +21,10 @@ import showResults from './showResults/showResults';
 import Web3 from "web3";
 import Loader from "react-spinners/DotLoader";
 import { css } from "@emotion/react";
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4charts from "@amcharts/amcharts4/charts";
+import am4themes_kelly from "@amcharts/amcharts4/themes/kelly";
+import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
 require("dotenv").config();
 
@@ -224,6 +228,65 @@ export default class ListRequestData extends Component {
       },
     ];
 
+    /* Chart code */
+    // Themes begin
+    am4core.useTheme(am4themes_animated);
+    // Themes end
+
+    let chart = am4core.create('chartdiv', am4charts.XYChart)
+    chart.colors.step = 2;
+
+    chart.scrollbarX = new am4core.Scrollbar();
+
+    chart.legend = new am4charts.Legend()
+    chart.legend.position = 'top'
+    chart.legend.paddingBottom = 20
+    chart.legend.labels.template.maxWidth = 95
+
+    let xAxis = chart.xAxes.push(new am4charts.CategoryAxis())
+    xAxis.dataFields.category = 'Wallet'
+    xAxis.renderer.minGridDistance = 30
+    xAxis.renderer.cellStartLocation = 0.1
+    xAxis.renderer.cellEndLocation = 0.9
+    xAxis.renderer.grid.template.location = 0;
+
+    let yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    yAxis.min = 0;
+
+    function createSeries(value, name) {
+      let series = chart.series.push(new am4charts.ColumnSeries())
+      series.dataFields.valueY = value
+      series.dataFields.categoryX = 'Wallet'
+      series.name = name
+
+      series.columns.template.tooltipText = "[#fff font-size: 15px][/]Telah Melakukan Get Data {name} :[#fff font-size: 20px]{valueY}X [/]";
+      series.tooltip.label.textAlign = "middle";
+
+      let bullet = series.bullets.push(new am4charts.LabelBullet())
+      bullet.interactionsEnabled = false
+
+      return series;
+    }
+
+    var DataBarchart = [];
+
+    for(let i = 0; i < this.state.content.length; i++) {
+      DataBarchart.push({
+        "Wallet": this.state.content.dataWallet[i],
+        "Production": this.state.content.dataProduction[i],
+        "Logistics": this.state.content.dataLogistics[i],
+        "Sales": this.state.content.dataSales[i],
+      },)
+    }
+
+    chart.data = DataBarchart;
+
+    createSeries('Production', 'Production');
+    createSeries('Logistics', 'Logistics');
+    createSeries('Sales', 'Sales');
+
+    /* Chart code end */
+
     return (
       <Fragment>
 
@@ -274,6 +337,8 @@ export default class ListRequestData extends Component {
                                   </CRow>
                                 </CCardHeader>
                                 <CCardBody>
+                                  <div id="chartdiv" className="chartdiv"></div>
+
                                   <CDataTable
                                     items={this.state.content.listRequestData}
                                     fields={RequestData}

@@ -41,6 +41,7 @@ const DaftarSales = () => {
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
+  const [catchErr, setErr] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -90,34 +91,49 @@ const DaftarSales = () => {
         const signer = provider.getSigner();
 
         // input sales
-          const updateData = new FormData();
-          let contract = new ethers.Contract(contractAddress, AddSales, signer)
-          let transaction = await contract.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal')
-            updateData.append('transaction', transaction.hash);
-            updateData.append('wallet', transaction.from);
-            setHash(transaction.hash);
-          await transaction.wait()
+          try{
+            const updateData = new FormData();
+            let contract = new ethers.Contract(contractAddress, AddSales, signer)
+            let transaction = await contract.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal')
+              updateData.append('transaction', transaction.hash);
+              updateData.append('wallet', transaction.from);
+              setHash(transaction.hash);
+            await transaction.wait()
 
-          updateData.append('id', response.data.data.id);
-          UserService.addSalesTransactionHash(updateData);
+            updateData.append('id', response.data.data.id);
+            UserService.addSalesTransactionHash(updateData);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
         // end sales
 
         // input logistik sobs
-          const updateDataL = new FormData();
-          let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
-          let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, response.data.logistik.sugar, 'normal', dateString)
-            updateDataL.append('transaction', transactionL.hash);
-            updateDataL.append('wallet', transactionL.from);
-            setHash(transactionL.hash);
-          await transactionL.wait()
+          try{
+            const updateDataL = new FormData();
+            let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
+            let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, response.data.logistik.sugar, 'normal', dateString)
+              updateDataL.append('transaction', transactionL.hash);
+              updateDataL.append('wallet', transactionL.from);
+              setHash(transactionL.hash);
+            await transactionL.wait()
 
-          updateDataL.append('id', response.data.logistik.id);
-          updateDataL.append('flag', 'stockOutBulkSugar');
-          UserService.addLogisticsTransactionHash(updateDataL);
+            updateDataL.append('id', response.data.logistik.id);
+            updateDataL.append('flag', 'stockOutBulkSugar');
+            UserService.addLogisticsTransactionHash(updateDataL);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
         // end input sobs
 
-        setLoading(false);
-        showResults("Dimasukkan");
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Dimasukkan");
+        }
         setHash("");
       },
       (error) => {

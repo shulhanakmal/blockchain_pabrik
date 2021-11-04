@@ -80,8 +80,14 @@ const RequestDataForm = (props) => {
     const accounts = await window.ethereum.enable();
     const akun = accounts[0];
 
-    console.log(signer);
-    console.log(item.data);
+    // insert into log
+      const dataLog = new FormData();
+      dataLog.append('wallet', item.address_wallet);
+      dataLog.append('email', item.email);
+      dataLog.append('name', item.name);
+      dataLog.append('data', item.data);
+      UserService.addLogRequestData(dataLog);
+    // end insert log
 
     var getDataReq = [];
     if(item.data === 'Production') {
@@ -89,28 +95,76 @@ const RequestDataForm = (props) => {
         let contractMSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, ProductMSC, signer);
         let transactionMSC = await contractMSC.getAllData();
         // await transactionMSC.wait();
-        getDataReq.push(["Production Milled Sugar Cane", transactionMSC]);
+
+        await transactionMSC.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Production Milled Sugar Cane",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "status" : value[4],
+              "created" : value[5]
+            }
+          );
+        });
       // end get msc
 
       // get prs
         let contractPRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, ProductPRS, signer);
         let transactionPRS = await contractPRS.getAllData();
         // await transactionPRS.wait()
-        getDataReq.push(["Production Processed Raw Sugar", transactionPRS]);
+
+        await transactionPRS.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Production Processed Raw Sugar",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "status" : value[4],
+              "created" : value[5]
+            }
+          );
+        });
       // end get prs
 
       // get sc
         let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, ProductSFC, signer);
         let transactionSC = await contractSC.getAllData();
         // await transactionSC.wait()
-        getDataReq.push(["Production Sugar From Cane", transactionSC]);
+
+        await transactionSC.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Production Sugar From Cane",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "status" : value[4],
+              "created" : value[5]
+            }
+          );
+        });
       // end get sc
 
       // get sfrs
         let contractSFRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, ProductSFRS, signer);
         let transactionSFRS = await contractSFRS.getAllData();
         // await transactionSFRS.wait()
-        getDataReq.push(["Production From Raw Sugar", transactionSFRS]);
+
+        await transactionSFRS.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Production From Raw Sugar",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "status" : value[4],
+              "created" : value[5]
+            }
+          );
+        });
       // end get sfrs
 
     } else if(item.data === 'Logistics') {
@@ -118,35 +172,98 @@ const RequestDataForm = (props) => {
         let contractSBSFC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, LogistikSBSFC, signer);
         let transactionSBSFC = await contractSBSFC.getAllData();
         // await transactionSBSFC.wait();
-        getDataReq.push(["Logistik Stock Bulk Sugar From Cane", transactionSBSFC]);
+
+        await transactionSBSFC.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Logistik Stock Bulk Sugar From Cane",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "status" : value[4],
+              "created" : value[5]
+            }
+          );
+        });
       // end get sbsfc
 
       // get sbsfs
         let contractSBSFRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, LogistikSBSFRS, signer);
         let transactionSBSFRS = await contractSBSFRS.getAllData();
         // await transactionSBSFRS.wait();
-        getDataReq.push(["Logistik Stock Bulk Sugar From Raw Sugar", transactionSBSFRS]);
+
+        await transactionSBSFRS.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Logistik Stock Bulk Sugar From Raw Sugar",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "status" : value[4],
+              "created" : value[5]
+            }
+          );
+        });
       // end get sbsfrs
 
       // get sobs
         let contractSOBS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SOBS, LogistikSOBS, signer);
         let transactionSOBS = await contractSOBS.getAllData();
         // await transactionSOBS.wait();
-        getDataReq.push(["Logistik Stock Out Bulk Sugar", transactionSOBS]);
+        await transactionSOBS.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Logistik Stock Out Bulk Sugar",
+              "wallet" : value[0],
+              "date" : value[2],
+              "volume" : value[3],
+              "sugar" : value[4],
+              "status" : value[5],
+              "created" : value[6]
+            }
+          );
+        });
       // end get sobs
 
       // get rbs
         let contractRBS = new ethers.Contract(process.env.REACT_APP_ADDRESS_RBS, LogistikRBS, signer);
         let transactionRBS = await contractRBS.getAllData();
         // await transactionRBS.wait();
-        getDataReq.push(["Logistik Return Bulk Sugar", transactionRBS]);
+        await transactionRBS.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Logistik Return Bulk Sugar",
+              "wallet" : value[0],
+              "date" : value[2],
+              "buyer" : value[3],
+              "sugar" : value[4],
+              "volume" : value[5],
+              "status" : value[6],
+              "created" : value[7]
+            }
+          );
+        });
       // end get rbs
     } else if(item.data === 'Sales') {
       // get sales
         let contractSALES = new ethers.Contract(process.env.REACT_APP_ADDRESS_SALES, AddSales, signer);
         let transactionSALES = await contractSALES.getAllData();
         // await transactionSALES.wait();
-        getDataReq.push(["Sales", transactionSALES]);
+        await transactionSALES.forEach(async function (value, index) {
+          getDataReq.push(
+            {
+              "Data Request" : "Sales",
+              "wallet" : value[0],
+              "date" : value[2],
+              "dokumen" : value[3],
+              "buyer" : value[4],
+              "price" : value[5],
+              "sugar" : value[6],
+              "volume" : value[7],
+              "status" : value[8]
+            }
+          );
+        });
       // end get sales
     } else {
       // masih aneh ketika deploy smart contract stok tidak terdeploy dan tidak terbuat abinya
@@ -158,10 +275,12 @@ const RequestDataForm = (props) => {
       // end get stok
     }
     
-    // const {myData} = getDataReq;
-    // console.log("DATANYA NIH", getDataReq);
+
+    console.log("DATANYA NIH", getDataReq);
+
     const fileName = "file";
-    const json = JSON.stringify(getDataReq);
+    // const json = JSON.stringify(getDataReq);
+    const json = JSON.stringify(getDataReq, null, 4).replace(/[",\\]]/g, "");
     const blob = new Blob([json],{type:'application/json'});
     const href = await URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -171,9 +290,7 @@ const RequestDataForm = (props) => {
     link.click();
     document.body.removeChild(link);
 
-    console.log("cek langsung", getDataReq);
     setDFBC(getDataReq)
-    console.log("cek dari state", dataFBC);
 
     // const formData = new FormData();
     // formData.append('requestDataId',item.id);
@@ -330,7 +447,7 @@ const RequestDataForm = (props) => {
                                     <option value="Production">Production</option>
                                     <option value="Logistics">Logistics</option>
                                     <option value="Sales">Sales</option>
-                                    <option value="Stock">Stock</option>
+                                    {/* <option value="Stock">Stock</option> */}
                                 </Field>
                             </CFormGroup>
                           </CForm>
@@ -404,7 +521,7 @@ const RequestDataForm = (props) => {
                                     <option value="Production">Production</option>
                                     <option value="Logistics">Logistics</option>
                                     <option value="Sales">Sales</option>
-                                    <option value="Stock">Stock</option>
+                                    {/* <option value="Stock">Stock</option> */}
                                 </Field>
                             </CFormGroup>
                           </CForm>

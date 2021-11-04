@@ -40,6 +40,7 @@ const DaftarLogistic = () => {
 
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
+  const [catchErr, setErr] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -84,8 +85,9 @@ const DaftarLogistic = () => {
         const provider = new ethers.providers.Web3Provider(connection);
         const signer = provider.getSigner();
 
-        const updateData = new FormData();
         // input logistik sobs
+        try{
+          const updateData = new FormData();
           console.log("CEK ADDRESS MAL :", contractAddress);
           let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
           let transaction = await contract.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString)
@@ -97,40 +99,57 @@ const DaftarLogistic = () => {
           updateData.append('id', response.data.data.id);
           updateData.append('flag', 'returnBulkSugar');
           UserService.addLogisticsTransactionHash(updateData);
+        } catch(e) {
+          console.log(e);
+          setErr(true);
+        }
         // end input sobs
 
         // post ke blockchain data return ke stock (stok menambah dari return)
         if(values.sugar === 'cane'){
-          const txnCane = new FormData();
-          let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
-          let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
-            txnCane.append('transaction', transactionC.hash);
-            txnCane.append('wallet', transactionC.from);
-            setHash(transactionC.hash);
-          await transactionC.wait()
+          try{
+            const txnCane = new FormData();
+            let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
+            let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
+              txnCane.append('transaction', transactionC.hash);
+              txnCane.append('wallet', transactionC.from);
+              setHash(transactionC.hash);
+            await transactionC.wait()
 
-          txnCane.append('id', response.data.stock.id);
-          txnCane.append('flag', 'stockBulkSugarFromCane');
-          UserService.addLogisticsTransactionHash(txnCane);
-          
+            txnCane.append('id', response.data.stock.id);
+            txnCane.append('flag', 'stockBulkSugarFromCane');
+            UserService.addLogisticsTransactionHash(txnCane);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
         } else {
+          try{
+            const txnRS = new FormData();
+            let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
+            let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
+              txnRS.append('transaction', transactionRS.hash);
+              txnRS.append('wallet', transactionRS.from);
+              setHash(transactionRS.hash);
+            await transactionRS.wait()
 
-          const txnRS = new FormData();
-          let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
-          let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
-            txnRS.append('transaction', transactionRS.hash);
-            txnRS.append('wallet', transactionRS.from);
-            setHash(transactionRS.hash);
-          await transactionRS.wait()
-
-          txnRS.append('id', response.data.stock.id);
-          txnRS.append('flag', 'stockBulkSugarFromRs');
-          UserService.addLogisticsTransactionHash(txnRS);
+            txnRS.append('id', response.data.stock.id);
+            txnRS.append('flag', 'stockBulkSugarFromRs');
+            UserService.addLogisticsTransactionHash(txnRS);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
         }
-
-        setLoading(false);
-        showResults("Dimasukkan");
         setHash("");
+
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Dimasukkan");
+        }
       },
       (error) => {
       }

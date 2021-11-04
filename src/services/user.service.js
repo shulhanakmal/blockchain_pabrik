@@ -3,7 +3,8 @@ import authHeader from "./auth-header";
 // import authHeaderImage from "./auth-header-image";
 
 // const API_URL = "http://209.97.160.154:90/api/v1/";
-const API_URL = "http://127.0.0.1:8000/api/v2/";
+// const API_URL = "http://127.0.0.1:8000/api/v2/";
+const API_URL = "http://209.97.160.154:8002/api/v2/";
 
 class UserService {
   getPublicContent() {
@@ -187,6 +188,13 @@ class UserService {
   changeSRD(requestDataControlId) {
     return axios.get(API_URL + "change-status-request-data/" + requestDataControlId, { headers: authHeader() });
   }
+
+  addLogRequestData(raw) {
+    return axios.post(API_URL + "add-log-request-data", raw, {
+      headers: authHeader(),
+    });
+  }
+
 }
 
 export default new UserService();
