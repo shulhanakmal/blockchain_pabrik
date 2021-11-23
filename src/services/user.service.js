@@ -195,6 +195,38 @@ class UserService {
     });
   }
 
+  getDataMitraTani() {
+    return axios.get(API_URL + "get-petani-all", { headers: authHeader() });
+  }
+
+  getDetailMitraTani(id) {
+    return axios.get(API_URL + "get-detail-petani/" + id, { headers: authHeader() });
+  }
+
+  changeStatusMitraTani(id) {
+    return axios.get(API_URL + "change-status-petani/" + id, { headers: authHeader() });
+  }
+
+  AddMitraTani(raw) {
+    return axios.post(API_URL + "add-mitra-petani", raw, { 
+      headers: authHeader() 
+    });
+  }
+
+  getDataKebun() {
+    return axios.get(API_URL + "get-kebun-all", { headers: authHeader() });
+  }
+
+  getDetailKebun(id) {
+    return axios.get(API_URL + "get-detail-kebun/"+ id, { headers: authHeader() });
+  }
+
+  AddLokasiKebun(raw) {
+    return axios.post(API_URL + "add-lokasi-kebun", raw, { 
+      headers: authHeader() 
+    });
+  }
+
 }
 
 export default new UserService();

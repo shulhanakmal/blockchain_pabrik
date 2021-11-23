@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect, useCallback } from "react";
 import "../Pabrik.css";
 import "../PabrikMedia.css";
-import DaftarProductionForm from "./DaftarProductionForm";
+import DaftarMSCForm from "./DaftarMSCForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
 import Web3Modal from "web3modal";
@@ -49,96 +49,97 @@ const DaftarProduction = () => {
   };
 
   const handleSubmit = (values) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('date',tanggal);
-    formData.append('volume',values.volume);
-    formData.append('status','normal');
-    formData.append('param','milledSugarCane');
-    console.log(formData);
+    // setLoading(true);
+    console.log(values)
+    // const formData = new FormData();
+    // formData.append('date',tanggal);
+    // formData.append('volume',values.volume);
+    // formData.append('status','normal');
+    // formData.append('param','milledSugarCane');
+    // console.log(formData);
 
-    UserService.addProduction(formData).then(
-      async (response) => {
-        console.log('response', response);
+    // UserService.addProduction(formData).then(
+    //   async (response) => {
+    //     console.log('response', response);
 
-        const web3Modal = new Web3Modal();
-        const connection = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
+    //     const web3Modal = new Web3Modal();
+    //     const connection = await web3Modal.connect();
+    //     const provider = new ethers.providers.Web3Provider(connection);
+    //     const signer = provider.getSigner();
 
-        const accounts = await window.ethereum.enable();
-        const akun = accounts[0];
+    //     const accounts = await window.ethereum.enable();
+    //     const akun = accounts[0];
 
-        // input production msc
-          try{
-            const updateData = new FormData();
-            let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
-            let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-              updateData.append('transaction', transaction.hash);
-              updateData.append('wallet', transaction.from);
-              setHash(transaction.hash);
-            await transaction.wait()
+    //     // input production msc
+    //       try{
+    //         const updateData = new FormData();
+    //         let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
+    //         let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+    //           updateData.append('transaction', transaction.hash);
+    //           updateData.append('wallet', transaction.from);
+    //           setHash(transaction.hash);
+    //         await transaction.wait()
 
-            updateData.append('id', response.data.data.id);
-            updateData.append('flag', 'milledSugarCane');
-            UserService.addProdcutionTransactionHash(updateData);
-            setHash("");
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end input msc
+    //         updateData.append('id', response.data.data.id);
+    //         updateData.append('flag', 'milledSugarCane');
+    //         UserService.addProdcutionTransactionHash(updateData);
+    //         setHash("");
+    //       } catch(e) {
+    //         console.log(e);
+    //         setErr(true);
+    //       }
+    //     // end input msc
 
-        // input sugar cane
-          try{
-            const updateDataInput = new FormData();
-            let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
-            let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
-              updateDataInput.append('transaction', transactionSC.hash);
-              updateDataInput.append('wallet', transactionSC.from);
-              setHash(transactionSC.hash);
-            await transactionSC.wait()
+    //     // input sugar cane
+    //       try{
+    //         const updateDataInput = new FormData();
+    //         let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
+    //         let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+    //           updateDataInput.append('transaction', transactionSC.hash);
+    //           updateDataInput.append('wallet', transactionSC.from);
+    //           setHash(transactionSC.hash);
+    //         await transactionSC.wait()
 
-            updateDataInput.append('id', response.data.input.id);
-            updateDataInput.append('flag', 'sugarCane');
-            UserService.addProdcutionTransactionHash(updateDataInput);
-            setHash("");
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end input sugar cane
+    //         updateDataInput.append('id', response.data.input.id);
+    //         updateDataInput.append('flag', 'sugarCane');
+    //         UserService.addProdcutionTransactionHash(updateDataInput);
+    //         setHash("");
+    //       } catch(e) {
+    //         console.log(e);
+    //         setErr(true);
+    //       }
+    //     // end input sugar cane
 
-        // input logistik cane
-        try{
-          const updateDataLogistik = new FormData();
-          let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
-          let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
-            setHash(transactionL.hash);
-            updateDataLogistik.append('transaction', transactionL.hash);
-            updateDataLogistik.append('wallet', transactionL.from);
-          await transactionL.wait()
+    //     // input logistik cane
+    //     try{
+    //       const updateDataLogistik = new FormData();
+    //       let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
+    //       let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+    //         setHash(transactionL.hash);
+    //         updateDataLogistik.append('transaction', transactionL.hash);
+    //         updateDataLogistik.append('wallet', transactionL.from);
+    //       await transactionL.wait()
 
-          updateDataLogistik.append('id', response.data.logistik.id);
-          updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
-          UserService.addLogisticsTransactionHash(updateDataLogistik);
-          setHash("");
-        } catch(e) {
-          console.log(e);
-          setErr(true);
-        }
+    //       updateDataLogistik.append('id', response.data.logistik.id);
+    //       updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
+    //       UserService.addLogisticsTransactionHash(updateDataLogistik);
+    //       setHash("");
+    //     } catch(e) {
+    //       console.log(e);
+    //       setErr(true);
+    //     }
 
-        if(catchErr) {
-          setLoading(false);
-          console.log(catchErr);
-        } else {
-          setLoading(false);
-          showResults("Dimasukkan");
-        }
-      },
-      (error) => {
-      }
-    );
+    //     if(catchErr) {
+    //       setLoading(false);
+    //       console.log(catchErr);
+    //     } else {
+    //       setLoading(false);
+    //       showResults("Dimasukkan");
+    //     }
+    //   },
+    //   (error) => {
+    //   }
+    // );
   };
 
   return (
@@ -160,7 +161,7 @@ const DaftarProduction = () => {
           )
         } else {
           return (
-            <DaftarProductionForm 
+            <DaftarMSCForm 
               onSubmit={handleSubmit} 
               onSelectDate={handleDate}
             />

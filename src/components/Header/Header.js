@@ -92,6 +92,15 @@ const Header = props => {
                   </CDropdownMenu>
                 </CDropdown>
                 <CNavLink href="/List-request-data">List Request Data</CNavLink>
+                <CNavLink href="/"></CNavLink>
+                <CDropdown inNav>
+                  <CDropdownToggle color="primary">Farmer</CDropdownToggle>
+                  <CDropdownMenu>
+                    <CDropdownItem to="/List-mitra-petani">Farmer Partners</CDropdownItem>
+                    <CDropdownItem to="/List-lokasi-kebun">Farmer's Garden</CDropdownItem>
+                  </CDropdownMenu>
+                </CDropdown>
+                {/* <CNavLink href="/List-petani">Farmer</CNavLink> */}
               </CNavbarNav>
             )
           } else {

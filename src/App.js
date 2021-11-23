@@ -21,6 +21,12 @@ import DaftarStockBulkSugarFromRs from "./components/Pabrik/Logistic/DaftarStock
 import DaftarStockOutBulkSugar from "./components/Pabrik/Logistic/DaftarStockOutBulkSugar";
 import RequestData from "./components/RequestData";
 import ListRequestData from "./components/ListRequestData";
+import AddLokasiKebun from "./components/AddLokasiKebun";
+import LokasiKebun from "./components/LokasiKebun";
+import DetailKebun from "./components/DetailKebun";
+import ListMitraPetani from "./components/ListMitraTani";
+import AddMitraTani from "./components/AddMitraTani";
+import DetailMitraTani from "./components/DetailMitraTani";
 import SummarySales from "./components/Pabrik/Sales/SummarySales";
 import EditSales from "./components/Pabrik/Sales/EditSales";
 import Sales from "./components/Pabrik/Sales/Sales";
@@ -142,6 +148,12 @@ class App extends Component {
         <Route path="/User-management/add-user" exact component={AddUser} />
         <Route path="/Request-data" exact component={RequestData} />
         <Route path="/List-request-data" exact component={ListRequestData} />
+        <Route path="/List-lokasi-kebun" exact component={LokasiKebun} />
+        <Route path="/Add-lokasi-kebun" exact component={AddLokasiKebun} />
+        <Route path="/Detail-kebun/:id" exact component={DetailKebun} />
+        <Route path="/List-mitra-petani" exact component={ListMitraPetani} />
+        <Route path="/Detail-mitra-petani/:id" exact component={DetailMitraTani} />
+        <Route path="/Add-mitra-petani" exact component={AddMitraTani} />
       </Router>
     );
   }
