@@ -73,6 +73,9 @@ const DaftarMSCForm = (props) => {
 
   const MAX_ICUMSA = 300;
   const formatIcumsa = ({ formattedValue }) => formattedValue <= MAX_ICUMSA;
+
+  const MAX_SCQ = 100;
+  const SCQ = ({ formattedValue }) => formattedValue <= MAX_SCQ;
   
   const AddMitra = async (e) => {
       setMT(parseInt(e) + 1);
@@ -142,7 +145,7 @@ const DaftarMSCForm = (props) => {
                   onValueChange={ async (values) => {
                     const { formattedValue, value } = values;
                     console.log("cek ini",values)
-                    setTVol( parseInt(totalVol) + parseInt(values.value) )
+                    // setTVol( parseInt(totalVol) + parseInt(values.value) )
                   }}
                 />
             </CFormGroup>
@@ -201,9 +204,6 @@ const DaftarMSCForm = (props) => {
                   <NumberFormat
                     className="textInput pabrik"
                     name="volume_total"
-                    placeholder="automatically filled when the farmer's partner fills"
-                    defaultValue={totalVol === 0 ? '' : totalVol}
-                    readOnly
                   />
                 </CFormGroup>
                 <CFormGroup>
@@ -222,24 +222,18 @@ const DaftarMSCForm = (props) => {
                   <CLabel htmlFor="nf-namaJenis">Sugarcane Quality</CLabel>
                   <CRow>
                     <CCol sm={6} md={6} xl={6} >
-                      <Field
+                      <NumberFormat
                         className="textInput pabrik"
                         name="brix"
-                        component="input"
-                        type="number"
-                        max={100}
-                        min={0}
+                        isAllowed={SCQ}
                         placeholder="Brix ...%"
                       />
                     </CCol>
                     <CCol sm={6} md={6} xl={6} >
-                      <Field
+                      <NumberFormat
                         className="textInput pabrik"
                         name="trash"
-                        component="input"
-                        type="number"
-                        max={100}
-                        min={0}
+                        isAllowed={SCQ}
                         placeholder="Trash ...%"
                       />
                     </CCol>
