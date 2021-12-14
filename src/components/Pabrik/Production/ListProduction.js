@@ -311,7 +311,8 @@ export default class ListProduction extends Component {
 
     const milledSugarCane = [
       { key: "date", label: "Date", _style: { width: "40%" } },
-      { key: "volume", label: "Volume", _style: { width: "30%" } },
+      // { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
         label: "",
@@ -420,11 +421,30 @@ export default class ListProduction extends Component {
                                         itemsPerPage={10}
                                         pagination
                                         scopedSlots={{
+                                          show_volume: (item) => {
+                                            return (
+                                              <td className="py-2">
+                                                <div>
+                                                  {(() => {
+                                                      if(item.volume) {
+                                                        return(
+                                                          item.volume
+                                                        )
+                                                      } else {
+                                                        return (
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/msc/add-mitra/${item.id}`} >Add Mitra</CButton>
+                                                        )
+                                                      }
+                                                  })()}
+                                                </div>
+                                              </td>
+                                            );
+                                          },
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Production/edit/msc/${item.id}`}>Edit</CButton>
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteMSC(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Production/edit/msc/${item.id}`}>Edit</CButton> */}
                                               </td>
                                             );
                                           },

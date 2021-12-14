@@ -107,6 +107,7 @@ const Header = props => {
             return (
               <CNavbarNav>
                 <CNavLink href="/Request-data">Request Data</CNavLink>
+                <CNavLink href="/Konsumen">Customer</CNavLink>
               </CNavbarNav>
             )
           }

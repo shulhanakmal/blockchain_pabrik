@@ -8,6 +8,7 @@ import Stock from "./components/Pabrik/Stok/Stock";
 import SummaryProduction from "./components/Pabrik/Production/SummaryProduction";
 import ListProduction from "./components/Pabrik/Production/ListProduction";
 import EditProduction from "./components/Pabrik/Production/EditProduction";
+import AddMitraMsc from "./components/Pabrik/Production/AddMitraMsc";
 import DaftarMilledSugarCane from "./components/Pabrik/Production/DaftarMilledSugarCane";
 import DaftarProcessedRs from "./components/Pabrik/Production/DaftarProcessedRs";
 import DaftarSugarCane from "./components/Pabrik/Production/DaftarSugarCane";
@@ -30,6 +31,8 @@ import DetailMitraTani from "./components/DetailMitraTani";
 import SummarySales from "./components/Pabrik/Sales/SummarySales";
 import EditSales from "./components/Pabrik/Sales/EditSales";
 import Sales from "./components/Pabrik/Sales/Sales";
+import Konsumen from "./components/Pabrik/Konsumen/index";
+import TrackingTransaksi from "./components/Pabrik/Konsumen/trackingTransaksi";
 import DaftarSales from "./components/Pabrik/Sales/DaftarSales";
 import ListUser from "./components/Pabrik/UserManagement/ListUser";
 import AddUser from "./components/Pabrik/UserManagement/AddUser";
@@ -128,6 +131,7 @@ class App extends Component {
         <Route path="/Stock" exact component={Stock} />
         <Route path="/SummaryProduction" exact component={SummaryProduction} />
         <Route path="/Production" exact component={ListProduction} />
+        <Route path="/Production/msc/add-mitra/:id" exact component={AddMitraMsc} />
         <Route path="/Production/tambah-milled-sugar-cane" exact component={DaftarMilledSugarCane} />
         <Route path="/Production/tambah-processed-rs" exact component={DaftarProcessedRs} />
         <Route path="/Production/tambah-sugar-cane" exact component={DaftarSugarCane} />
@@ -144,6 +148,8 @@ class App extends Component {
         <Route path="/Sales" exact component={Sales} />
         <Route path="/Sales/edit/:id" exact component={EditSales} />
         <Route path="/Sales/tambah-sales" exact component={DaftarSales} />
+        <Route path="/Konsumen" exact component={Konsumen} />
+        <Route path="/Konsumen/transaction/:id/:hash" exact component={TrackingTransaksi} />
         <Route path="/User-management/list-user" exact component={ListUser} />
         <Route path="/User-management/add-user" exact component={AddUser} />
         <Route path="/Request-data" exact component={RequestData} />

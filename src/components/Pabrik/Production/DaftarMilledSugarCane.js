@@ -37,7 +37,15 @@ const DaftarProduction = () => {
   let [TxnHash, setHash] = useState("");
   const [balance, setBalance] = useState(0);
   const [tanggal, setDate] = useState("");
+  // const [TVolume, setTotalVolume] = useState("");
+  const [Vicumsa, setIcumsa] = useState("");
+  const [Vbjb, setBJB] = useState("");
+  const [Vka, setKA] = useState("");
+  const [milling, setLamaGiling] = useState("");
+  // const [dataId, setDataId] = useState(null);
   const [catchErr, setErr] = useState(false);
+  const [mscId, setMscId] = useState(null);
+  const [AddMitra, setAddMitra] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -48,98 +56,153 @@ const DaftarProduction = () => {
     setDate(date);
   };
 
+  const handleMilling = (proses) => {
+    setLamaGiling(proses);
+  };
+
+  // const handleTotalVolume = (vol) => {
+  //   setTotalVolume(vol);
+  // };
+
+  const handleIcumsa = (icumsa) => {
+    setIcumsa(icumsa);
+  };
+
+  const handleBJB = (bjb) => {
+    setBJB(bjb);
+  };
+
+  const handleKA = (ka) => {
+    setKA(ka);
+  };
+
+  const handleAddMitra = (mitra) => {
+    setAddMitra(AddMitra)
+    // return AddMitra;
+  };
+
   const handleSubmit = (values) => {
     // setLoading(true);
-    console.log(values)
-    // const formData = new FormData();
-    // formData.append('date',tanggal);
-    // formData.append('volume',values.volume);
-    // formData.append('status','normal');
-    // formData.append('param','milledSugarCane');
-    // console.log(formData);
 
-    // UserService.addProduction(formData).then(
-    //   async (response) => {
-    //     console.log('response', response);
+    const formData = new FormData();
+    formData.append('date',tanggal);
+    formData.append('lama_proses',milling.target.value);
+    formData.append('brix',values.brix);
+    formData.append('trash',values.trash);
+    formData.append('icumsa',Vicumsa.target.value);
+    formData.append('bjb',Vbjb.target.value);
+    formData.append('ka',Vka.target.value);
 
-    //     const web3Modal = new Web3Modal();
-    //     const connection = await web3Modal.connect();
-    //     const provider = new ethers.providers.Web3Provider(connection);
-    //     const signer = provider.getSigner();
+    // if(TVolume === '') {
+    //   formData.append('volume', null);
+    //   formData.append('mitra', null);
+    //   formData.append('mscid', null);
+    // } else {
+    //   formData.append('mscid', mscId);
+    //   formData.append('volume',TVolume);
+    //   formData.append('mitra', JSON.stringify(values.mitra));
+    // }
+    formData.append('status','normal');
+    formData.append('param','milledSugarCane');
+    console.log('form data', formData);
 
-    //     const accounts = await window.ethereum.enable();
-    //     const akun = accounts[0];
+    UserService.addProduction(formData).then(
+      async (response) => {
 
-    //     // input production msc
-    //       try{
-    //         const updateData = new FormData();
-    //         let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
-    //         let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-    //           updateData.append('transaction', transaction.hash);
-    //           updateData.append('wallet', transaction.from);
-    //           setHash(transaction.hash);
-    //         await transaction.wait()
+        setMscId(response.data.data.id)
+        console.log('response', response);
+        setAddMitra(true);
 
-    //         updateData.append('id', response.data.data.id);
-    //         updateData.append('flag', 'milledSugarCane');
-    //         UserService.addProdcutionTransactionHash(updateData);
-    //         setHash("");
-    //       } catch(e) {
-    //         console.log(e);
-    //         setErr(true);
-    //       }
-    //     // end input msc
+        showResults("Data berhasil disimpan, silahkan untuk mengisi data mitra!");
+        
+        // if(mscId) {
+        //   const web3Modal = new Web3Modal();
+        //   const connection = await web3Modal.connect();
+        //   const provider = new ethers.providers.Web3Provider(connection);
+        //   const signer = provider.getSigner();
 
-    //     // input sugar cane
-    //       try{
-    //         const updateDataInput = new FormData();
-    //         let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
-    //         let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
-    //           updateDataInput.append('transaction', transactionSC.hash);
-    //           updateDataInput.append('wallet', transactionSC.from);
-    //           setHash(transactionSC.hash);
-    //         await transactionSC.wait()
+        //   const accounts = await window.ethereum.enable();
+        //   const akun = accounts[0];
 
-    //         updateDataInput.append('id', response.data.input.id);
-    //         updateDataInput.append('flag', 'sugarCane');
-    //         UserService.addProdcutionTransactionHash(updateDataInput);
-    //         setHash("");
-    //       } catch(e) {
-    //         console.log(e);
-    //         setErr(true);
-    //       }
-    //     // end input sugar cane
+        //   // input production msc
+        //     try{
+        //       const updateData = new FormData();
+        //       let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
+        //       let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+        //         updateData.append('transaction', transaction.hash);
+        //         updateData.append('wallet', transaction.from);
+        //         setHash(transaction.hash);
+        //       await transaction.wait()
 
-    //     // input logistik cane
-    //     try{
-    //       const updateDataLogistik = new FormData();
-    //       let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
-    //       let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
-    //         setHash(transactionL.hash);
-    //         updateDataLogistik.append('transaction', transactionL.hash);
-    //         updateDataLogistik.append('wallet', transactionL.from);
-    //       await transactionL.wait()
+        //       updateData.append('id', response.data.data.id);
+        //       updateData.append('flag', 'milledSugarCane');
+        //       UserService.addProdcutionTransactionHash(updateData);
+        //       setHash("");
+        //     } catch(e) {
+        //       console.log(e);
+        //       setErr(true);
+        //     }
+        //   // end input msc
 
-    //       updateDataLogistik.append('id', response.data.logistik.id);
-    //       updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
-    //       UserService.addLogisticsTransactionHash(updateDataLogistik);
-    //       setHash("");
-    //     } catch(e) {
-    //       console.log(e);
-    //       setErr(true);
-    //     }
+        //   // input sugar cane
+        //     try{
+        //       const updateDataInput = new FormData();
+        //       let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
+        //       let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+        //         updateDataInput.append('transaction', transactionSC.hash);
+        //         updateDataInput.append('wallet', transactionSC.from);
+        //         setHash(transactionSC.hash);
+        //       await transactionSC.wait()
 
-    //     if(catchErr) {
-    //       setLoading(false);
-    //       console.log(catchErr);
-    //     } else {
-    //       setLoading(false);
-    //       showResults("Dimasukkan");
-    //     }
-    //   },
-    //   (error) => {
-    //   }
-    // );
+        //       updateDataInput.append('id', response.data.input.id);
+        //       updateDataInput.append('flag', 'sugarCane');
+        //       UserService.addProdcutionTransactionHash(updateDataInput);
+        //       setHash("");
+        //     } catch(e) {
+        //       console.log(e);
+        //       setErr(true);
+        //     }
+        //   // end input sugar cane
+
+        //   // input logistik cane
+        //   try{
+        //     const updateDataLogistik = new FormData();
+        //     let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
+        //     let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+        //       setHash(transactionL.hash);
+        //       updateDataLogistik.append('transaction', transactionL.hash);
+        //       updateDataLogistik.append('wallet', transactionL.from);
+        //     await transactionL.wait()
+
+        //     updateDataLogistik.append('id', response.data.logistik.id);
+        //     updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
+        //     UserService.addLogisticsTransactionHash(updateDataLogistik);
+        //     setHash("");
+        //   } catch(e) {
+        //     console.log(e);
+        //     setErr(true);
+        //   }
+
+        //   if(catchErr) {
+        //     setLoading(false);
+        //     console.log(catchErr);
+        //   } else {
+        //     setLoading(false);
+        //     showResults("Data Berhasil Dimasukkan");
+        //   }
+
+        // } else {
+
+        //   setMscId(response.data.data.id)
+        //   console.log('response', response);
+
+        //   showResults("Data berhasil disimpan, silahkan untuk mengisi data mitra!");
+        // }
+
+      },
+      (error) => {
+      }
+    );
   };
 
   return (
@@ -162,8 +225,15 @@ const DaftarProduction = () => {
         } else {
           return (
             <DaftarMSCForm 
-              onSubmit={handleSubmit} 
+              onSubmit={handleSubmit}
               onSelectDate={handleDate}
+              Milling={handleMilling}
+              Icumsa={handleIcumsa}
+              BJB={handleBJB}
+              KA={handleKA}
+              AddMitra={handleAddMitra}
+              MSCID={mscId}
+              // TOTALV={handleTotalVolume}
             />
           )
         }

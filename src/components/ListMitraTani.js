@@ -124,39 +124,39 @@ export default class ListMitraTani extends Component {
                                 </CRow>
                             </CCardHeader>
                             <CCardBody>
-                                <CDataTable
-                                    items={this.state.content}
-                                    fields={Data}
-                                    itemsPerPage={10}
-                                    tableFilter
-                                    cleaner
-                                    itemsPerPageSelect
-                                    hover
-                                    sorter
-                                    pagination
-                                    scopedSlots={{
-                                        dataControl: (item) => {
-                                          return (
-                                            <td className="py-2">
-                                              <div>
-                                                {(() => {
-                                                    if(item.status === 'Active') {
-                                                      return(
-                                                        <CButton size="sm" color="danger" onClick={() => this.changeStatus(item)}>Deactivate</CButton>
-                                                      )
-                                                    } else {
-                                                      return (
-                                                        <CButton size="sm" color="warning" onClick={() => this.changeStatus(item)}>Activate</CButton>
-                                                      )
-                                                    }
-                                                })()}
-                                                <CButton size="sm" color="info" className="ml-1" to={`Detail-mitra-petani/${item.id}`} >Detail</CButton>
-                                              </div>
-                                            </td>
-                                          );
-                                        },
-                                    }}
-                                />
+                              <CDataTable
+                                  items={this.state.content}
+                                  fields={Data}
+                                  itemsPerPage={10}
+                                  tableFilter
+                                  cleaner
+                                  itemsPerPageSelect
+                                  hover
+                                  sorter
+                                  pagination
+                                  scopedSlots={{
+                                      dataControl: (item) => {
+                                        return (
+                                          <td className="py-2">
+                                            <div>
+                                              {(() => {
+                                                  if(item.status === 'Active') {
+                                                    return(
+                                                      <CButton size="sm" color="danger" onClick={() => this.changeStatus(item)}>Deactivate</CButton>
+                                                    )
+                                                  } else {
+                                                    return (
+                                                      <CButton size="sm" color="warning" onClick={() => this.changeStatus(item)}>Activate</CButton>
+                                                    )
+                                                  }
+                                              })()}
+                                              <CButton size="sm" color="info" className="ml-1" to={`Detail-mitra-petani/${item.id}`} >Detail</CButton>
+                                            </div>
+                                          </td>
+                                        );
+                                      },
+                                  }}
+                              />
                             </CCardBody>
                         </CCol>
                     </CRow>

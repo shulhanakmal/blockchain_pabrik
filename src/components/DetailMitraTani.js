@@ -106,7 +106,7 @@ const DetailMitraTani = (props) => {
     // end collapse
 
     // google maps
-    const apiKey = 'AIzaSyASyYRBZmULmrmw_P9kgr7_266OhFNinPA'
+    const apiKey = 'AIzaSyCwO-uMs8PcFmBON8gqQAVK8EdX1NRUnOU' // api google punya akmal
 
     const defaultZoom = 5
     const defaultCenter = { lat: -7.4491301, lng: 110.3810213 }

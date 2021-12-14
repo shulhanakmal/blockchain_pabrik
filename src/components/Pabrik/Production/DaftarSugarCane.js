@@ -41,6 +41,10 @@ const DaftarProduction = () => {
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
 
+  const [Vicumsa, setIcumsa] = useState("");
+  const [Vbjb, setBJB] = useState("");
+  const [Vka, setKA] = useState("");
+
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
 
@@ -48,6 +52,18 @@ const DaftarProduction = () => {
 
   const handleDate = (date) => {
     setDate(date);
+  };
+
+  const handleIcumsa = (icumsa) => {
+    setIcumsa(icumsa);
+  };
+
+  const handleBJB = (bjb) => {
+    setBJB(bjb);
+  };
+
+  const handleKA = (ka) => {
+    setKA(ka);
   };
 
   const getWallet = async () => {
@@ -162,6 +178,9 @@ const DaftarProduction = () => {
             <DaftarProductionForm 
               onSubmit={handleSubmit} 
               onSelectDate={handleDate}
+              Icumsa={handleIcumsa}
+              BJB={handleBJB}
+              KA={handleKA}
             />
           )
         }

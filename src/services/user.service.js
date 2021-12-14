@@ -57,12 +57,22 @@ class UserService {
     });
   }
 
+  addProductionMitra(raw) {
+    return axios.post(API_URL + "add-production-msc-mitra", raw, {
+      headers: authHeader(),
+    });
+  }
+
   addProdcutionTransactionHash(raw) {
     return axios.post(API_URL + "add-transaction-hash-production", raw, {
       headers: authHeader(),
     });
   }
   
+  getListLogisticForIDProduct(flag, date) {
+    return axios.get(API_URL + "list-logistic/" + flag + "/" + date, { headers: authHeader() });
+  }
+
   getListLogistic() {
     return axios.get(API_URL + "list-logistic", { headers: authHeader() });
   }
@@ -227,6 +237,9 @@ class UserService {
     });
   }
 
+  getSalesTrasaction(txHash) {
+    return axios.get(API_URL + "get-sales-transaction/"+ txHash, { headers: authHeader() });
+  }
 }
 
 export default new UserService();

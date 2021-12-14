@@ -11,6 +11,12 @@ import {
   CCardFooter,
   CRow,
   CCol,
+  CInput,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
 } from "@coreui/react";
 import DatePicker from "react-datepicker";
 import UserService from "../../../services/user.service";
@@ -21,11 +27,19 @@ import moment from 'moment';
 import NumberFormat from 'react-number-format';
 
 const DaftarMSCForm = (props) => {
+  console.log('cek props', props);
   const { handleSubmit, reset, param } = props;
   const [tgl, setStartDate] = useState('');
   const [mt, setMT] = useState(1);
+  const [dataVolTotal, setDataVolTotal] = useState("");
   const [dataMitra, setMitra] = useState([]);
+  const [dataVolMitra, setDataVolMitra] = useState([]);
   const [totalVol, setTVol] = useState(0);
+  const [milling, setMilling] = useState(0);
+  const [icumsa, setIcumsa] = useState(0);
+  const [bjb, setBjb] = useState(0);
+  const [ka, setKA] = useState(0);
+  const [AM, setAddMitra] = useState(false);
 
   const MAX_VAL = parseFloat(0.10).toFixed(2);
   const withValueKALimit = ({ formattedValue }) => formattedValue <= MAX_VAL;
@@ -60,28 +74,25 @@ const DaftarMSCForm = (props) => {
     } else {
       return hour + (minute < 61 ? ':' + minute : ':' + 60);
     }
-  }
-
-  function TotalVolume() {
-    console.log('test');
-    if(totalVol === 0) {
-      return ;
-    } else {
-      return totalVol;
-    }
-  }
+  }  
 
   const MAX_ICUMSA = 300;
   const formatIcumsa = ({ formattedValue }) => formattedValue <= MAX_ICUMSA;
-
-  const MAX_SCQ = 100;
-  const SCQ = ({ formattedValue }) => formattedValue <= MAX_SCQ;
   
   const AddMitra = async (e) => {
       setMT(parseInt(e) + 1);
   };
 
   props.onSelectDate(moment(tgl).format('YYYY-MM-DD'));
+  props.Milling(milling);
+  props.Icumsa(icumsa);
+  props.BJB(bjb);
+  props.KA(ka);
+  props.AddMitra(AM);
+
+  if(dataVolMitra.length > 0) {
+    props.TOTALV(dataVolMitra.reduce((curr, next) => parseInt(curr) + parseInt(next)));  
+  }
 
     useEffect(() => {
         getData();
@@ -98,6 +109,13 @@ const DaftarMSCForm = (props) => {
       }
     );
   }
+
+  const handleVolumeChange = (tags) => (event) => {
+    const vols = dataVolMitra;
+    vols[event.target.id] = event.target.value;
+    setDataVolMitra(vols);
+    console.log("Total ", vols.reduce((curr, next) => parseInt(curr) + parseInt(next)));
+  };
 
   const renderMitra = ({ fields, meta: { error, submitFailed } }) => (
     <ul style={{ listStyle: "none", marginLeft: "0px", padding: "0px" }}>
@@ -139,34 +157,32 @@ const DaftarMSCForm = (props) => {
             </CFormGroup>
             <CFormGroup>
                 <CLabel htmlFor="selectBeanMultiple"> Volume Milled Sugar Cane </CLabel>
-                <NumberFormat
+                <Field
+                  id={index}
                   className="textInput pabrik"
                   name={`${mitra}.persentase`}
-                  onValueChange={ async (values) => {
-                    const { formattedValue, value } = values;
-                    console.log("cek ini",values)
-                    // setTVol( parseInt(totalVol) + parseInt(values.value) )
-                  }}
+                  onChange={handleVolumeChange(index)}
+                  component="input"
                 />
             </CFormGroup>
           </Fragment>
         </li>
       ))}
-      
         <li>
-            <CButton
-              type="button"
-              size="sm"
-              color="success"
-              className="btn-pill"
-              onClick={() => fields.push({})}
-            >
+          <CButton
+            type="button"
+            size="sm"
+            color="info"
+            className="btn-pill"
+            onClick={() => fields.push({})}
+          >
             Add Mitra
-            </CButton>
-            {submitFailed && error && <span>{error}</span>}
+          </CButton>
+          &nbsp;
+          {submitFailed && error && <span>{error}</span>}
         </li>
     </ul>
-  );
+  );  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -199,22 +215,23 @@ const DaftarMSCForm = (props) => {
                     placeholderText="Select a date"
                   />
                 </CFormGroup>
-                <CFormGroup>
+                {/* <CFormGroup>
                   <CLabel htmlFor="nf-namaJenis">Volume Total (kwintal)</CLabel>
                   <NumberFormat
                     className="textInput pabrik"
                     name="volume_total"
+                    placeholder="automatically filled when the farmer's partner fills"
+                    defaultValue={dataVolMitra && dataVolMitra.length > 0 ? dataVolMitra.reduce((curr, next) => parseInt(curr) + parseInt(next)) : ''}
+                    readOnly
                   />
-                </CFormGroup>
-                <CFormGroup>
-                    <FieldArray name="mitra" component={renderMitra} />
-                </CFormGroup>
+                </CFormGroup> */}
                 <CFormGroup>
                   <CLabel htmlFor="nf-namaJenis">Milling Process</CLabel>
                   <NumberFormat 
                     className="textInput pabrik" 
-                    format={prosesGiling} 
-                    placeholder="H:m" 
+                    format={prosesGiling}
+                    onChange={(val) => setMilling(val)}
+                    placeholder="H:m"
                     name="jam_giling"
                   />
                 </CFormGroup>
@@ -222,18 +239,24 @@ const DaftarMSCForm = (props) => {
                   <CLabel htmlFor="nf-namaJenis">Sugarcane Quality</CLabel>
                   <CRow>
                     <CCol sm={6} md={6} xl={6} >
-                      <NumberFormat
+                      <Field
                         className="textInput pabrik"
                         name="brix"
-                        isAllowed={SCQ}
+                        component="input"
+                        type="number"
+                        max={100}
+                        min={0}
                         placeholder="Brix ...%"
                       />
                     </CCol>
                     <CCol sm={6} md={6} xl={6} >
-                      <NumberFormat
+                      <Field
                         className="textInput pabrik"
                         name="trash"
-                        isAllowed={SCQ}
+                        component="input"
+                        type="number"
+                        max={100}
+                        min={0}
                         placeholder="Trash ...%"
                       />
                     </CCol>
@@ -247,6 +270,8 @@ const DaftarMSCForm = (props) => {
                         className="textInput pabrik" 
                         isAllowed={formatIcumsa}
                         maxLength={3}
+                        defaultValue={icumsa === 0 ? '' : icumsa}
+                        onChange={(val) => setIcumsa(val)}
                         placeholder="Icumsa" 
                         name='icumsa'
                       />
@@ -256,6 +281,7 @@ const DaftarMSCForm = (props) => {
                         format="#.##" 
                         className="textInput pabrik" 
                         isAllowed={withValueBJBLimit}
+                        onChange={(val) => setBjb(val)}
                         name="bjb" 
                         placeholder="BJB 0.00" 
                       />
@@ -265,6 +291,7 @@ const DaftarMSCForm = (props) => {
                         format="#.##"
                         className="textInput pabrik"
                         isAllowed={withValueKALimit}
+                        onChange={(val) => setKA(val)}
                         name="kadar_air"
                         placeholder="Water Content 0.00" 
                       />
@@ -274,9 +301,24 @@ const DaftarMSCForm = (props) => {
               </CForm>
             </CCardBody>
             <CCardFooter>
-              <CButton type="submit" size="sm" color="primary">
+            {(() => {
+              if(props.MSCID) {
+                return (
+                  <>
+                    <CButton type="button" to={`/Production/msc/add-mitra/${props.MSCID}`} size="sm" color="info" > Add Mitra </CButton>{" "}
+                  </>
+                )
+              } else {
+                return (
+                  <>
+                    <CButton type="submit" size="sm" color="primary" onClick={() => setAddMitra(true)}> Submit </CButton>{" "}
+                  </>
+                )
+              }
+            })()}
+              {/* <CButton type="submit" size="sm" color="primary" onClick={() => setAddMitra(true)}>
                 Submit
-              </CButton>{" "}
+              </CButton>{" "} */}
               <CButton type="reset" size="sm" color="danger" onClick={reset}>
                 Reset
               </CButton>

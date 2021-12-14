@@ -34,6 +34,7 @@ const DaftarLogistic = () => {
   let [color, setColor] = useState("#3c4b64");
 
   let [TxnHash, setHash] = useState("");
+  let [data, setData] = useState("");
 
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
@@ -50,6 +51,38 @@ const DaftarLogistic = () => {
     setDate(date);
   };
 
+  const handleIDProduct = () => {
+    var date = new Date().getDate();
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear().toString().substr(-2);
+
+    if (date < 10) {
+      date = "0" + date;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+
+    let increment = 1;
+    let incrementalResultIDProduct = "0" + increment;
+    let resultIDProduct = "Cane-" + year + month + date + incrementalResultIDProduct;
+
+    for (let i = 0; i < data.length; i++) {
+      if (this.state.content[i].Product_id == resultIDProduct) {
+        increment += 1;
+        if (increment < 10) {
+          incrementalResultIDProduct = "0" + increment;
+        }
+        else {
+          incrementalResultIDProduct = increment;
+        }
+        resultIDProduct = "Cane-" + year + month + date + incrementalResultIDProduct;
+      }
+    }
+
+    return resultIDProduct;
+  };
+
   const getWallet = async () => {
     web3.eth.getAccounts(function(err, accounts){
         if (err != null) {
@@ -60,6 +93,16 @@ const DaftarLogistic = () => {
           setAccount(accounts[0])
         }
     });
+
+    UserService.getListLogisticForIDProduct('stockBulkSugarFromRs', dateString).then(
+      (response) => {
+        console.log(response.data);
+        setData(response.data)
+      },
+      (error) => {
+        setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
+      }
+    );
   };
 
   const handleSubmit = (values) => {
@@ -67,6 +110,7 @@ const DaftarLogistic = () => {
     const formData = new FormData();
     formData.append('date',tanggal);
     formData.append('volume',values.volume);
+    formData.append('product',handleIDProduct());
     formData.append('status','normal');
     formData.append('param','stockBulkSugarFromCane');
     console.log(formData);
