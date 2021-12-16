@@ -310,8 +310,8 @@ export default class ListProduction extends Component {
     ;
 
     const milledSugarCane = [
-      { key: "date", label: "Date", _style: { width: "40%" } },
-      // { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "date", label: "Date", _style: { width: "30%" } },
+      { key: "product_id", label: "Product", _style: { width: "20%" } },
       { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
@@ -321,8 +321,9 @@ export default class ListProduction extends Component {
       },
     ];
     const processedRS = [
-      { key: "date", label: "Date", _style: { width: "40%" } },
-      { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "date", label: "Date", _style: { width: "30%" } },
+      { key: "product_id", label: "Product", _style: { width: "20%" } },
+      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
         label: "",
@@ -331,8 +332,9 @@ export default class ListProduction extends Component {
       },
     ];
     const sugarCane = [
-      { key: "date", label: "Date", _style: { width: "40%" } },
-      { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "date", label: "Date", _style: { width: "30%" } },
+      { key: "product_id", label: "Product", _style: { width: "20%" } },
+      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
         label: "",
@@ -341,8 +343,9 @@ export default class ListProduction extends Component {
       },
     ];
     const sugarFromRS = [
-      { key: "date", label: "Date", _style: { width: "40%" } },
-      { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "date", label: "Date", _style: { width: "30%" } },
+      { key: "product_id", label: "Product", _style: { width: "20%" } },
+      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
         label: "",
@@ -419,6 +422,11 @@ export default class ListProduction extends Component {
                                         items={this.state.content.milledSugarCane}
                                         fields={milledSugarCane}
                                         itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
                                         pagination
                                         scopedSlots={{
                                           show_volume: (item) => {
@@ -432,7 +440,7 @@ export default class ListProduction extends Component {
                                                         )
                                                       } else {
                                                         return (
-                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/msc/add-mitra/${item.id}`} >Add Mitra</CButton>
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/add-mitra/msc/${item.id}`} >Add Mitra</CButton>
                                                         )
                                                       }
                                                   })()}
@@ -483,12 +491,36 @@ export default class ListProduction extends Component {
                                         items={this.state.content.processedRS}
                                         fields={processedRS}
                                         itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
                                         pagination
                                         scopedSlots={{
+                                          show_volume: (item) => {
+                                            return (
+                                              <td className="py-2">
+                                                <div>
+                                                  {(() => {
+                                                      if(item.volume) {
+                                                        return(
+                                                          item.volume
+                                                        )
+                                                      } else {
+                                                        return (
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/add-mitra/prs/${item.id}`} >Add Mitra</CButton>
+                                                        )
+                                                      }
+                                                  })()}
+                                                </div>
+                                              </td>
+                                            );
+                                          },
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Production/edit/prs/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Production/edit/prs/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deletePRS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );
@@ -528,12 +560,36 @@ export default class ListProduction extends Component {
                                         items={this.state.content.sugarCane}
                                         fields={sugarCane}
                                         itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
                                         pagination
                                         scopedSlots={{
+                                          show_volume: (item) => {
+                                            return (
+                                              <td className="py-2">
+                                                <div>
+                                                  {(() => {
+                                                      if(item.volume) {
+                                                        return(
+                                                          item.volume
+                                                        )
+                                                      } else {
+                                                        return (
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/add-mitra/sc/${item.id}`} >Add Mitra</CButton>
+                                                        )
+                                                      }
+                                                  })()}
+                                                </div>
+                                              </td>
+                                            );
+                                          },
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Production/edit/sfc/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Production/edit/sfc/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSFC(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );
@@ -573,12 +629,36 @@ export default class ListProduction extends Component {
                                         items={this.state.content.sugarFromRS}
                                         fields={sugarFromRS}
                                         itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
                                         pagination
                                         scopedSlots={{
+                                          show_volume: (item) => {
+                                            return (
+                                              <td className="py-2">
+                                                <div>
+                                                  {(() => {
+                                                      if(item.volume) {
+                                                        return(
+                                                          item.volume
+                                                        )
+                                                      } else {
+                                                        return (
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/add-mitra/msc/${item.id}`} >Add Mitra</CButton>
+                                                        )
+                                                      }
+                                                  })()}
+                                                </div>
+                                              </td>
+                                            );
+                                          },
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Production/edit/sfrs/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Production/edit/sfrs/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSFRS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );

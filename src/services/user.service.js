@@ -31,6 +31,10 @@ class UserService {
     return axios.get(API_URL + "list-production", { headers: authHeader() });
   }
 
+  getListProductionForIDProduct(flag, date) {
+    return axios.get(API_URL + "list-production/" + flag + "/" + date, { headers: authHeader() });
+  }
+
   getProduction(flag, id) {
     return axios.get(API_URL + "get-data-production/"+ flag + "/" + id, {
       headers: authHeader(),

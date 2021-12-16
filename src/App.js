@@ -131,7 +131,7 @@ class App extends Component {
         <Route path="/Stock" exact component={Stock} />
         <Route path="/SummaryProduction" exact component={SummaryProduction} />
         <Route path="/Production" exact component={ListProduction} />
-        <Route path="/Production/msc/add-mitra/:id" exact component={AddMitraMsc} />
+        <Route path="/Production/add-mitra/:flag/:id" exact component={AddMitraMsc} />
         <Route path="/Production/tambah-milled-sugar-cane" exact component={DaftarMilledSugarCane} />
         <Route path="/Production/tambah-processed-rs" exact component={DaftarProcessedRs} />
         <Route path="/Production/tambah-sugar-cane" exact component={DaftarSugarCane} />

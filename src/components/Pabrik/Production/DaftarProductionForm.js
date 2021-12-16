@@ -16,13 +16,20 @@ import DatePicker from "react-datepicker";
 import "../react-datepicker.css";
 import moment from 'moment';
 import NumberFormat from 'react-number-format';
+import UserService from "../../../services/user.service";
 
 const DaftarProductionForm = (props) => {
   const { handleSubmit, reset, param } = props;
   const [tgl, setStartDate] = useState('');
+  const [dataMitra, setMitra] = useState([]);
   const [icumsa, setIcumsa] = useState(0);
   const [bjb, setBjb] = useState(0);
   const [ka, setKA] = useState(0);
+
+  const [brix, setBrix] = useState(0);
+  const [tras, setTras] = useState(0);
+
+  const [AM, setAddMitra] = useState(false);
 
   const MAX_VAL = parseFloat(0.10).toFixed(2);
   const withValueKALimit = ({ formattedValue }) => formattedValue <= MAX_VAL;
@@ -33,10 +40,30 @@ const DaftarProductionForm = (props) => {
   const MAX_ICUMSA = 300;
   const formatIcumsa = ({ formattedValue }) => formattedValue <= MAX_ICUMSA;
 
+  const MAX_SUGARCANE_QUALITY = 100
+  const formatQuality = ({ formattedValue }) => formattedValue <= MAX_SUGARCANE_QUALITY;
+
   props.onSelectDate(moment(tgl).format('YYYY-MM-DD'));
   props.Icumsa(icumsa);
   props.BJB(bjb);
   props.KA(ka);
+  props.TRAS(tras);
+  props.BRIX(brix);
+  props.AddMitra(AM);
+
+  console.log('cek propsnya nih', props);
+
+  const getData = async () => {
+      await UserService.getDataMitraTani().then(
+      (response) => {
+        console.log(response);
+        setMitra(response.data.petani)
+      },
+      (error) => {
+        setMitra((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
+      }
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -66,9 +93,10 @@ const DaftarProductionForm = (props) => {
                   dateFormat="dd/MM/yyyy"
                   name="date"
                   placeholderText="Select a date"
+                  require
                 />
               </CFormGroup>
-              <CFormGroup>
+              {/* <CFormGroup>
                 <CLabel htmlFor="nf-namaJenis">Volume (kwintal)</CLabel>
                 <Field
                   className="textInput pabrik"
@@ -76,7 +104,84 @@ const DaftarProductionForm = (props) => {
                   component="input"
                   type="number"
                 />
-              </CFormGroup>
+              </CFormGroup> */}
+              {(() => {
+                if(props.PRSID || props.SFRSID) {
+                  return(
+                    <CFormGroup>
+                      <CLabel htmlFor="nf-namaJenis">Sugarcane Quality (Optional)</CLabel>
+                      <CRow>
+                        <CCol sm={6} md={6} xl={6} >
+                          <NumberFormat
+                            className="textInput pabrik"
+                            name="brix"
+                            component="input"
+                            isAllowed={formatQuality}
+                            maxLength={3}
+                            defaultValue={brix === 0 ? '' : brix}
+                            onChange={(val) => setBrix(val)}
+                            // max={100}
+                            // min={0}
+                            placeholder="Brix ...%"
+                          />
+                        </CCol>
+                        <CCol sm={6} md={6} xl={6} >
+                          <NumberFormat
+                            className="textInput pabrik"
+                            name="trash"
+                            isAllowed={formatQuality}
+                            component="input"
+                            maxLength={3}
+                            defaultValue={tras === 0 ? '' : tras}
+                            onChange={(val) => setTras(val)}
+                            // max={100}
+                            // min={0}
+                            placeholder="Tras ...%"
+                          />
+                        </CCol>
+                      </CRow>
+                    </CFormGroup>
+                  )
+                } else {
+                  return(
+                    <CFormGroup>
+                      <CLabel htmlFor="nf-namaJenis">Sugarcane Quality</CLabel>
+                      <CRow>
+                        <CCol sm={6} md={6} xl={6} >
+                          <NumberFormat
+                            className="textInput pabrik"
+                            name="brix"
+                            component="input"
+                            isAllowed={formatQuality}
+                            maxLength={3}
+                            defaultValue={brix === 0 ? '' : brix}
+                            onChange={(val) => setBrix(val)}
+                            // max={100}
+                            // min={0}
+                            placeholder="Brix ...%"
+                            require
+                          />
+                        </CCol>
+                        <CCol sm={6} md={6} xl={6} >
+                          <NumberFormat
+                            className="textInput pabrik"
+                            name="trash"
+                            isAllowed={formatQuality}
+                            component="input"
+                            maxLength={3}
+                            defaultValue={tras === 0 ? '' : tras}
+                            onChange={(val) => setTras(val)}
+                            // max={100}
+                            // min={0}
+                            placeholder="Tras ...%"
+                            require
+                          />
+                        </CCol>
+                      </CRow>
+                    </CFormGroup>
+                  )
+                }
+              })()}
               <CFormGroup>
                 <CLabel htmlFor="nf-namaJenis">Quality of Sugar</CLabel>
                 <CRow>
@@ -89,6 +194,7 @@ const DaftarProductionForm = (props) => {
                       onChange={(val) => setIcumsa(val)}
                       placeholder="Icumsa" 
                       name='icumsa'
+                      require
                     />
                   </CCol>
                   <CCol sm={4} md={4} xl={4} >
@@ -99,6 +205,7 @@ const DaftarProductionForm = (props) => {
                       onChange={(val) => setBjb(val)}
                       name="bjb" 
                       placeholder="BJB 0.00" 
+                      require
                     />
                   </CCol>
                   <CCol sm={4} md={4} xl={4} >
@@ -109,15 +216,44 @@ const DaftarProductionForm = (props) => {
                       onChange={(val) => setKA(val)}
                       name="kadar_air"
                       placeholder="Water Content 0.00" 
+                      require
                     />
                   </CCol>
                 </CRow>
               </CFormGroup>
             </CCardBody>
             <CCardFooter>
-              <CButton type="submit" size="sm" color="primary">
+               {(() => {
+                if(props.SCID) {
+                  return (
+                    <>
+                      <CButton type="button" to={`/Production/add-mitra/sc/${props.SCID}`} size="sm" color="info" > Add Mitra </CButton>{" "}
+                    </>
+                  )
+                } else if(props.PRSID) {
+                  return (
+                    <>
+                      <CButton type="button" to={`/Production/add-mitra/prs/${props.PRSID}`} size="sm" color="info" > Add Mitra </CButton>{" "}
+                    </>
+                  )
+                } else if(props.SFRSID) {
+                  return (
+                    <>
+                      <CButton type="button" to={`/Production/add-mitra/sfrs/${props.SFRSID}`} size="sm" color="info" > Add Mitra </CButton>{" "}
+                    </>
+                  )
+                } else {
+                  return (
+                    <>
+                      <CButton type="submit" size="sm" color="primary" onClick={() => setAddMitra(true)}> Submit </CButton>{" "}
+                    </>
+                  )
+                }
+              })()}
+
+              {/* <CButton type="submit" size="sm" color="primary">
                 Submit
-              </CButton>{" "}
+              </CButton>{" "} */}
               <CButton type="reset" size="sm" color="danger" onClick={reset}>
                 Reset
               </CButton>

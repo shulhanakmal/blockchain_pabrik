@@ -39,6 +39,8 @@ const DaftarMSCForm = (props) => {
   const [icumsa, setIcumsa] = useState(0);
   const [bjb, setBjb] = useState(0);
   const [ka, setKA] = useState(0);
+  const [brix, setBrix] = useState(0);
+  const [tras, setTras] = useState(0);
   const [AM, setAddMitra] = useState(false);
 
   const MAX_VAL = parseFloat(0.10).toFixed(2);
@@ -78,6 +80,9 @@ const DaftarMSCForm = (props) => {
 
   const MAX_ICUMSA = 300;
   const formatIcumsa = ({ formattedValue }) => formattedValue <= MAX_ICUMSA;
+
+  const MAX_SUGARCANE_QUALITY = 100
+  const formatQuality = ({ formattedValue }) => formattedValue <= MAX_SUGARCANE_QUALITY;
   
   const AddMitra = async (e) => {
       setMT(parseInt(e) + 1);
@@ -88,11 +93,13 @@ const DaftarMSCForm = (props) => {
   props.Icumsa(icumsa);
   props.BJB(bjb);
   props.KA(ka);
+  props.TRAS(tras);
+  props.BRIX(brix);
   props.AddMitra(AM);
 
-  if(dataVolMitra.length > 0) {
-    props.TOTALV(dataVolMitra.reduce((curr, next) => parseInt(curr) + parseInt(next)));  
-  }
+  // if(dataVolMitra.length > 0) {
+  //   props.TOTALV(dataVolMitra.reduce((curr, next) => parseInt(curr) + parseInt(next)));  
+  // }
 
     useEffect(() => {
         getData();
@@ -116,73 +123,6 @@ const DaftarMSCForm = (props) => {
     setDataVolMitra(vols);
     console.log("Total ", vols.reduce((curr, next) => parseInt(curr) + parseInt(next)));
   };
-
-  const renderMitra = ({ fields, meta: { error, submitFailed } }) => (
-    <ul style={{ listStyle: "none", marginLeft: "0px", padding: "0px" }}>
-      {fields.map((mitra, index) => (
-        <li key={index} style={{ marginTop: "40px" }}>
-          <CButton
-            type="button"
-            size="sm"
-            color="dark"
-            className="btn-pill"
-            style={{
-              float: "right",
-            }}
-            onClick={() => fields.remove(index)}
-          >
-            <span style={{ color: "white" }}>X</span>
-          </CButton>
-          <h4 style={{ marginTop: "30px" }}>Mitra #{index + 1}</h4>
-          <Fragment>
-            <CFormGroup>
-                <CLabel htmlFor="selectMitraMultiple"> Select Mitra </CLabel>
-                <Field
-                  className="textInput pabrik"
-                  name={`${mitra}.selectMitra`}
-                  component="select"
-                >
-                  <option value="" disabled hidden>
-                    -= Select Mitra =-
-                  </option>
-                  {dataMitra &&
-                    dataMitra.map((value) => {
-                      return (
-                        <option key={value.id} value={value.id}>
-                          {value.nama_petani}
-                        </option>
-                      );
-                    })}
-                </Field>
-            </CFormGroup>
-            <CFormGroup>
-                <CLabel htmlFor="selectBeanMultiple"> Volume Milled Sugar Cane </CLabel>
-                <Field
-                  id={index}
-                  className="textInput pabrik"
-                  name={`${mitra}.persentase`}
-                  onChange={handleVolumeChange(index)}
-                  component="input"
-                />
-            </CFormGroup>
-          </Fragment>
-        </li>
-      ))}
-        <li>
-          <CButton
-            type="button"
-            size="sm"
-            color="info"
-            className="btn-pill"
-            onClick={() => fields.push({})}
-          >
-            Add Mitra
-          </CButton>
-          &nbsp;
-          {submitFailed && error && <span>{error}</span>}
-        </li>
-    </ul>
-  );  
 
   return (
     <form onSubmit={handleSubmit}>
@@ -213,6 +153,7 @@ const DaftarMSCForm = (props) => {
                     dateFormat="dd/MM/yyyy"
                     name="date"
                     placeholderText="Select a date"
+                    required
                   />
                 </CFormGroup>
                 {/* <CFormGroup>
@@ -233,31 +174,42 @@ const DaftarMSCForm = (props) => {
                     onChange={(val) => setMilling(val)}
                     placeholder="H:m"
                     name="jam_giling"
+                    require
                   />
                 </CFormGroup>
                 <CFormGroup>
                   <CLabel htmlFor="nf-namaJenis">Sugarcane Quality</CLabel>
                   <CRow>
                     <CCol sm={6} md={6} xl={6} >
-                      <Field
+                      <NumberFormat
                         className="textInput pabrik"
                         name="brix"
                         component="input"
-                        type="number"
-                        max={100}
-                        min={0}
+                        isAllowed={formatQuality}
+                        // type="number"
+                        maxLength={3}
+                        defaultValue={brix === 0 ? '' : brix}
+                        onChange={(val) => setBrix(val)}
+                        // max={100}
+                        // min={0}
                         placeholder="Brix ...%"
+                        require
                       />
                     </CCol>
                     <CCol sm={6} md={6} xl={6} >
-                      <Field
+                      <NumberFormat
                         className="textInput pabrik"
                         name="trash"
+                        isAllowed={formatQuality}
                         component="input"
-                        type="number"
-                        max={100}
-                        min={0}
-                        placeholder="Trash ...%"
+                        // type="number"
+                        maxLength={3}
+                        defaultValue={tras === 0 ? '' : tras}
+                        onChange={(val) => setTras(val)}
+                        // max={100}
+                        // min={0}
+                        placeholder="Tras ...%"
+                        require
                       />
                     </CCol>
                   </CRow>
@@ -274,6 +226,7 @@ const DaftarMSCForm = (props) => {
                         onChange={(val) => setIcumsa(val)}
                         placeholder="Icumsa" 
                         name='icumsa'
+                        require
                       />
                     </CCol>
                     <CCol sm={4} md={4} xl={4} >
@@ -284,6 +237,7 @@ const DaftarMSCForm = (props) => {
                         onChange={(val) => setBjb(val)}
                         name="bjb" 
                         placeholder="BJB 0.00" 
+                        require
                       />
                     </CCol>
                     <CCol sm={4} md={4} xl={4} >
@@ -294,6 +248,7 @@ const DaftarMSCForm = (props) => {
                         onChange={(val) => setKA(val)}
                         name="kadar_air"
                         placeholder="Water Content 0.00" 
+                        require
                       />
                     </CCol>
                   </CRow>
@@ -305,7 +260,7 @@ const DaftarMSCForm = (props) => {
               if(props.MSCID) {
                 return (
                   <>
-                    <CButton type="button" to={`/Production/msc/add-mitra/${props.MSCID}`} size="sm" color="info" > Add Mitra </CButton>{" "}
+                    <CButton type="button" to={`/Production/add-mitra/msc/${props.MSCID}`} size="sm" color="info" > Add Mitra </CButton>{" "}
                   </>
                 )
               } else {

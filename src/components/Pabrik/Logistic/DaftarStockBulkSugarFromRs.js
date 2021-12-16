@@ -63,24 +63,18 @@ const DaftarLogistic = () => {
       month = "0" + month;
     }
 
-    let increment = 1;
-    let incrementalResultIDProduct = "0" + increment;
-    let resultIDProduct = "Raw-" + year + month + date + incrementalResultIDProduct;
-
-    for (let i = 0; i < data.length; i++) {
-      if (this.state.content[i].Product_id == resultIDProduct) {
-        increment += 1;
-        if (increment < 10) {
-          incrementalResultIDProduct = "0" + increment;
-        }
-        else {
-          incrementalResultIDProduct = increment;
-        }
-        resultIDProduct = "Raw-" + year + month + date + incrementalResultIDProduct;
-      }
+    let increment = 0;
+    if(data === 0) {
+      increment = 1;
+    } else {
+      increment = data + 1;
     }
 
-    return resultIDProduct;
+    // let increment = data;
+    let incrementalResultIDBatch = "0" + increment;
+    let resultIDBatch = "Raw-" + year + month + date + incrementalResultIDBatch;
+
+    return resultIDBatch;
   };
 
   console.log('produc idnya nih', handleIDProduct());
@@ -99,7 +93,7 @@ const DaftarLogistic = () => {
     UserService.getListLogisticForIDProduct('stockBulkSugarFromRs', dateString).then(
       (response) => {
         console.log(response.data);
-        setData(response.data)
+        setData(response.data.data)
       },
       (error) => {
         setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
