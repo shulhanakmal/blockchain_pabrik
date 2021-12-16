@@ -128,18 +128,6 @@ const DaftarProduction = () => {
     return resultIDBatch;
   };
 
-  // const getWallet = async () => {
-  //   web3.eth.getAccounts(function(err, accounts){
-  //       if (err != null) {
-  //         alert("An error occurred: "+err);
-  //       } else if (accounts.length == 0) {
-  //         alert("User is not logged in to MetaMask");
-  //       } else {
-  //         setAccount(accounts[0])
-  //       }
-  //   });
-  // };
-
   const handleSubmit = (values) => {
     // setLoading(true);
 

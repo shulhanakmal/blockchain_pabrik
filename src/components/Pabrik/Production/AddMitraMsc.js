@@ -41,6 +41,7 @@ const AddMitraMsc = () => {
   let [TxnHash, setHash] = useState("");
   const [balance, setBalance] = useState(0);
   const [tanggal, setDate] = useState("");
+  const [importir, setImportir] = useState("");
   const [TVolume, setTotalVolume] = useState("");
   // const [dataId, setDataId] = useState(null);
   const [catchErr, setErr] = useState(false);
@@ -54,11 +55,10 @@ const AddMitraMsc = () => {
 
   const handleDate = (date) => {
     setDate(date);
-  };  
+  };
 
-  // const handleTotalVolume = (vol) => {
-  //   console.log(vol);
-  //   setTotalVolume(vol);
+  // const handleImportir = (value) => {
+  //   setImportir(value);
   // };
 
   const handleSubmit = (values) => {
@@ -68,21 +68,24 @@ const AddMitraMsc = () => {
     formData.append('date',tanggal);
     if(jenis === 'msc') {
       formData.append('mscid', dataId);
+      formData.append('param','milledSugarCane');
     } else if(jenis === 'sc') {
       formData.append('scid', dataId);
+      formData.append('param','sugarCane');
     } else if(jenis === 'prs') {
       formData.append('prsid', dataId);
+      formData.append('param','processedRs');
     } else if(jenis === 'sfrs') {
       formData.append('sfrsid', dataId);
+      formData.append('param','sugarFromRs');
     } else {
       formData.append('mscid', null);
     }
     // formData.append('volume',TVolume);
     formData.append('mitra', JSON.stringify(values.mitra));
     formData.append('status','normal');
-    formData.append('param','milledSugarCane');
 
-    console.log('cek Data Mitra', values.mitra);
+    console.log('cek Data Mitra', JSON.stringify(values.mitra));
     console.log('cek form', formData);
 
     if(values.mitra.length > 0) {
@@ -205,9 +208,24 @@ const AddMitraMsc = () => {
           return (
             <AddMitraMscForm 
               onSubmit={handleSubmit}
-              // TOTALV={handleTotalVolume}
+              FLAG={flag}
             />
           )
+          // if(flag === 'prs' || flag === 'sfrs') {
+          //   return (
+          //     <AddMitraMscForm 
+          //       onSubmit={handleSubmit}
+          //       FLAG={flag}
+          //     />
+          //   )
+          // } else {
+          //   return (
+          //     <AddMitraMscForm 
+          //       onSubmit={handleSubmit}
+          //       FLAG={flag}
+          //     />
+          //   )
+          // }
         }
       })()}
     </Fragment>

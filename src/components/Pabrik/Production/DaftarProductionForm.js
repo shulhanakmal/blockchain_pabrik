@@ -29,6 +29,8 @@ const DaftarProductionForm = (props) => {
   const [brix, setBrix] = useState(0);
   const [tras, setTras] = useState(0);
 
+  const [milling, setMilling] = useState(0);
+
   const [AM, setAddMitra] = useState(false);
 
   const MAX_VAL = parseFloat(0.10).toFixed(2);
@@ -43,7 +45,37 @@ const DaftarProductionForm = (props) => {
   const MAX_SUGARCANE_QUALITY = 100
   const formatQuality = ({ formattedValue }) => formattedValue <= MAX_SUGARCANE_QUALITY;
 
+  function limit(val, max) {
+    if (val.length === 1 && val[0] > max[0]) {
+      val = '0' + val;
+    }
+
+    if (val.length === 2) {
+      if (Number(val) === 0) {
+        val = '01';
+
+        //this can happen when user paste number
+      } else if (val > max) {
+        val = max;
+      }
+    }
+
+    return val;
+  }
+
+  function prosesGiling(val) {
+    let hour = limit(val.substring(0, 2), '24');
+    let minute = val.substring(2, 4);
+
+    if(parseInt(hour) === 24) {
+      return hour + ':' + 0 + 0;
+    } else {
+      return hour + (minute < 61 ? ':' + minute : ':' + 60);
+    }
+  }
+
   props.onSelectDate(moment(tgl).format('YYYY-MM-DD'));
+  props.Milling(milling);
   props.Icumsa(icumsa);
   props.BJB(bjb);
   props.KA(ka);
@@ -93,7 +125,7 @@ const DaftarProductionForm = (props) => {
                   dateFormat="dd/MM/yyyy"
                   name="date"
                   placeholderText="Select a date"
-                  require
+                  require="true"
                 />
               </CFormGroup>
               {/* <CFormGroup>
@@ -106,7 +138,27 @@ const DaftarProductionForm = (props) => {
                 />
               </CFormGroup> */}
               {(() => {
-                if(props.PRSID || props.SFRSID) {
+                if(props.PRSID || props.PRSID === 0) {
+                  console.log('Processed');
+                  return (
+                    <CFormGroup>
+                      <CLabel htmlFor="nf-namaJenis">Milling Process</CLabel>
+                      <NumberFormat 
+                        className="textInput pabrik" 
+                        format={prosesGiling}
+                        onChange={(val) => setMilling(val)}
+                        placeholder="H:m"
+                        name="jam_giling"
+                        require
+                      />
+                    </CFormGroup>
+                  )
+                }
+              })()}
+
+              {(() => {
+                if((props.PRSID || props.PRSID === 0) || (props.SFRSID || props.SFRSID === 0)) {
+                  console.log('RAW SUGAR');
                   return(
                     <CFormGroup>
                       <CLabel htmlFor="nf-namaJenis">Sugarcane Quality (Optional)</CLabel>
@@ -143,6 +195,7 @@ const DaftarProductionForm = (props) => {
                     </CFormGroup>
                   )
                 } else {
+                  console.log('CANE SUGAR');
                   return(
                     <CFormGroup>
                       <CLabel htmlFor="nf-namaJenis">Sugarcane Quality</CLabel>
@@ -159,7 +212,7 @@ const DaftarProductionForm = (props) => {
                             // max={100}
                             // min={0}
                             placeholder="Brix ...%"
-                            require
+                            require="true"
                           />
                         </CCol>
                         <CCol sm={6} md={6} xl={6} >
@@ -174,7 +227,7 @@ const DaftarProductionForm = (props) => {
                             // max={100}
                             // min={0}
                             placeholder="Tras ...%"
-                            require
+                            require="true"
                           />
                         </CCol>
                       </CRow>
@@ -194,7 +247,7 @@ const DaftarProductionForm = (props) => {
                       onChange={(val) => setIcumsa(val)}
                       placeholder="Icumsa" 
                       name='icumsa'
-                      require
+                      require="true"
                     />
                   </CCol>
                   <CCol sm={4} md={4} xl={4} >
@@ -205,7 +258,7 @@ const DaftarProductionForm = (props) => {
                       onChange={(val) => setBjb(val)}
                       name="bjb" 
                       placeholder="BJB 0.00" 
-                      require
+                      require="true"
                     />
                   </CCol>
                   <CCol sm={4} md={4} xl={4} >
@@ -216,7 +269,7 @@ const DaftarProductionForm = (props) => {
                       onChange={(val) => setKA(val)}
                       name="kadar_air"
                       placeholder="Water Content 0.00" 
-                      require
+                      require="true"
                     />
                   </CCol>
                 </CRow>

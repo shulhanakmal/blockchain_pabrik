@@ -76,7 +76,7 @@ const DaftarMSCForm = (props) => {
     } else {
       return hour + (minute < 61 ? ':' + minute : ':' + 60);
     }
-  }  
+  }
 
   const MAX_ICUMSA = 300;
   const formatIcumsa = ({ formattedValue }) => formattedValue <= MAX_ICUMSA;

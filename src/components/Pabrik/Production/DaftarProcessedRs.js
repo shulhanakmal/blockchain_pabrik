@@ -38,10 +38,23 @@ const DaftarProduction = () => {
 
   let [TxnHash, setHash] = useState("");
 
+  const [Vicumsa, setIcumsa] = useState("");
+  const [Vbjb, setBJB] = useState("");
+  const [Vka, setKA] = useState("");
+
+  const [Vbrix, setBRIX] = useState("");
+  const [Vtras, setTRAS] = useState("");
+
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
+
+  const [milling, setLamaGiling] = useState("");
+
+  const [data, setData] = useState("");
+  const [prsId, setPrsId] = useState(0);
+  const [AddMitra, setAddMitra] = useState(false);
 
   const handleDate = (date) => {
     setDate(date);
@@ -52,113 +65,199 @@ const DaftarProduction = () => {
 
   provider.engine.stop();
 
-  const getWallet = async () => {
-    web3.eth.getAccounts(function(err, accounts){
-        if (err != null) {
-          alert("An error occurred: "+err);
-        } else if (accounts.length == 0) {
-          alert("User is not logged in to MetaMask");
-        } else {
-          setAccount(accounts[0])
-        }
-    });
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = () => {
+    UserService.getListProductionForIDProduct('prs', dateString).then(
+      (response) => {
+        console.log(response.data.data);
+        setData(response.data.data)
+      },
+      (error) => {
+        setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
+      }
+    );
+  }
+
+  const handleMilling = (proses) => {
+    setLamaGiling(proses);
+  };
+
+  const handleIcumsa = (icumsa) => {
+    setIcumsa(icumsa);
+  };
+
+  const handleBJB = (bjb) => {
+    setBJB(bjb);
+  };
+
+  const handleKA = (ka) => {
+    setKA(ka);
+  };
+
+  const handleTRAS = (tras) => {
+    setTRAS(tras);
+  };
+
+  const handleBRIX = (brix) => {
+    setBRIX(brix);
+  };
+
+  const handleAddMitra = (mitra) => {
+    setAddMitra(AddMitra)
+    // return AddMitra;
+  };
+
+  const handleIDProduct = () => {
+    var date = new Date().getDate();
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear().toString().substr(-2);
+
+    if (date < 10) {
+      date = "0" + date;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+
+    let increment = 0;
+    if(data === 0) {
+      increment = 1;
+    } else {
+      increment = data + 1;
+    }
+
+    // let increment = data;
+    let incrementalResultIDBatch = "0" + increment;
+    let resultIDBatch = "Raw-" + year + month + date + incrementalResultIDBatch;
+
+    return resultIDBatch;
   };
 
   const handleSubmit = (values) => {
-    const formData = new FormData();
-    formData.append('date',tanggal);
-    formData.append('volume',values.volume);
-    formData.append('status','normal');
-    formData.append('param','processedRs');
-    console.log(formData);
 
-    UserService.addProduction(formData).then(
-      async (response) => {
+    if(tanggal &&
+      milling &&
+      Vicumsa &&
+      Vbjb &&
+      Vka
+    ) {  
 
-        const web3Modal = new Web3Modal();
-        const connection = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
-
-        setLoading(true);
-        // insert rs
-
-        const updateData = new FormData();
-        // input production prs
-          try{
-            let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, AddProduct, signer)
-            let transaction = await contract.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-              updateData.append('transaction', transaction.hash);
-              updateData.append('wallet', transaction.from);
-              setHash(transaction.hash);
-            await transaction.wait()
-
-            updateData.append('id', response.data.data.id);
-            updateData.append('flag', 'processedRs');
-            UserService.addProdcutionTransactionHash(updateData);
-            setHash("");
-          } catch (e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end insert prs
-
-        // insert sugar rs
-          try{
-            const updateDataRS = new FormData();
-            let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddRs, signer)
-            let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
-              updateDataRS.append('transaction', transactionRS.hash);
-              updateDataRS.append('wallet', transactionRS.from);
-              setHash(transactionRS.hash);
-            await transactionRS.wait()
-
-            updateDataRS.append('id', response.data.input.id);
-            updateDataRS.append('flag', 'sugarFromRs');
-            UserService.addProdcutionTransactionHash(updateDataRS);
-            setHash("");
-          } catch (e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end insert sugar rs
-
-        // insert logistik
-          try{
-            const updateDataL = new FormData();
-            let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddLogistics, signer)
-            let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
-              updateDataL.append('transaction', transactionL.hash);
-              updateDataL.append('wallet', transactionL.from);
-              setHash(transactionL.hash);
-            await transactionL.wait()
-
-            updateDataL.append('id', response.data.logistik.id);
-            updateDataL.append('flag', 'stockBulkSugarFromRs');
-            UserService.addLogisticsTransactionHash(updateDataL);
-            setHash("");
-          } catch (e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end insert logistik
-
-        if(catchErr) {
-          setLoading(false);
-          console.log(catchErr);
-        } else {
-          setLoading(false);
-          showResults("Dimasukkan");
-        }
-      },
-      (error) => {
+      const formData = new FormData();
+      formData.append('product',handleIDProduct());
+      formData.append('date',tanggal);
+      if(Vbrix) {
+        formData.append('brix',Vbrix.target.value);
       }
-    );
-  };
+      if(Vtras){
+        formData.append('trash',Vtras.target.value);
+      }
+      formData.append('icumsa',Vicumsa.target.value);
+      formData.append('bjb',Vbjb.target.value);
+      formData.append('ka',Vka.target.value);
+      formData.append('lama_proses',milling.target.value);
+      formData.append('status','normal');
+      formData.append('param','processedRs');
+      console.log(formData);
 
-  useEffect(() => {
-    getWallet();
-  }, []);
+      UserService.addProduction(formData).then(
+        async (response) => {
+
+          if(response.data.message) {
+              showResults(response.data.message);
+            } else {
+              setPrsId(response.data.data.id)
+              console.log('response', response);
+              setAddMitra(true);
+
+              showResults("Data berhasil disimpan, silahkan untuk mengisi data mitra!");
+            }
+
+          // const web3Modal = new Web3Modal();
+          // const connection = await web3Modal.connect();
+          // const provider = new ethers.providers.Web3Provider(connection);
+          // const signer = provider.getSigner();
+
+          // setLoading(true);
+          // // insert rs
+
+          // const updateData = new FormData();
+          // // input production prs
+          //   try{
+          //     let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, AddProduct, signer)
+          //     let transaction = await contract.addProductionPrs(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+          //       updateData.append('transaction', transaction.hash);
+          //       updateData.append('wallet', transaction.from);
+          //       setHash(transaction.hash);
+          //     await transaction.wait()
+
+          //     updateData.append('id', response.data.data.id);
+          //     updateData.append('flag', 'processedRs');
+          //     UserService.addProdcutionTransactionHash(updateData);
+          //     setHash("");
+          //   } catch (e) {
+          //     console.log(e);
+          //     setErr(true);
+          //   }
+          // // end insert prs
+
+          // // insert sugar rs
+          //   try{
+          //     const updateDataRS = new FormData();
+          //     let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddRs, signer)
+          //     let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+          //       updateDataRS.append('transaction', transactionRS.hash);
+          //       updateDataRS.append('wallet', transactionRS.from);
+          //       setHash(transactionRS.hash);
+          //     await transactionRS.wait()
+
+          //     updateDataRS.append('id', response.data.input.id);
+          //     updateDataRS.append('flag', 'sugarFromRs');
+          //     UserService.addProdcutionTransactionHash(updateDataRS);
+          //     setHash("");
+          //   } catch (e) {
+          //     console.log(e);
+          //     setErr(true);
+          //   }
+          // // end insert sugar rs
+
+          // // insert logistik
+          //   try{
+          //     const updateDataL = new FormData();
+          //     let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddLogistics, signer)
+          //     let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+          //       updateDataL.append('transaction', transactionL.hash);
+          //       updateDataL.append('wallet', transactionL.from);
+          //       setHash(transactionL.hash);
+          //     await transactionL.wait()
+
+          //     updateDataL.append('id', response.data.logistik.id);
+          //     updateDataL.append('flag', 'stockBulkSugarFromRs');
+          //     UserService.addLogisticsTransactionHash(updateDataL);
+          //     setHash("");
+          //   } catch (e) {
+          //     console.log(e);
+          //     setErr(true);
+          //   }
+          // // end insert logistik
+
+          // if(catchErr) {
+          //   setLoading(false);
+          //   console.log(catchErr);
+          // } else {
+          //   setLoading(false);
+          //   showResults("Dimasukkan");
+          // }
+        },
+        (error) => {
+        }
+      );
+    } else {
+      showResults("Data belum lengkap, harap isi semua data!");
+    }
+  };
 
   return (
     <Fragment>
@@ -182,6 +281,14 @@ const DaftarProduction = () => {
             <DaftarProductionForm 
               onSubmit={handleSubmit} 
               onSelectDate={handleDate}
+              Milling={handleMilling}
+              Icumsa={handleIcumsa}
+              BJB={handleBJB}
+              KA={handleKA}
+              AddMitra={handleAddMitra}
+              BRIX={handleBRIX}
+              TRAS={handleTRAS}
+              PRSID={prsId}
             />
           )
         }

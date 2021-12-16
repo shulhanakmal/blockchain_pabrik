@@ -25,6 +25,8 @@ import moment from 'moment';
 // import { formatValue } from 'react-currency-input-field';
 // import CurrencyInput from 'react-currency-input-field';
 import NumberFormat from 'react-number-format';
+import 'react-select2-wrapper/css/select2.css';
+import Select2 from 'react-select2-wrapper';
 
 const AddMitraMscForm = (props) => {
   const { handleSubmit, reset, param } = props;
@@ -33,6 +35,7 @@ const AddMitraMscForm = (props) => {
 //   const [dataVolTotal, setDataVolTotal] = useState("");
   const [dataMitra, setMitra] = useState([]);
   const [dataVolMitra, setDataVolMitra] = useState([]);
+  const [negara, setNegara] = useState([]);
 //   const [totalVol, setTVol] = useState(0);
   
   const AddMitra = async (e) => {
@@ -44,11 +47,11 @@ const AddMitraMscForm = (props) => {
 //   props.Icumsa(icumsa);
 //   props.BJB(bjb);
 //   props.KA(ka);
+  // props.IMPORTIR(importir);
 
     // if(dataVolMitra.length > 0) {
     //   props.TOTALV(dataVolMitra.reduce((curr, next) => parseInt(curr) + parseInt(next)))
     // }
-
 
   useEffect(() => {
     getData();
@@ -59,6 +62,7 @@ const AddMitraMscForm = (props) => {
       (response) => {
         console.log(response);
         setMitra(response.data.petani)
+        setNegara(response.data.negara)
       },
       (error) => {
         // setMitra((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
@@ -92,26 +96,72 @@ const AddMitraMscForm = (props) => {
           </CButton>
           <h4 style={{ marginTop: "30px" }}>Mitra #{index + 1}</h4>
           <Fragment>
-            <CFormGroup>
-                <CLabel htmlFor="selectMitraMultiple"> Select Mitra </CLabel>
-                <Field
-                  className="textInput pabrik"
-                  name={`${mitra}.selectMitra`}
-                  component="select"
-                >
-                  <option value="" disabled hidden>
-                    -= Select Mitra =-
-                  </option>
-                  {dataMitra &&
-                    dataMitra.map((value) => {
-                      return (
-                        <option key={value.id} value={value.id}>
-                          {value.nama_petani}
-                        </option>
-                      );
-                    })}
-                </Field>
-            </CFormGroup>
+            {(() => {
+              if(props.FLAG === 'prs' || props.FLAG === 'sfrs') {
+                return (
+                  <CFormGroup>
+                    {/* setImportir */}
+                    <CLabel htmlFor="selectMitraMultiple"> Select Importing Country </CLabel>
+                    <Field
+                      className="textInput pabrik"
+                      name={`${mitra}.selectMitra`}
+                      component="select"
+                    >
+                      <option value="" disabled hidden>
+                        -= Select Mitra =-
+                      </option>
+                      {negara &&
+                        negara.map((value) => {
+                          return (
+                            <option key={value.id} value={value.id}>
+                              {value.value}
+                            </option>
+                          );
+                        })}
+                    </Field>
+                    {/* <Select2
+                      multiple
+                      className="textInput pabrik"
+                      name={`${mitra}.selectMitra`}
+                      // value={ value }
+                      data={ 
+                        negara && negara.map((value) => {
+                          return(
+                            { text: value.value, id: value.id }
+                          )
+                        })
+                      }
+                      options={{
+                        placeholder: 'search by tags',
+                      }}
+                    /> */}
+                  </CFormGroup>
+                )
+              } else {
+                return (
+                  <CFormGroup>
+                    <CLabel htmlFor="selectMitraMultiple"> Select Mitra </CLabel>
+                    <Field
+                      className="textInput pabrik"
+                      name={`${mitra}.selectMitra`}
+                      component="select"
+                    >
+                      <option value="" disabled hidden>
+                        -= Select Mitra =-
+                      </option>
+                      {dataMitra &&
+                        dataMitra.map((value) => {
+                          return (
+                            <option key={value.id} value={value.id}>
+                              {value.nama_petani}
+                            </option>
+                          );
+                        })}
+                    </Field>
+                  </CFormGroup>
+                )
+              }
+            })()}
             <CFormGroup>
                 <CLabel htmlFor="selectBeanMultiple"> Volume Milled Sugar Cane </CLabel>
                 <Field
