@@ -344,7 +344,9 @@ export default class ListLogistic extends Component {
 
     const StockBulkSugarFromCane = [
       { key: "date", label: "Date", _style: { width: "40%" } },
-      { key: "volume", label: "Volume", _style: { width: "30%" } },
+      // { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "product_id", label: "Product", _style: { width: "20%" } },
+      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
         label: "",
@@ -354,7 +356,9 @@ export default class ListLogistic extends Component {
     ];
     const StockBulkSugarFromRS = [
       { key: "date", label: "Date", _style: { width: "40%" } },
-      { key: "volume", label: "Volume", _style: { width: "30%" } },
+      // { key: "volume", label: "Volume", _style: { width: "30%" } },
+      { key: "product_id", label: "Product", _style: { width: "20%" } },
+      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
       {
         key: "show_details",
         label: "",
@@ -468,12 +472,36 @@ export default class ListLogistic extends Component {
                                         items={this.state.content.stockBulkSugarFromCane}
                                         fields={StockBulkSugarFromCane}
                                         itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
                                         pagination
                                         scopedSlots={{
+                                          show_volume: (item) => {
+                                            return (
+                                              <td className="py-2">
+                                                <div>
+                                                  {(() => {
+                                                      if(item.volume) {
+                                                        return(
+                                                          item.volume
+                                                        )
+                                                      } else {
+                                                        return (
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/add-mitra/msc/${item.id}`} >Add Mitra</CButton>
+                                                        )
+                                                      }
+                                                  })()}
+                                                </div>
+                                              </td>
+                                            );
+                                          },
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Logistic/edit/sbsfc/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Logistic/edit/sbsfc/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFC(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );
@@ -513,12 +541,36 @@ export default class ListLogistic extends Component {
                                         items={this.state.content.stockBulkSugarFromRs}
                                         fields={StockBulkSugarFromRS}
                                         itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
                                         pagination
                                         scopedSlots={{
+                                          show_volume: (item) => {
+                                            return (
+                                              <td className="py-2">
+                                                <div>
+                                                  {(() => {
+                                                      if(item.volume) {
+                                                        return(
+                                                          item.volume
+                                                        )
+                                                      } else {
+                                                        return (
+                                                          <CButton size="sm" color="warning" style={{'color': 'white'}} to={`/Production/add-mitra/msc/${item.id}`} >Add Mitra</CButton>
+                                                        )
+                                                      }
+                                                  })()}
+                                                </div>
+                                              </td>
+                                            );
+                                          },
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Logistic/edit/sbsfrs/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Logistic/edit/sbsfrs/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFRS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );
@@ -563,7 +615,7 @@ export default class ListLogistic extends Component {
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Logistic/edit/sobs/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Logistic/edit/sobs/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSOBS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );
@@ -608,7 +660,7 @@ export default class ListLogistic extends Component {
                                           show_details: (item) => {
                                             return (
                                               <td className="py-2">
-                                                <CButton size="sm" color="info" to={`/Logistic/edit/return/${item.id}`}>Edit</CButton>
+                                                {/* <CButton size="sm" color="info" to={`/Logistic/edit/return/${item.id}`}>Edit</CButton> */}
                                                 <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteRBS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
                                               </td>
                                             );

@@ -51,6 +51,7 @@ const DaftarProduction = () => {
   const [catchErr, setErr] = useState(false);
 
   const [milling, setLamaGiling] = useState("");
+  const [productId, setProductId] = useState("");
 
   const [data, setData] = useState("");
   const [prsId, setPrsId] = useState(0);
@@ -73,7 +74,37 @@ const DaftarProduction = () => {
     UserService.getListProductionForIDProduct('prs', dateString).then(
       (response) => {
         console.log(response.data.data);
-        setData(response.data.data)
+        // setData(response.data.data)
+
+        var date = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear().toString().substr(-2);
+
+        if (date < 10) {
+          date = "0" + date;
+        }
+        if (month < 10) {
+          month = "0" + month;
+        }
+
+        if(response.data.data.length === 0) {
+          var product_id = "Cane-" + year + month + date + '01';
+          setProductId(product_id);
+        } else {
+          // setProductId(resultIDBatch)
+          const dataBaru = response.data.data.sort().reverse();
+
+          var product_id = dataBaru[0];
+          var count = product_id.match(/\d*$/);
+
+          // Take the substring up until where the integer was matched
+          // Concatenate it to the matched count incremented by 1
+          product_id = product_id.substr(0, count.index) + (++count[0]);
+
+          setProductId(product_id)
+
+        }
+        console.log('cek productId', product_id);
       },
       (error) => {
         setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
@@ -110,32 +141,6 @@ const DaftarProduction = () => {
     // return AddMitra;
   };
 
-  const handleIDProduct = () => {
-    var date = new Date().getDate();
-    var month = new Date().getMonth() + 1;
-    var year = new Date().getFullYear().toString().substr(-2);
-
-    if (date < 10) {
-      date = "0" + date;
-    }
-    if (month < 10) {
-      month = "0" + month;
-    }
-
-    let increment = 0;
-    if(data === 0) {
-      increment = 1;
-    } else {
-      increment = data + 1;
-    }
-
-    // let increment = data;
-    let incrementalResultIDBatch = "0" + increment;
-    let resultIDBatch = "Raw-" + year + month + date + incrementalResultIDBatch;
-
-    return resultIDBatch;
-  };
-
   const handleSubmit = (values) => {
 
     if(tanggal &&
@@ -146,7 +151,7 @@ const DaftarProduction = () => {
     ) {  
 
       const formData = new FormData();
-      formData.append('product',handleIDProduct());
+      formData.append('product',productId);
       formData.append('date',tanggal);
       if(Vbrix) {
         formData.append('brix',Vbrix.target.value);

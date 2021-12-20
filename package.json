@@ -33,6 +33,7 @@
     "mysql2": "^2.2.5",
     "node-sass": "^6.0.0",
     "prop-types": "^15.7.2",
+    "qrcode.react": "^1.0.0",
     "react": "^17.0.2",
     "react-app-polyfill": "^2.0.0",
     "react-big-calendar": "^0.30.0",

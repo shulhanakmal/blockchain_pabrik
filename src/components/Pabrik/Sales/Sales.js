@@ -168,62 +168,62 @@ export default class Sales extends Component {
     return (
       <Fragment>
         {(() => {
-            if (this.state.loading === true) {
-                return (
-                    <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
-                        <div className="sweet-loading">
-                            <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
-                            {/* <h5>{this.state.TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + this.state.TxnHash} target="_blank" >Detail</a>}</h5> */}
-                            <br></br>
-                                <Loader color={this.state.color} loading={this.state.loading} css={override} size={150} />
-                            <br></br>
-                            <br></br>
-                            <h5>Mohon Tunggu...</h5>
-                        </div>
-                    </div>
-                )
-            } else {
-              return (
-                <main className="c-main">
-                  <div className="container-fluid">
-                    <CCard>
-                      <CCardBody>
-                        <CCol xs="12">
-                            <CCardHeader>
-                                <CRow>
-                                    <CCol xs={6} md={7} lg={10} style={{ margin: "auto" }}>
-                                        <h4 style={{ margin: "auto" }}>Data Sales</h4>
-                                    </CCol>
-                                    <CCol>
-                                        <CButton block color="dark" to="/Sales/tambah-sales">Add Sales</CButton>
-                                    </CCol>
-                                </CRow>
-                            </CCardHeader>
-                            <CCardBody>
-                                <CDataTable
-                                    items={this.state.content.sales}
-                                    fields={sales}
-                                    itemsPerPage={10}
-                                    pagination
-                                    scopedSlots={{
-                                    show_details: (item) => {
-                                        return (
-                                          <td className="py-2">
-                                              <CButton size="sm" color="info" to={`/Sales/edit/${item.id}`}>Edit</CButton>
-                                              <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSales(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
-                                          </td>
-                                        );
-                                    },
-                                    }}
-                                />
-                            </CCardBody>
-                        </CCol>
-                      </CCardBody>
-                    </CCard>
-                  </div>
-                </main>
-                )
-            }
+          if (this.state.loading === true) {
+            return (
+              <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+                <div className="sweet-loading">
+                  <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                  {/* <h5>{this.state.TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + this.state.TxnHash} target="_blank" >Detail</a>}</h5> */}
+                  <br></br>
+                      <Loader color={this.state.color} loading={this.state.loading} css={override} size={150} />
+                  <br></br>
+                  <br></br>
+                  <h5>Mohon Tunggu...</h5>
+                </div>
+              </div>
+            )
+          } else {
+            return (
+              <main className="c-main">
+                <div className="container-fluid">
+                  <CCard>
+                    <CCardBody>
+                      <CCol xs="12">
+                          <CCardHeader>
+                              <CRow>
+                                  <CCol xs={6} md={7} lg={10} style={{ margin: "auto" }}>
+                                      <h4 style={{ margin: "auto" }}>Data Sales</h4>
+                                  </CCol>
+                                  <CCol>
+                                      <CButton block color="dark" to="/Sales/tambah-sales">Add Sales</CButton>
+                                  </CCol>
+                              </CRow>
+                          </CCardHeader>
+                          <CCardBody>
+                              <CDataTable
+                                  items={this.state.content.sales}
+                                  fields={sales}
+                                  itemsPerPage={10}
+                                  pagination
+                                  scopedSlots={{
+                                  show_details: (item) => {
+                                      return (
+                                        <td className="py-2">
+                                            <CButton size="sm" color="info" to={`/Sales/edit/${item.id}`}>Edit</CButton>
+                                            <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSales(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
+                                        </td>
+                                      );
+                                  },
+                                  }}
+                              />
+                          </CCardBody>
+                      </CCol>
+                    </CCardBody>
+                  </CCard>
+                </div>
+              </main>
+              )
+          }
         })()}
       </Fragment>
     );

@@ -75,7 +75,9 @@ const DaftarProductionForm = (props) => {
   }
 
   props.onSelectDate(moment(tgl).format('YYYY-MM-DD'));
-  props.Milling(milling);
+  if(props.PRSID || props.MSCID === 0) {
+    props.Milling(milling);
+  }
   props.Icumsa(icumsa);
   props.BJB(bjb);
   props.KA(ka);

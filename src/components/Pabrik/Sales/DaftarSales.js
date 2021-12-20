@@ -12,6 +12,8 @@ import { AddLogistics } from "../../../abi/logisticsSobs";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
 
+import QRcode from "qrcode.react";
+
 require("dotenv").config();
 
 var HDWalletProvider = require("@truffle/hdwallet-provider");
@@ -37,6 +39,7 @@ const DaftarSales = () => {
   let [color, setColor] = useState("#3c4b64");
 
   let [TxnHash, setHash] = useState("");
+  const [qr, setQr] = useState("test");
 
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
@@ -54,6 +57,23 @@ const DaftarSales = () => {
     setDate(date);
   };
 
+  const handleChange = (value) => {
+    setQr(value);
+  };
+
+  const downloadQR = (product_id) => {
+    const canvas = document.getElementById("myqr");
+    const pngUrl = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream");
+    let downloadLink = document.createElement("a");
+    downloadLink.href = pngUrl;
+    downloadLink.download = "" + product_id + ".png";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   const getWallet = async () => {
     web3.eth.getAccounts(function(err, accounts){
         if (err != null) {
@@ -67,7 +87,7 @@ const DaftarSales = () => {
   };
 
   const handleSubmit = (values) => {
-    setLoading(true);
+    // setLoading(true);
     console.log(values);
     const formData = new FormData();
     formData.append('date',tanggal);
@@ -85,56 +105,56 @@ const DaftarSales = () => {
 
         console.log("CEK RESPONSE DATANYA MAL :", response);
 
-        const web3Modal = new Web3Modal();
-        const connection = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
+        // const web3Modal = new Web3Modal();
+        // const connection = await web3Modal.connect();
+        // const provider = new ethers.providers.Web3Provider(connection);
+        // const signer = provider.getSigner();
 
-        // input sales
-          try{
-            const updateData = new FormData();
-            let contract = new ethers.Contract(contractAddress, AddSales, signer)
-            let transaction = await contract.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal')
-              updateData.append('transaction', transaction.hash);
-              updateData.append('wallet', transaction.from);
-              setHash(transaction.hash);
-            await transaction.wait()
+        // // input sales
+        //   try{
+        //     const updateData = new FormData();
+        //     let contract = new ethers.Contract(contractAddress, AddSales, signer)
+        //     let transaction = await contract.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal')
+        //       updateData.append('transaction', transaction.hash);
+        //       updateData.append('wallet', transaction.from);
+        //       setHash(transaction.hash);
+        //     await transaction.wait()
 
-            updateData.append('id', response.data.data.id);
-            UserService.addSalesTransactionHash(updateData);
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end sales
+        //     updateData.append('id', response.data.data.id);
+        //     UserService.addSalesTransactionHash(updateData);
+        //   } catch(e) {
+        //     console.log(e);
+        //     setErr(true);
+        //   }
+        // // end sales
 
-        // input logistik sobs
-          try{
-            const updateDataL = new FormData();
-            let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
-            let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, response.data.logistik.sugar, 'normal', dateString)
-              updateDataL.append('transaction', transactionL.hash);
-              updateDataL.append('wallet', transactionL.from);
-              setHash(transactionL.hash);
-            await transactionL.wait()
+        // // input logistik sobs
+        //   try{
+        //     const updateDataL = new FormData();
+        //     let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
+        //     let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, response.data.logistik.sugar, 'normal', dateString)
+        //       updateDataL.append('transaction', transactionL.hash);
+        //       updateDataL.append('wallet', transactionL.from);
+        //       setHash(transactionL.hash);
+        //     await transactionL.wait()
 
-            updateDataL.append('id', response.data.logistik.id);
-            updateDataL.append('flag', 'stockOutBulkSugar');
-            UserService.addLogisticsTransactionHash(updateDataL);
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        // end input sobs
+        //     updateDataL.append('id', response.data.logistik.id);
+        //     updateDataL.append('flag', 'stockOutBulkSugar');
+        //     UserService.addLogisticsTransactionHash(updateDataL);
+        //   } catch(e) {
+        //     console.log(e);
+        //     setErr(true);
+        //   }
+        // // end input sobs
 
-        if(catchErr) {
-          setLoading(false);
-          console.log(catchErr);
-        } else {
-          setLoading(false);
-          showResults("Dimasukkan");
-        }
-        setHash("");
+        // if(catchErr) {
+        //   setLoading(false);
+        //   console.log(catchErr);
+        // } else {
+        //   setLoading(false);
+        //   showResults("Dimasukkan");
+        // }
+        // setHash("");
       },
       (error) => {
       }

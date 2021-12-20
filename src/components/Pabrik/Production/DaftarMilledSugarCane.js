@@ -45,6 +45,8 @@ const DaftarProduction = () => {
   const [Vtras, setTRAS] = useState("");
   const [milling, setLamaGiling] = useState("");
 
+  const [productId, setProductId] = useState('');
+
   const [catchErr, setErr] = useState(false);
   const [mscId, setMscId] = useState(null);
   const [AddMitra, setAddMitra] = useState(false);
@@ -99,9 +101,38 @@ const DaftarProduction = () => {
   const getData = () => {
     UserService.getListProductionForIDProduct('msc', dateString).then(
       (response) => {
-        console.log('cek response', response.data.data);
-        console.log('cek productId', handleIDProduct());
-        setData(response.data.data)
+        console.log('cek response', response.data);
+        // setData(response.data.data.length)
+
+        var date = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear().toString().substr(-2);
+
+        if (date < 10) {
+          date = "0" + date;
+        }
+        if (month < 10) {
+          month = "0" + month;
+        }
+
+        if(response.data.data.length === 0) {
+          var product_id = "Cane-" + year + month + date + '01';
+          setProductId(product_id);
+        } else {
+          // setProductId(resultIDBatch)
+          const dataBaru = response.data.data.sort().reverse();
+
+          var product_id = dataBaru[0];
+          var count = product_id.match(/\d*$/);
+
+          // Take the substring up until where the integer was matched
+          // Concatenate it to the matched count incremented by 1
+          product_id = product_id.substr(0, count.index) + (++count[0]);
+
+          setProductId(product_id)
+
+        }
+        console.log('cek productId', product_id);
       },
       (error) => {
         setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
@@ -109,36 +140,14 @@ const DaftarProduction = () => {
     );
   }
 
-  const handleIDProduct = () => {
-    var date = new Date().getDate();
-    var month = new Date().getMonth() + 1;
-    var year = new Date().getFullYear().toString().substr(-2);
+  // const handleIDProduct = () => {
+    
 
-    if (date < 10) {
-      date = "0" + date;
-    }
-    if (month < 10) {
-      month = "0" + month;
-    }
-
-    let increment = 0;
-    if(data === 0) {
-      increment = 1;
-    } else {
-      increment = data + 1;
-    }
-
-    // let increment = data;
-    let incrementalResultIDBatch = "0" + increment;
-    let resultIDBatch = "Cane-" + year + month + date + incrementalResultIDBatch;
-
-    return resultIDBatch;
-  };
+    
+  // };
 
   const handleSubmit = (values) => {
     // setLoading(true);
-
-    console.log('cek productId', handleIDProduct());
 
     if(tanggal && 
       milling &&
@@ -150,7 +159,7 @@ const DaftarProduction = () => {
     ) {    
 
       const formData = new FormData();
-      formData.append('product',handleIDProduct());
+      formData.append('product',productId);
       formData.append('date',tanggal);
       formData.append('lama_proses',milling.target.value);
       formData.append('brix',Vbrix.target.value);

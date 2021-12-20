@@ -142,7 +142,7 @@ const DaftarMSCForm = (props) => {
               </CRow>
             </CCardHeader>
             <CCardBody>
-              <CForm action="" method="post">
+              {/* <CForm action="" method="post"> */}
                 <CFormGroup>
                   <CLabel htmlFor="nf-date">Date</CLabel>
                   <DatePicker
@@ -153,7 +153,7 @@ const DaftarMSCForm = (props) => {
                     dateFormat="dd/MM/yyyy"
                     name="date"
                     placeholderText="Select a date"
-                    required
+                    require="true"
                   />
                 </CFormGroup>
                 {/* <CFormGroup>
@@ -174,7 +174,7 @@ const DaftarMSCForm = (props) => {
                     onChange={(val) => setMilling(val)}
                     placeholder="H:m"
                     name="jam_giling"
-                    require
+                    require="true"
                   />
                 </CFormGroup>
                 <CFormGroup>
@@ -193,7 +193,7 @@ const DaftarMSCForm = (props) => {
                         // max={100}
                         // min={0}
                         placeholder="Brix ...%"
-                        require
+                        require="true"
                       />
                     </CCol>
                     <CCol sm={6} md={6} xl={6} >
@@ -209,7 +209,7 @@ const DaftarMSCForm = (props) => {
                         // max={100}
                         // min={0}
                         placeholder="Tras ...%"
-                        require
+                        require="true"
                       />
                     </CCol>
                   </CRow>
@@ -226,7 +226,7 @@ const DaftarMSCForm = (props) => {
                         onChange={(val) => setIcumsa(val)}
                         placeholder="Icumsa" 
                         name='icumsa'
-                        require
+                        require="true"
                       />
                     </CCol>
                     <CCol sm={4} md={4} xl={4} >
@@ -237,7 +237,7 @@ const DaftarMSCForm = (props) => {
                         onChange={(val) => setBjb(val)}
                         name="bjb" 
                         placeholder="BJB 0.00" 
-                        require
+                        require="true"
                       />
                     </CCol>
                     <CCol sm={4} md={4} xl={4} >
@@ -248,12 +248,12 @@ const DaftarMSCForm = (props) => {
                         onChange={(val) => setKA(val)}
                         name="kadar_air"
                         placeholder="Water Content 0.00" 
-                        require
+                        require="true"
                       />
                     </CCol>
                   </CRow>
                 </CFormGroup>
-              </CForm>
+              {/* </CForm> */}
             </CCardBody>
             <CCardFooter>
             {(() => {
