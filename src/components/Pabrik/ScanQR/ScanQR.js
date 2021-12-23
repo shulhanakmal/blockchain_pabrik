@@ -293,22 +293,22 @@ export default class ScanQR extends Component {
                   textAlign: "center",
                 }}
               >
-                <strong>Product Dan Mitra</strong>
+                {/* <strong>Product Dan Mitra</strong> */}
+                <strong>Product</strong>
               </h1>
             </CCol>
             <CCol xs="10" lg="7">
               {/* loop karena produk id bisa lebih dari 1 */}
               {(() => {
-                if (this.state.sales.get_detail.length > 1) {
+                if (this.state.sales.get_detail.length > 0) {
                   let i = 0;
                   return this.state.sales.get_detail.map((value, index) => {
-                    console.log('cek',value);
                     i++;
                     return (
                       <Fragment key={index}>
                         <div>
                           <p align="center" >
-                            <strong><b> Product #{i} </b></strong>
+                            <strong><b> Hasil Produksi #{i} </b></strong>
                           </p>
                           <p>
                             <strong>Product Id:</strong> {value.product_id}
@@ -329,26 +329,6 @@ export default class ScanQR extends Component {
                       </Fragment>
                     )
                   })
-                } else {
-                  return (
-                    <>
-                      <p>
-                        <strong>Product Id:</strong> 
-                      </p>
-                      <p>
-                        <strong>Volume Product:</strong> 
-                      </p>
-
-                      <hr
-                        style={{
-                          marginTop: "60px",
-                          color: "#ffffff",
-                          backgroundColor: "#ffffff",
-                          height: 2,
-                        }}
-                      />
-                    </>
-                  )
                 }      
               })()}
               {/* end loop */}
@@ -356,12 +336,11 @@ export default class ScanQR extends Component {
               {(() => {
                 let i = 0;
                 return this.state.mitra.map((value, index) => {
-                  console.log('cek',value);
                   i++;
                   return (
                     <Fragment key={index}>
                       <p align="center" >
-                        <strong><b> Mitra #{i} </b></strong>
+                        <strong><b> Produk dihasilkan dari mitra pertanian #{i} </b></strong>
                       </p>
                       <p>
                         <strong>Petani:</strong> {value.nama_petani}
@@ -375,6 +354,19 @@ export default class ScanQR extends Component {
                       <p>
                         <strong>Lahan:</strong> {value.luas_lahan} Hektar
                       </p>
+                        {(() => {
+                          return this.state.produk.map((produk) => {
+                            if(value.id === produk.mitra) {
+                              return (
+                                // <Fragment key={i}>
+                                  <p>
+                                    <strong>Volume:</strong> {produk.volume} Kwintal
+                                  </p>
+                                // </Fragment>
+                              )
+                            }
+                          })
+                        })()}
                       <p align="center" >
                         <CButton size="sm" color="info" style={{'color': 'white'}} to={`/Detail-mitra-petani-view/${value.id}`} target="_blank">
                           Detail

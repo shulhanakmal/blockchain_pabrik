@@ -129,6 +129,8 @@ const DaftarSales = () => {
 
         UserService.pushQRCodeImage(salesId, formDataQR);
 
+        showResults("Data berhasil dimasukan");
+
         // setLoading(false);
 
         // const web3Modal = new Web3Modal();

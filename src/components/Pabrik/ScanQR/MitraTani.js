@@ -179,7 +179,7 @@ const DetailMitraTaniView = (props) => {
                         </CCardHeader>
                         <CCardBody>
                             <CRow>
-                                <CCol xs={5} md={6} lg={6}>
+                                <CCol xs={6} md={6} lg={6}>
                                     <CFormGroup>
                                         <CLabel htmlFor="nf-namaJenis">Nama</CLabel>
                                         <CInput
@@ -214,7 +214,7 @@ const DetailMitraTaniView = (props) => {
                                         />
                                     </CFormGroup>
                                 </CCol>
-                                <CCol xs={5} md={6} lg={6}>
+                                <CCol xs={6} md={6} lg={6}>
                                     <CFormGroup>
                                         <CLabel htmlFor="nf-namaJenis">Luas Lahan</CLabel>
                                         <CInput
