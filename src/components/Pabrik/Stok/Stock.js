@@ -59,10 +59,8 @@ export default class Stock extends Component {
 
     const product = [
       { key: "product_id", label: "Product", _style: { width: "15%" } },
-      { key: "jenis", label: "Sugar", _style: { width: "15%" } },
+      { key: "sugar", label: "Sugar", _style: { width: "15%" } },
       { key: "volume", label: "Volume", _style: { width: "15%" } },
-      { key: "transaksi", label: "Transaction", _style: { width: "20%" } },
-      { key: "proses", label: "Process", _style: { width: "20%" } },
       { key: "created_at", label: "Date", _style: { width: "15%" } },
     ];
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 import authHeader from "./auth-header";
-// import authHeaderImage from "./auth-header-image";
+import authHeaderImage from "./auth-header-image";
 
 // const API_URL = "http://209.97.160.154:90/api/v1/";
 // const API_URL = "http://127.0.0.1:8000/api/v2/";
@@ -243,6 +243,20 @@ class UserService {
 
   getSalesTrasaction(txHash) {
     return axios.get(API_URL + "get-sales-transaction/"+ txHash, { headers: authHeader() });
+  }
+
+  pushQRCodeImage(salesId, raw) {
+    return axios.post(API_URL + "update-qr-product/" + salesId, raw, {
+      headers: authHeaderImage(),
+    });
+  }
+
+  getScanQRDataSales(sugar, salesDoc) {
+    return axios.get(API_URL + "get-sales-detail/"+ sugar + "/" + salesDoc, { headers: authHeader() });
+  }
+
+  getDataProdukDanMitra(sugar, salesId) {
+    return axios.get(API_URL + "get-produk-sales/"+ sugar + "/" + salesId, { headers: authHeader() });
   }
 }
 

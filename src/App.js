@@ -20,6 +20,8 @@ import DaftarReturnBulkSugar from "./components/Pabrik/Logistic/DaftarReturnBulk
 import DaftarStockBulkSugarFromCane from "./components/Pabrik/Logistic/DaftarStockBulkSugarFromCane";
 import DaftarStockBulkSugarFromRs from "./components/Pabrik/Logistic/DaftarStockBulkSugarFromRs";
 import DaftarStockOutBulkSugar from "./components/Pabrik/Logistic/DaftarStockOutBulkSugar";
+import GetIDScan from "./components/Pabrik/ScanQR/GetIDScan";
+import ScanQR from "./components/Pabrik/ScanQR/ScanQR";
 import RequestData from "./components/RequestData";
 import ListRequestData from "./components/ListRequestData";
 import AddLokasiKebun from "./components/AddLokasiKebun";
@@ -28,6 +30,7 @@ import DetailKebun from "./components/DetailKebun";
 import ListMitraPetani from "./components/ListMitraTani";
 import AddMitraTani from "./components/AddMitraTani";
 import DetailMitraTani from "./components/DetailMitraTani";
+import DetailMitraTaniView from "./components/Pabrik/ScanQR/MitraTani";
 import SummarySales from "./components/Pabrik/Sales/SummarySales";
 import EditSales from "./components/Pabrik/Sales/EditSales";
 import Sales from "./components/Pabrik/Sales/Sales";
@@ -159,7 +162,9 @@ class App extends Component {
         <Route path="/Detail-kebun/:id" exact component={DetailKebun} />
         <Route path="/List-mitra-petani" exact component={ListMitraPetani} />
         <Route path="/Detail-mitra-petani/:id" exact component={DetailMitraTani} />
+        <Route path="/Detail-mitra-petani-view/:id" exact component={DetailMitraTaniView} />
         <Route path="/Add-mitra-petani" exact component={AddMitraTani} />
+        <Route path="/detailProduk/:sugar/:salesDoc" exact component={GetIDScan} />
       </Router>
     );
   }

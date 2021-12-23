@@ -61,14 +61,14 @@ const DaftarSales = () => {
     setQr(value);
   };
 
-  const downloadQR = (product_id) => {
+  const downloadQR = (salesId) => {
     const canvas = document.getElementById("myqr");
     const pngUrl = canvas
       .toDataURL("image/png")
       .replace("image/png", "image/octet-stream");
     let downloadLink = document.createElement("a");
     downloadLink.href = pngUrl;
-    downloadLink.download = "" + product_id + ".png";
+    downloadLink.download = "" + salesId + ".png";
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
@@ -88,7 +88,6 @@ const DaftarSales = () => {
 
   const handleSubmit = (values) => {
     // setLoading(true);
-    console.log(values);
     const formData = new FormData();
     formData.append('date',tanggal);
     formData.append('no_do',values.no_do);
@@ -104,6 +103,33 @@ const DaftarSales = () => {
       async (response) => {
 
         console.log("CEK RESPONSE DATANYA MAL :", response);
+
+        const salesId = response.data.data.id;
+        // const docNumber = response.data.data.no_do;
+        // const linkQRCode = "http://127.0.0.1:3000/detailProduk/" + product_id;
+        const linkQRCode =
+          process.env.REACT_APP_PROD_URL +
+          "detailProduk/" +
+          sugar +
+          "/" +
+          salesId;
+        await handleChange(linkQRCode);
+
+        const canvas = document.getElementById("myqr");
+        let imageBlob = await new Promise((resolve) =>
+          canvas.toBlob(resolve, "image/png")
+        );
+
+        let formDataQR = new FormData();
+        formDataQR.append("files_qr", imageBlob, "" + salesId + ".png");
+        console.log("gambar qr", imageBlob, "" + salesId + ".png");
+        formDataQR.append("fileName_qr", "" + salesId + ".png");
+
+        downloadQR(salesId);
+
+        UserService.pushQRCodeImage(salesId, formDataQR);
+
+        // setLoading(false);
 
         // const web3Modal = new Web3Modal();
         // const connection = await web3Modal.connect();
@@ -184,10 +210,19 @@ const DaftarSales = () => {
           )
         } else {
           return (
+            <>
             <DaftarSalesForm 
               onSubmit={handleSubmit} 
               onSelectDate={handleDate}
             />
+            <div style={{ visibility: "hidden" }}>
+              {qr ? (
+                <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+              ) : (
+                <p>No QR code preview</p>
+              )}
+            </div>
+            </>
           )
         }
       })()}
