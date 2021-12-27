@@ -48,6 +48,8 @@ const AddMitraMsc = () => {
   const [dataId, setDataId] = useState(id);
   const [jenis, setflag] = useState(flag);
 
+  const [produkId, setProdukId] = useState("");
+
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
 
@@ -61,10 +63,23 @@ const AddMitraMsc = () => {
   //   setImportir(value);
   // };
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = () => {
+    UserService.getDataForAddMitra(flag, id).then(
+      async (response) => {
+        setProdukId(response.data.data.product_id);
+      }
+    )
+  }
+
   const handleSubmit = (values) => {
     setLoading(true);
 
     const formData = new FormData();
+    formData.append('product',produkId);
     formData.append('date',tanggal);
     if(jenis === 'msc') {
       formData.append('mscid', dataId);
@@ -85,13 +100,9 @@ const AddMitraMsc = () => {
     formData.append('mitra', JSON.stringify(values.mitra));
     formData.append('status','normal');
 
-    console.log('cek Data Mitra', JSON.stringify(values.mitra));
-    console.log('cek form', formData);
-
     if(values.mitra.length > 0) {
       UserService.addProduction(formData).then(
         async (response) => {
-          console.log('cek response', response)
 
           // if(mscId) {
           //   const web3Modal = new Web3Modal();

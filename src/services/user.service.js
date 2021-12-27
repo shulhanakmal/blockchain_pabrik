@@ -241,8 +241,11 @@ class UserService {
     });
   }
 
-  getSalesTrasaction(txHash) {
-    return axios.get(API_URL + "get-sales-transaction/"+ txHash, { headers: authHeader() });
+  // getSalesTrasaction(txHash) {
+  //   return axios.get(API_URL + "get-sales-transaction/"+ txHash, { headers: authHeader() });
+  // }
+  getSalesTrasaction(raw) {
+    return axios.post(API_URL + "track-sales-transaction", raw, { headers: authHeader() });
   }
 
   pushQRCodeImage(salesId, raw) {
@@ -257,6 +260,10 @@ class UserService {
 
   getDataProdukDanMitra(sugar, salesId) {
     return axios.get(API_URL + "get-produk-sales/"+ sugar + "/" + salesId, { headers: authHeader() });
+  }
+
+  getDataForAddMitra(flag, dataId) {
+    return axios.get(API_URL + "get-data-for-mitra/"+ flag + "/" + dataId, { headers: authHeader() });
   }
 }
 

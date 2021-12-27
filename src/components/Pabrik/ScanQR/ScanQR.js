@@ -355,11 +355,11 @@ export default class ScanQR extends Component {
                         <strong>Lahan:</strong> {value.luas_lahan} Hektar
                       </p>
                         {(() => {
-                          return this.state.produk.map((produk) => {
+                          return this.state.produk.map((produk, i) => {
                             if(value.id === produk.mitra) {
                               return (
                                 // <Fragment key={i}>
-                                  <p>
+                                  <p key={i}>
                                     <strong>Volume:</strong> {produk.volume} Kwintal
                                   </p>
                                 // </Fragment>

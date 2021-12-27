@@ -88,7 +88,7 @@ const DaftarProduction = () => {
         }
 
         if(response.data.data.length === 0) {
-          var product_id = "Cane-" + year + month + date + '01';
+          var product_id = "Raw-" + year + month + date + '01';
           setProductId(product_id);
         } else {
           // setProductId(resultIDBatch)
@@ -113,6 +113,7 @@ const DaftarProduction = () => {
   }
 
   const handleMilling = (proses) => {
+    console.log('proses', proses);
     setLamaGiling(proses);
   };
 
@@ -142,13 +143,12 @@ const DaftarProduction = () => {
   };
 
   const handleSubmit = (values) => {
-
     if(tanggal &&
       milling &&
       Vicumsa &&
       Vbjb &&
       Vka
-    ) {  
+    ) {
 
       const formData = new FormData();
       formData.append('product',productId);
@@ -172,13 +172,13 @@ const DaftarProduction = () => {
 
           if(response.data.message) {
               showResults(response.data.message);
-            } else {
-              setPrsId(response.data.data.id)
-              console.log('response', response);
-              setAddMitra(true);
+          } else {
+            setPrsId(response.data.data.id)
+            console.log('response', response);
+            setAddMitra(true);
 
-              showResults("Data berhasil disimpan, silahkan untuk mengisi data mitra!");
-            }
+            showResults("Data berhasil disimpan, silahkan untuk mengisi data mitra!");
+          }
 
           // const web3Modal = new Web3Modal();
           // const connection = await web3Modal.connect();

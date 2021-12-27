@@ -31,7 +31,6 @@ const Header = props => {
       <CCollapse show={isOpen} navbar>
         <CNavbarNav>
         <CNavLink href="/">Dashboard</CNavLink>
-        <CNavLink to="/Stock">Stock</CNavLink>
           <CDropdown inNav>
             <CDropdownToggle color="primary">Sugar</CDropdownToggle>
               {/* {(() => {
@@ -84,6 +83,7 @@ const Header = props => {
           if (userRole === 'admin') {
             return (
               <CNavbarNav>
+                <CNavLink to="/Stock">Stock</CNavLink>
                 <CDropdown inNav>
                   <CDropdownToggle color="primary">User Management</CDropdownToggle>
                   <CDropdownMenu>
