@@ -70,13 +70,18 @@ const AddMitraMsc = () => {
   const getData = () => {
     UserService.getDataForAddMitra(flag, id).then(
       async (response) => {
+        console.log('cek response', response);
         setProdukId(response.data.data.product_id);
       }
     )
   }
 
   const handleSubmit = (values) => {
+    console.log('jenis', jenis);
+    console.log('dataId', dataId);
+    console.log('values', values);
     setLoading(true);
+
 
     const formData = new FormData();
     formData.append('product',produkId);
@@ -93,6 +98,12 @@ const AddMitraMsc = () => {
     } else if(jenis === 'sfrs') {
       formData.append('sfrsid', dataId);
       formData.append('param','sugarFromRs');
+    } else if(jenis === 'sbsfc') {
+      formData.append('sbsfcid', dataId);
+      formData.append('param','stockBulkSugarFromCane');
+    } else if(jenis === 'sbsfrs') {
+      formData.append('sbsfrsid', dataId);
+      formData.append('param','stockBulkSugarFromRs');
     } else {
       formData.append('mscid', null);
     }
@@ -101,97 +112,191 @@ const AddMitraMsc = () => {
     formData.append('status','normal');
 
     if(values.mitra.length > 0) {
-      UserService.addProduction(formData).then(
-        async (response) => {
+      if(jenis === 'sbsfc' || jenis === 'sbsfrs'){
+        UserService.addLogistic(formData).then(
+          async (response) => {
 
-          // if(mscId) {
-          //   const web3Modal = new Web3Modal();
-          //   const connection = await web3Modal.connect();
-          //   const provider = new ethers.providers.Web3Provider(connection);
-          //   const signer = provider.getSigner();
+            // if(mscId) {
+            //   const web3Modal = new Web3Modal();
+            //   const connection = await web3Modal.connect();
+            //   const provider = new ethers.providers.Web3Provider(connection);
+            //   const signer = provider.getSigner();
 
-          //   const accounts = await window.ethereum.enable();
-          //   const akun = accounts[0];
+            //   const accounts = await window.ethereum.enable();
+            //   const akun = accounts[0];
 
-          //   // input production msc
-          //   try{
-          //     const updateData = new FormData();
-          //     let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
-          //     let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-          //       updateData.append('transaction', transaction.hash);
-          //       updateData.append('wallet', transaction.from);
-          //       setHash(transaction.hash);
-          //     await transaction.wait()
+            //   // input production msc
+            //   try{
+            //     const updateData = new FormData();
+            //     let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
+            //     let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+            //       updateData.append('transaction', transaction.hash);
+            //       updateData.append('wallet', transaction.from);
+            //       setHash(transaction.hash);
+            //     await transaction.wait()
 
-          //     updateData.append('id', response.data.data.id);
-          //     updateData.append('flag', 'milledSugarCane');
-          //     UserService.addProdcutionTransactionHash(updateData);
-          //     setHash("");
-          //   } catch(e) {
-          //     console.log(e);
-          //     setErr(true);
-          //   }
-          //   // end input msc
+            //     updateData.append('id', response.data.data.id);
+            //     updateData.append('flag', 'milledSugarCane');
+            //     UserService.addProdcutionTransactionHash(updateData);
+            //     setHash("");
+            //   } catch(e) {
+            //     console.log(e);
+            //     setErr(true);
+            //   }
+            //   // end input msc
 
-          //   // input sugar cane
-          //   try{
-          //     const updateDataInput = new FormData();
-          //     let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
-          //     let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
-          //       updateDataInput.append('transaction', transactionSC.hash);
-          //       updateDataInput.append('wallet', transactionSC.from);
-          //       setHash(transactionSC.hash);
-          //     await transactionSC.wait()
+            //   // input sugar cane
+            //   try{
+            //     const updateDataInput = new FormData();
+            //     let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
+            //     let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+            //       updateDataInput.append('transaction', transactionSC.hash);
+            //       updateDataInput.append('wallet', transactionSC.from);
+            //       setHash(transactionSC.hash);
+            //     await transactionSC.wait()
 
-          //     updateDataInput.append('id', response.data.input.id);
-          //     updateDataInput.append('flag', 'sugarCane');
-          //     UserService.addProdcutionTransactionHash(updateDataInput);
-          //     setHash("");
-          //   } catch(e) {
-          //     console.log(e);
-          //     setErr(true);
-          //   }
-          //   // end input sugar cane
+            //     updateDataInput.append('id', response.data.input.id);
+            //     updateDataInput.append('flag', 'sugarCane');
+            //     UserService.addProdcutionTransactionHash(updateDataInput);
+            //     setHash("");
+            //   } catch(e) {
+            //     console.log(e);
+            //     setErr(true);
+            //   }
+            //   // end input sugar cane
 
-          //   // input logistik cane
-          //   try{
-          //     const updateDataLogistik = new FormData();
-          //     let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
-          //     let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
-          //       setHash(transactionL.hash);
-          //       updateDataLogistik.append('transaction', transactionL.hash);
-          //       updateDataLogistik.append('wallet', transactionL.from);
-          //     await transactionL.wait()
+            //   // input logistik cane
+            //   try{
+            //     const updateDataLogistik = new FormData();
+            //     let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
+            //     let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+            //       setHash(transactionL.hash);
+            //       updateDataLogistik.append('transaction', transactionL.hash);
+            //       updateDataLogistik.append('wallet', transactionL.from);
+            //     await transactionL.wait()
 
-          //     updateDataLogistik.append('id', response.data.logistik.id);
-          //     updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
-          //     UserService.addLogisticsTransactionHash(updateDataLogistik);
-          //     setHash("");
-          //   } catch(e) {
-          //     console.log(e);
-          //     setErr(true);
-          //   }
+            //     updateDataLogistik.append('id', response.data.logistik.id);
+            //     updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
+            //     UserService.addLogisticsTransactionHash(updateDataLogistik);
+            //     setHash("");
+            //   } catch(e) {
+            //     console.log(e);
+            //     setErr(true);
+            //   }
 
-          //   if(catchErr) {
-          //     setLoading(false);
-          //     console.log(catchErr);
-          //   } else {
-          //     setLoading(false);
-          //     showResults("Data Berhasil Dimasukkan");
-          //   }
+            //   if(catchErr) {
+            //     setLoading(false);
+            //     console.log(catchErr);
+            //   } else {
+            //     setLoading(false);
+            //     showResults("Data Berhasil Dimasukkan");
+            //   }
 
-          // } else {
-          //     console.log('Failed')
-          //     setLoading(true);
-          // }
+            // } else {
+            //     console.log('Failed')
+            //     setLoading(true);
+            // }
 
-          setLoading(false) 
-
-        },(error) => { 
-            console.log(error) 
             setLoading(false) 
-        }
-      );
+
+          },(error) => { 
+              console.log(error) 
+              setLoading(false) 
+          }
+        );
+      } else {
+        UserService.addProduction(formData).then(
+          async (response) => {
+
+            // if(mscId) {
+            //   const web3Modal = new Web3Modal();
+            //   const connection = await web3Modal.connect();
+            //   const provider = new ethers.providers.Web3Provider(connection);
+            //   const signer = provider.getSigner();
+
+            //   const accounts = await window.ethereum.enable();
+            //   const akun = accounts[0];
+
+            //   // input production msc
+            //   try{
+            //     const updateData = new FormData();
+            //     let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddProduct, signer)
+            //     let transaction = await contract.addProductionMsc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+            //       updateData.append('transaction', transaction.hash);
+            //       updateData.append('wallet', transaction.from);
+            //       setHash(transaction.hash);
+            //     await transaction.wait()
+
+            //     updateData.append('id', response.data.data.id);
+            //     updateData.append('flag', 'milledSugarCane');
+            //     UserService.addProdcutionTransactionHash(updateData);
+            //     setHash("");
+            //   } catch(e) {
+            //     console.log(e);
+            //     setErr(true);
+            //   }
+            //   // end input msc
+
+            //   // input sugar cane
+            //   try{
+            //     const updateDataInput = new FormData();
+            //     let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddCane, signer)
+            //     let transactionSC = await contractSC.addProductionSfc(response.data.input.id, response.data.input.date, response.data.input.volume, 'normal', dateString)
+            //       updateDataInput.append('transaction', transactionSC.hash);
+            //       updateDataInput.append('wallet', transactionSC.from);
+            //       setHash(transactionSC.hash);
+            //     await transactionSC.wait()
+
+            //     updateDataInput.append('id', response.data.input.id);
+            //     updateDataInput.append('flag', 'sugarCane');
+            //     UserService.addProdcutionTransactionHash(updateDataInput);
+            //     setHash("");
+            //   } catch(e) {
+            //     console.log(e);
+            //     setErr(true);
+            //   }
+            //   // end input sugar cane
+
+            //   // input logistik cane
+            //   try{
+            //     const updateDataLogistik = new FormData();
+            //     let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddLogistics, signer)
+            //     let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, 'normal', dateString)
+            //       setHash(transactionL.hash);
+            //       updateDataLogistik.append('transaction', transactionL.hash);
+            //       updateDataLogistik.append('wallet', transactionL.from);
+            //     await transactionL.wait()
+
+            //     updateDataLogistik.append('id', response.data.logistik.id);
+            //     updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
+            //     UserService.addLogisticsTransactionHash(updateDataLogistik);
+            //     setHash("");
+            //   } catch(e) {
+            //     console.log(e);
+            //     setErr(true);
+            //   }
+
+            //   if(catchErr) {
+            //     setLoading(false);
+            //     console.log(catchErr);
+            //   } else {
+            //     setLoading(false);
+            //     showResults("Data Berhasil Dimasukkan");
+            //   }
+
+            // } else {
+            //     console.log('Failed')
+            //     setLoading(true);
+            // }
+
+            setLoading(false) 
+
+          },(error) => { 
+              console.log(error) 
+              setLoading(false) 
+          }
+        );
+      }
     } else {
       console.log('failed, Data mitra harus ada');
     }

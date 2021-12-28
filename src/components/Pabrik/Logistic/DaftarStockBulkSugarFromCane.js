@@ -1,6 +1,7 @@
 import { Fragment, useState, useEffect, useCallback } from "react";
 import "../Pabrik.css";
 import "../PabrikMedia.css";
+import "../react-datepicker.css";
 import DaftarLogisticForm from "./DaftarLogisticForm";
 import UserService from "../../../services/user.service";
 import showResults from "../../showResults/showResults";
@@ -34,12 +35,25 @@ const DaftarLogistic = () => {
   let [color, setColor] = useState("#3c4b64");
 
   let [TxnHash, setHash] = useState("");
-  let [data, setData] = useState("");
+  
+  const [Vicumsa, setIcumsa] = useState("");
+  const [Vbjb, setBJB] = useState("");
+  const [Vka, setKA] = useState("");
+
+  const [Vbrix, setBRIX] = useState("");
+  const [Vtras, setTRAS] = useState("");
 
   const [balance, setBalance] = useState(0);
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
+
+  const [milling, setLamaGiling] = useState("");
+  const [productId, setProductId] = useState("");
+
+  const [data, setData] = useState("");
+  const [sbsfcId, setSbsfcId] = useState(0);
+  const [AddMitra, setAddMitra] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -51,47 +65,53 @@ const DaftarLogistic = () => {
     setDate(date);
   };
 
-  const handleIDProduct = () => {
-    var date = new Date().getDate();
-    var month = new Date().getMonth() + 1;
-    var year = new Date().getFullYear().toString().substr(-2);
+  useEffect(() => {
+    getData();
+  }, []);
 
-    if (date < 10) {
-      date = "0" + date;
-    }
-    if (month < 10) {
-      month = "0" + month;
-    }
+  const getData = async () => {
+    // web3.eth.getAccounts(function(err, accounts){
+    //     if (err != null) {
+    //       alert("An error occurred: "+err);
+    //     } else if (accounts.length == 0) {
+    //       alert("User is not logged in to MetaMask");
+    //     } else {
+    //       setAccount(accounts[0])
+    //     }
+    // });
 
-    let increment = 0;
-    if(data === 0) {
-      increment = 1;
-    } else {
-      increment = data + 1;
-    }
-
-    // let increment = data;
-    let incrementalResultIDBatch = "0" + increment;
-    let resultIDBatch = "Cane-" + year + month + date + incrementalResultIDBatch;
-
-    return resultIDBatch;
-  };
-
-  const getWallet = async () => {
-    web3.eth.getAccounts(function(err, accounts){
-        if (err != null) {
-          alert("An error occurred: "+err);
-        } else if (accounts.length == 0) {
-          alert("User is not logged in to MetaMask");
-        } else {
-          setAccount(accounts[0])
-        }
-    });
-
-    UserService.getListLogisticForIDProduct('stockBulkSugarFromRs', dateString).then(
+    UserService.getListLogisticForIDProduct('sbsfc', dateString).then(
       (response) => {
         console.log(response.data);
-        setData(response.data.data)
+        var date = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear().toString().substr(-2);
+
+        if (date < 10) {
+          date = "0" + date;
+        }
+        if (month < 10) {
+          month = "0" + month;
+        }
+
+        if(response.data.data.length === 0) {
+          var product_id = "Cane-" + year + month + date + '01';
+          setProductId(product_id);
+        } else {
+          // setProductId(resultIDBatch)
+          const dataBaru = response.data.data.sort().reverse();
+
+          var product_id = dataBaru[0];
+          var count = product_id.match(/\d*$/);
+
+          // Take the substring up until where the integer was matched
+          // Concatenate it to the matched count incremented by 1
+          product_id = product_id.substr(0, count.index) + (++count[0]);
+
+          setProductId(product_id)
+
+        }
+        console.log('cek productId', product_id);
       },
       (error) => {
         setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
@@ -99,60 +119,114 @@ const DaftarLogistic = () => {
     );
   };
 
-  const handleSubmit = (values) => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('date',tanggal);
-    formData.append('volume',values.volume);
-    formData.append('product',handleIDProduct());
-    formData.append('status','normal');
-    formData.append('param','stockBulkSugarFromCane');
-    console.log(formData);
-
-    UserService.addLogistic(formData).then(
-      async (response) => {
-
-        const web3Modal = new Web3Modal();
-        const connection = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
-
-        // input logistik sbsfc
-        try{
-          const updateData = new FormData();
-          let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
-          let transaction = await contract.addLogisticsSbsfc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
-            updateData.append('transaction', transaction.hash);
-            updateData.append('wallet', transaction.from);
-            setHash(transaction.hash);
-          await transaction.wait()
-
-          updateData.append('id', response.data.data.id);
-          updateData.append('flag', 'stockBulkSugarFromCane');
-          UserService.addLogisticsTransactionHash(updateData);
-          setHash("");
-        } catch(e) {
-          console.log(e);
-          setErr(true);
-        }
-        // end input sbsfc
-        
-        if(catchErr) {
-          setLoading(false);
-          console.log(catchErr);
-        } else {
-          setLoading(false);
-          showResults("Dimasukkan");
-        }
-      },
-      (error) => {
-      }
-    );
+  const handleMilling = (proses) => {
+    setLamaGiling(proses);
   };
 
-  useEffect(() => {
-    getWallet();
-  }, []);
+  const handleIcumsa = (icumsa) => {
+    setIcumsa(icumsa);
+  };
+
+  const handleBJB = (bjb) => {
+    setBJB(bjb);
+  };
+
+  const handleKA = (ka) => {
+    setKA(ka);
+  };
+
+  const handleTRAS = (tras) => {
+    setTRAS(tras);
+  };
+
+  const handleBRIX = (brix) => {
+    setBRIX(brix);
+  };
+
+  const handleAddMitra = (mitra) => {
+    setAddMitra(AddMitra)
+    // return AddMitra;
+  };
+
+  const handleSubmit = (values) => {
+    // setLoading(true);
+    if(tanggal &&
+      Vicumsa &&
+      Vbjb &&
+      Vka
+    ) {
+      const formData = new FormData();
+      formData.append('product',productId);
+      formData.append('date',tanggal);
+      if(Vbrix) {
+        formData.append('brix',Vbrix.target.value);
+      }
+      if(Vtras){
+        formData.append('trash',Vtras.target.value);
+      }
+      formData.append('icumsa',Vicumsa.target.value);
+      formData.append('bjb',Vbjb.target.value);
+      formData.append('ka',Vka.target.value);
+      if(milling){
+        formData.append('lama_proses',milling.target.value);
+      }
+      formData.append('status','normal');
+      formData.append('param','stockBulkSugarFromCane');
+      console.log(formData);
+
+      UserService.addLogistic(formData).then(
+        async (response) => {
+
+          if(response.data.message) {
+              showResults(response.data.message);
+          } else {
+            setSbsfcId(response.data.data.id)
+            console.log('response', response);
+            setAddMitra(true);
+
+            showResults("Data berhasil disimpan, silahkan untuk mengisi data mitra!");
+          }
+
+          // const web3Modal = new Web3Modal();
+          // const connection = await web3Modal.connect();
+          // const provider = new ethers.providers.Web3Provider(connection);
+          // const signer = provider.getSigner();
+
+          // // input logistik sbsfc
+          // try{
+          //   const updateData = new FormData();
+          //   let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
+          //   let transaction = await contract.addLogisticsSbsfc(response.data.data.id, response.data.data.date, response.data.data.volume, 'normal', dateString)
+          //     updateData.append('transaction', transaction.hash);
+          //     updateData.append('wallet', transaction.from);
+          //     setHash(transaction.hash);
+          //   await transaction.wait()
+
+          //   updateData.append('id', response.data.data.id);
+          //   updateData.append('flag', 'stockBulkSugarFromCane');
+          //   UserService.addLogisticsTransactionHash(updateData);
+          //   setHash("");
+          // } catch(e) {
+          //   console.log(e);
+          //   setErr(true);
+          // }
+          // // end input sbsfc
+          
+          // if(catchErr) {
+          //   setLoading(false);
+          //   console.log(catchErr);
+          // } else {
+          //   setLoading(false);
+          //   showResults("Dimasukkan");
+          // }
+        },
+        (error) => {
+        }
+      );
+    } else {
+      showResults("Data belum lengkap, harap isi semua data!");
+    }
+  };
 
   return (
     <Fragment>
@@ -176,6 +250,14 @@ const DaftarLogistic = () => {
             <DaftarLogisticForm 
               onSubmit={handleSubmit} 
               onSelectDate={handleDate}
+              Milling={handleMilling}
+              Icumsa={handleIcumsa}
+              BJB={handleBJB}
+              KA={handleKA}
+              AddMitra={handleAddMitra}
+              BRIX={handleBRIX}
+              TRAS={handleTRAS}
+              SBSFCID={sbsfcId}
             />
           )
         }

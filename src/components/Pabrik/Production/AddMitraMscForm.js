@@ -97,7 +97,7 @@ const AddMitraMscForm = (props) => {
           <h4 style={{ marginTop: "30px" }}>Mitra #{index + 1}</h4>
           <Fragment>
             {(() => {
-              if(props.FLAG === 'prs' || props.FLAG === 'sfrs') {
+              if(props.FLAG === 'prs' || props.FLAG === 'sfrs' || props.FLAG === 'sbsfrs') {
                 return (
                   <CFormGroup>
                     {/* setImportir */}
@@ -202,9 +202,21 @@ const AddMitraMscForm = (props) => {
                   <h4 style={{ margin: "auto" }}>Add Production Mitra</h4>
                 </CCol>
                 <CCol>
-                  <CButton block color="dark" to="/Production">
-                    <span style={{ color: "white" }}>X</span>
-                  </CButton>
+                {(() => {
+                  if(props.FLAG === 'sbsfrs' || props.FLAG === 'sbsfc') {
+                    return (
+                      <CButton block color="dark" to="/Logistic">
+                        <span style={{ color: "white" }}>X</span>
+                      </CButton>
+                    )
+                  } else {
+                    return (
+                      <CButton block color="dark" to="/Production">
+                        <span style={{ color: "white" }}>X</span>
+                      </CButton>
+                    )
+                  }
+                })()}
                 </CCol>
               </CRow>
             </CCardHeader>

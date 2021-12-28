@@ -42,6 +42,8 @@ const DaftarLogistic = () => {
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
 
+  const [productId, setProductId] = useState("");
+
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
   const contractAddress = process.env.REACT_APP_ADDRESS_RBS;
@@ -54,25 +56,71 @@ const DaftarLogistic = () => {
     setDate(date);
   };
 
-  const getWallet = async () => {
-    web3.eth.getAccounts(function(err, accounts){
-        if (err != null) {
-          alert("An error occurred: "+err);
-        } else if (accounts.length == 0) {
-          alert("User is not logged in to MetaMask");
-        } else {
-          setAccount(accounts[0])
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    UserService.getListLogisticForIDProduct('rbs', dateString).then(
+      (response) => {
+        console.log(response.data);
+        var date = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear().toString().substr(-2);
+
+        if (date < 10) {
+          date = "0" + date;
         }
-    });
+        if (month < 10) {
+          month = "0" + month;
+        }
+
+        if(response.data.data.length === 0) {
+          var product_id = "Re-" + year + month + date + '01';
+          setProductId(product_id);
+        } else {
+          // setProductId(resultIDBatch)
+          const dataBaru = response.data.data.sort().reverse();
+
+          var product_id = dataBaru[0];
+          var count = product_id.match(/\d*$/);
+
+          // Take the substring up until where the integer was matched
+          // Concatenate it to the matched count incremented by 1
+          product_id = product_id.substr(0, count.index) + (++count[0]);
+
+          setProductId(product_id)
+
+        }
+        console.log('cek productId', product_id);
+      },
+      (error) => {
+        setErr((error.response && error.response.data && error.response.data.message) || error.message || error.toString())
+      }
+    );
   };
 
+  // const getWallet = async () => {
+  //   web3.eth.getAccounts(function(err, accounts){
+  //       if (err != null) {
+  //         alert("An error occurred: "+err);
+  //       } else if (accounts.length == 0) {
+  //         alert("User is not logged in to MetaMask");
+  //       } else {
+  //         setAccount(accounts[0])
+  //       }
+  //   });
+  // };
+
   const handleSubmit = (values) => {
-    setLoading(true);
+    // setLoading(true);
     const formData = new FormData();
     console.log(values);
+    formData.append('product',productId);
     formData.append('date',tanggal);
     formData.append('buyer',values.buyer);
     formData.append('sugar',values.sugar);
+    formData.append('no_do',values.transaksi);
     formData.append('volume',values.volume);
     formData.append('status','normal');
     formData.append('param','returnBulkSugar');
@@ -80,85 +128,86 @@ const DaftarLogistic = () => {
     UserService.addLogistic(formData).then(
       async (response) => {
 
-        const web3Modal = new Web3Modal();
-        const connection = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
+        console.log('cek response', response);
 
-        // input logistik sobs
-        try{
-          const updateData = new FormData();
-          console.log("CEK ADDRESS MAL :", contractAddress);
-          let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
-          let transaction = await contract.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString)
-            updateData.append('transaction', transaction.hash);
-            updateData.append('wallet', transaction.from);
-            setHash(transaction.hash);
-          await transaction.wait()
+      showResults("Data berhasil Dimasukan");
 
-          updateData.append('id', response.data.data.id);
-          updateData.append('flag', 'returnBulkSugar');
-          UserService.addLogisticsTransactionHash(updateData);
-        } catch(e) {
-          console.log(e);
-          setErr(true);
-        }
-        // end input sobs
+      //   const web3Modal = new Web3Modal();
+      //   const connection = await web3Modal.connect();
+      //   const provider = new ethers.providers.Web3Provider(connection);
+      //   const signer = provider.getSigner();
 
-        // post ke blockchain data return ke stock (stok menambah dari return)
-        if(values.sugar === 'cane'){
-          try{
-            const txnCane = new FormData();
-            let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
-            let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
-              txnCane.append('transaction', transactionC.hash);
-              txnCane.append('wallet', transactionC.from);
-              setHash(transactionC.hash);
-            await transactionC.wait()
+      //   // input logistik sobs
+      //   try{
+      //     const updateData = new FormData();
+      //     console.log("CEK ADDRESS MAL :", contractAddress);
+      //     let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
+      //     let transaction = await contract.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString)
+      //       updateData.append('transaction', transaction.hash);
+      //       updateData.append('wallet', transaction.from);
+      //       setHash(transaction.hash);
+      //     await transaction.wait()
 
-            txnCane.append('id', response.data.stock.id);
-            txnCane.append('flag', 'stockBulkSugarFromCane');
-            UserService.addLogisticsTransactionHash(txnCane);
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        } else {
-          try{
-            const txnRS = new FormData();
-            let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
-            let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
-              txnRS.append('transaction', transactionRS.hash);
-              txnRS.append('wallet', transactionRS.from);
-              setHash(transactionRS.hash);
-            await transactionRS.wait()
+      //     updateData.append('id', response.data.data.id);
+      //     updateData.append('flag', 'returnBulkSugar');
+      //     UserService.addLogisticsTransactionHash(updateData);
+      //   } catch(e) {
+      //     console.log(e);
+      //     setErr(true);
+      //   }
+      //   // end input sobs
 
-            txnRS.append('id', response.data.stock.id);
-            txnRS.append('flag', 'stockBulkSugarFromRs');
-            UserService.addLogisticsTransactionHash(txnRS);
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        }
-        setHash("");
+      //   // post ke blockchain data return ke stock (stok menambah dari return)
+      //   if(values.sugar === 'cane'){
+      //     try{
+      //       const txnCane = new FormData();
+      //       let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
+      //       let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
+      //         txnCane.append('transaction', transactionC.hash);
+      //         txnCane.append('wallet', transactionC.from);
+      //         setHash(transactionC.hash);
+      //       await transactionC.wait()
 
-        if(catchErr) {
-          setLoading(false);
-          console.log(catchErr);
-        } else {
-          setLoading(false);
-          showResults("Dimasukkan");
-        }
+      //       txnCane.append('id', response.data.stock.id);
+      //       txnCane.append('flag', 'stockBulkSugarFromCane');
+      //       UserService.addLogisticsTransactionHash(txnCane);
+      //     } catch(e) {
+      //       console.log(e);
+      //       setErr(true);
+      //     }
+      //   } else {
+      //     try{
+      //       const txnRS = new FormData();
+      //       let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
+      //       let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
+      //         txnRS.append('transaction', transactionRS.hash);
+      //         txnRS.append('wallet', transactionRS.from);
+      //         setHash(transactionRS.hash);
+      //       await transactionRS.wait()
+
+      //       txnRS.append('id', response.data.stock.id);
+      //       txnRS.append('flag', 'stockBulkSugarFromRs');
+      //       UserService.addLogisticsTransactionHash(txnRS);
+      //     } catch(e) {
+      //       console.log(e);
+      //       setErr(true);
+      //     }
+      //   }
+      //   setHash("");
+
+      //   if(catchErr) {
+      //     setLoading(false);
+      //     console.log(catchErr);
+      //   } else {
+      //     setLoading(false);
+      //     showResults("Dimasukkan");
+      //   }
       },
-      (error) => {
+        (error) => {
       }
     );
-  };
 
-  useEffect(() => {
-    getWallet();
-  }, []);
+  };
 
   return (
     <Fragment>

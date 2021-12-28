@@ -25,6 +25,7 @@ const DaftarReturnBulkSugarForm = (props) => {
   const [date, setDate] = useState('');
   const [max, setMax] = useState(0);
   const [sugar, setSugar] = useState([]);
+  const [transaksi, setTransaksi] = useState([]);
 
   props.onSelectDate(moment(tgl).format('YYYY-MM-DD'));
 
@@ -56,8 +57,9 @@ const DaftarReturnBulkSugarForm = (props) => {
     console.log('valBuyer', buyerValue);
     UserService.getMax(buyerValue, moment(date).format('YYYY-MM-DD'), e.target.value).then(
       (response) => {
+        console.log('max', response);
         setMax(response.data.max);
-        console.log('max', response)
+        setTransaksi(response.data.transaksi);
       },
       (error) => {}
     );
@@ -92,71 +94,87 @@ const DaftarReturnBulkSugarForm = (props) => {
               </CRow>
             </CCardHeader>
             <CCardBody>
-              <CForm action="" method="post">
-                <CFormGroup>
-                  <CLabel htmlFor="nf-date">Date</CLabel>
-                  <DatePicker
-                    selected={tgl}
-                    className="textInput pabrik"
-                    onChange={onChangeDate}
-                    maxDate={new Date()}
-                    dateFormat="dd/MM/yyyy"
-                    name="date"
-                    placeholderText="Select a date"
-                  />
-                </CFormGroup>
-                <CFormGroup>
-                  <CLabel htmlFor="nf-namaJenis">Buyer</CLabel>
-                  {/* <Field className="textInput pabrik" name="role" component="select"> */}
-                  <Field
-                    className="textInput pabrik"
-                    name="buyer"
-                    component="select"
-                    onChange={onChangeBuyer}
-                  >
-                    <option value="">Please Select Buyer</option>
-                    {buyer &&
-                      buyer.map((value) => {
-                        return (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        );
-                    })}
-                  </Field>
-                </CFormGroup>
-                <CFormGroup>
-                  <CLabel htmlFor="nf-namaJenis">Sugar</CLabel>
-                  <Field
-                    className="textInput pabrik"
-                    name="sugar"
-                    component="select"
-                    onChange={onChangeSugar}
-                  >
-                    <option value="">Please Select Sugar</option>
-                    {sugar &&
-                      sugar.map((value) => {
-                        return (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        );
-                    })}
-                  </Field>
-                </CFormGroup>
-                <CFormGroup>
-                  <CLabel htmlFor="nf-namaJenis">Volume (kwintal)</CLabel>
-                  <Field
-                    className="textInput pabrik number"
-                    name="volume"
-                    id="volume"
-                    component="input"
-                    type="number"
-                    placeholder="Input volume"
-                    onKeyUp={cekVolume}
-                  />
-                </CFormGroup>
-              </CForm>
+              <CFormGroup>
+                <CLabel htmlFor="nf-date">Date</CLabel>
+                <DatePicker
+                  selected={tgl}
+                  className="textInput pabrik"
+                  onChange={onChangeDate}
+                  maxDate={new Date()}
+                  dateFormat="dd/MM/yyyy"
+                  name="date"
+                  placeholderText="Select a date"
+                />
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="nf-namaJenis">Buyer</CLabel>
+                {/* <Field className="textInput pabrik" name="role" component="select"> */}
+                <Field
+                  className="textInput pabrik"
+                  name="buyer"
+                  component="select"
+                  onChange={onChangeBuyer}
+                >
+                  <option value="">Please Select Buyer</option>
+                  {buyer &&
+                    buyer.map((value) => {
+                      return (
+                        <option key={value} value={value}>
+                          {value}
+                        </option>
+                      );
+                  })}
+                </Field>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="nf-namaJenis">Sugar</CLabel>
+                <Field
+                  className="textInput pabrik"
+                  name="sugar"
+                  component="select"
+                  onChange={onChangeSugar}
+                >
+                  <option value="">Please Select Sugar</option>
+                  {sugar &&
+                    sugar.map((value) => {
+                      return (
+                        <option key={value} value={value}>
+                          {value}
+                        </option>
+                      );
+                  })}
+                </Field>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="nf-namaJenis">Transaksi</CLabel>
+                <Field
+                  className="textInput pabrik"
+                  name="transaksi"
+                  component="select"
+                >
+                  <option value="">Please Select Transaksi</option>
+                  {transaksi &&
+                    transaksi.map((value, index) => {
+                      return (
+                        <option key={index} value={value}>
+                          {value}
+                        </option>
+                      );
+                  })}
+                </Field>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="nf-namaJenis">Volume (kwintal)</CLabel>
+                <Field
+                  className="textInput pabrik number"
+                  name="volume"
+                  id="volume"
+                  component="input"
+                  type="number"
+                  placeholder="Input volume"
+                  onKeyUp={cekVolume}
+                />
+              </CFormGroup>
             </CCardBody>
             <CCardFooter>
               <CButton type="submit" size="sm" color="primary">

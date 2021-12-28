@@ -67,7 +67,7 @@ export default class ScanQR extends Component {
         prosesProduk: response.data.prosesProduk,
         prosesDetail: response.data.prosesDetail,
       });
-      
+
     });
   }
 
@@ -169,15 +169,53 @@ export default class ScanQR extends Component {
                             )
                           }
                         })()}
-                        <p>
-                          <strong>SugarCane Quality </strong> 
-                        </p>
-                        <p>
-                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> {this.state.prosesProduk[index].brix}
-                        </p>
-                        <p>
-                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> {this.state.prosesProduk[index].trash}
-                        </p>
+
+                        {(() => {
+                          if(this.state.prosesProduk[index].brix && this.state.prosesProduk[index].trash) {
+                            return (
+                              <>
+                                <p>
+                                  <strong>SugarCane Quality </strong> 
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> {this.state.prosesProduk[index].brix}
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> {this.state.prosesProduk[index].trash}
+                                </p>
+                              </>
+                            )
+                          } else if(this.state.prosesProduk[index].brix) {
+                            return (
+                              <>
+                                <p>
+                                  <strong>SugarCane Quality </strong> 
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> {this.state.prosesProduk[index].brix}
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> -
+                                </p>
+                              </>
+                            )
+                          } else if(this.state.prosesProduk[index].brix) {
+                            return (
+                              <>
+                                <p>
+                                  <strong>SugarCane Quality </strong> 
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> -
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> {this.state.prosesProduk[index].trash}
+                                </p>
+                              </>
+                            )
+                          }
+                        })()}
+
                         <p>
                           <strong>Quality of Sugar</strong> {/* icumsa, bjb dan kadar air  */}
                         </p>
@@ -234,15 +272,53 @@ export default class ScanQR extends Component {
                             )
                           }
                         })()}
-                        <p>
-                          <strong>SugarCane Quality </strong> 
-                        </p>
-                        <p>
-                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> {value.brix}
-                        </p>
-                        <p>
-                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> {value.trash}
-                        </p>
+
+                        {(() => {
+                          if(this.state.prosesProduk[index].brix && this.state.prosesProduk[index].trash) {
+                            return (
+                              <>
+                                <p>
+                                  <strong>SugarCane Quality </strong> 
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> {this.state.prosesProduk[index].brix}
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> {this.state.prosesProduk[index].trash}
+                                </p>
+                              </>
+                            )
+                          } else if(this.state.prosesProduk[index].brix) {
+                            return (
+                              <>
+                                <p>
+                                  <strong>SugarCane Quality </strong> 
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> {this.state.prosesProduk[index].brix}
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> -
+                                </p>
+                              </>
+                            )
+                          } else if(this.state.prosesProduk[index].brix) {
+                            return (
+                              <>
+                                <p>
+                                  <strong>SugarCane Quality </strong> 
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Brix:</strong> -
+                                </p>
+                                <p>
+                                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>Trash</strong> {this.state.prosesProduk[index].trash}
+                                </p>
+                              </>
+                            )
+                          }
+                        })()}
+
                         <p>
                           <strong>Quality of Sugar</strong> {/* icumsa, bjb dan kadar air  */}
                         </p>
@@ -334,26 +410,69 @@ export default class ScanQR extends Component {
               {/* end loop */}
 
               {(() => {
-                let i = 0;
-                return this.state.mitra.map((value, index) => {
-                  i++;
-                  return (
-                    <Fragment key={index}>
-                      <p align="center" >
-                        <strong><b> Produk dihasilkan dari mitra pertanian #{i} </b></strong>
-                      </p>
-                      <p>
-                        <strong>Petani:</strong> {value.nama_petani}
-                      </p>
-                      <p>
-                        <strong>Email:</strong> {value.email}
-                      </p>
-                      <p>
-                        <strong>Kontak:</strong> {value.email}
-                      </p>
-                      <p>
-                        <strong>Lahan:</strong> {value.luas_lahan} Hektar
-                      </p>
+                if(this.state.sugar === 'cane') {
+                  let i = 0;
+                  return this.state.mitra.map((value, index) => {
+                    i++;
+                    return (
+                      <Fragment key={index}>
+                        <p align="center" >
+                          <strong><b> Produk dihasilkan dari mitra pertanian #{i} </b></strong>
+                        </p>
+                        <p>
+                          <strong>Petani:</strong> {value.nama_petani}
+                        </p>
+                        <p>
+                          <strong>Email:</strong> {value.email}
+                        </p>
+                        <p>
+                          <strong>Kontak:</strong> {value.email}
+                        </p>
+                        <p>
+                          <strong>Lahan:</strong> {value.luas_lahan} Hektar
+                        </p>
+                          {(() => {
+                            return this.state.produk.map((produk, i) => {
+                              if(value.id === produk.mitra) {
+                                return (
+                                  // <Fragment key={i}>
+                                    <p key={i}>
+                                      <strong>Volume:</strong> {produk.volume} Kwintal
+                                    </p>
+                                  // </Fragment>
+                                )
+                              }
+                            })
+                          })()}
+                        <p align="center" >
+                          <CButton size="sm" color="info" style={{'color': 'white'}} to={`/Detail-mitra-petani-view/${value.id}`} target="_blank">
+                            Detail
+                          </CButton>
+                        </p>
+
+                        <hr
+                          style={{
+                            marginTop: "30px",
+                            color: "#ffffff",
+                            backgroundColor: "#ffffff",
+                            height: 2,
+                          }}
+                        />
+                      </Fragment>
+                    )
+                  })
+                } else {
+                  let i = 0;
+                  return this.state.mitra.map((value, index) => {
+                    i++;
+                    return (
+                      <Fragment key={index}>
+                        <p align="center" >
+                          <strong><b> Produk dihasilkan dari hasil import #{i} </b></strong>
+                        </p>
+                        <p>
+                          <strong>Negara:</strong> {value.value}
+                        </p>
                         {(() => {
                           return this.state.produk.map((produk, i) => {
                             if(value.id === produk.mitra) {
@@ -367,23 +486,19 @@ export default class ScanQR extends Component {
                             }
                           })
                         })()}
-                      <p align="center" >
-                        <CButton size="sm" color="info" style={{'color': 'white'}} to={`/Detail-mitra-petani-view/${value.id}`} target="_blank">
-                          Detail
-                        </CButton>
-                      </p>
 
-                      <hr
-                        style={{
-                          marginTop: "30px",
-                          color: "#ffffff",
-                          backgroundColor: "#ffffff",
-                          height: 2,
-                        }}
-                      />
-                    </Fragment>
-                  )
-                })
+                        <hr
+                          style={{
+                            marginTop: "30px",
+                            color: "#ffffff",
+                            backgroundColor: "#ffffff",
+                            height: 2,
+                          }}
+                        />
+                      </Fragment>
+                    )
+                  })
+                }
               })()}
             </CCol>
           </CRow>
