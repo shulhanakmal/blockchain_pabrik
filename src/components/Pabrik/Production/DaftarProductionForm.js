@@ -151,7 +151,7 @@ const DaftarProductionForm = (props) => {
                         onChange={(val) => setMilling(val)}
                         placeholder="H:m"
                         name="jam_giling"
-                        require
+                        require="true"
                       />
                     </CFormGroup>
                   )

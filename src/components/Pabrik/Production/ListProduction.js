@@ -353,6 +353,11 @@ export default class ListProduction extends Component {
         filter: false,
       },
     ];
+    const excessSugar = [
+      { key: "date", label: "Date", _style: { width: "30%" } },
+      { key: "proses", label: "Product", _style: { width: "40%" } },
+      { key: "volume", label: "Volume", _style: { width: "30%" } },
+    ];
 
     return (
       <Fragment>
@@ -390,6 +395,9 @@ export default class ListProduction extends Component {
                               </CNavItem>
                               <CNavItem>
                                 <CNavLink>Sugar From RS</CNavLink>
+                              </CNavItem>
+                              <CNavItem>
+                                <CNavLink>Excess Sugar</CNavLink>
                               </CNavItem>
                             </CNav>
                             <CTabContent>
@@ -664,6 +672,37 @@ export default class ListProduction extends Component {
                                             );
                                           },
                                         }}
+                                      />
+                                    </CCardBody>
+                                  </CCol>
+                                </CRow>
+                              </CTabPane>
+                              <CTabPane>
+                                <CRow>
+                                  <CCol xs="12">
+                                    <CCardHeader>
+                                      <CRow>
+                                        <CCol
+                                          xs={6}
+                                          md={7}
+                                          lg={10}
+                                          style={{ margin: "auto" }}
+                                        >
+                                          <h4 style={{ margin: "auto" }}>Production Data Excess Sugar</h4>
+                                        </CCol>
+                                      </CRow>
+                                    </CCardHeader>
+                                    <CCardBody>
+                                      <CDataTable
+                                        items={this.state.content.excessSugar}
+                                        fields={excessSugar}
+                                        itemsPerPage={10}
+                                        tableFilter
+                                        cleaner
+                                        itemsPerPageSelect
+                                        hover
+                                        sorter
+                                        pagination
                                       />
                                     </CCardBody>
                                   </CCol>
