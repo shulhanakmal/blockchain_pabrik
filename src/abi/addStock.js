@@ -1,4 +1,4 @@
-export const AddSales = [
+export const AddStock = [
     {
       "inputs": [
         {
@@ -16,7 +16,7 @@ export const AddSales = [
         },
         {
           "internalType": "uint256",
-          "name": "salesid",
+          "name": "stockid",
           "type": "uint256"
         },
         {
@@ -27,7 +27,7 @@ export const AddSales = [
               "type": "string"
             }
           ],
-          "internalType": "struct AddSales.Json",
+          "internalType": "struct AddStock.Json",
           "name": "json",
           "type": "tuple"
         },
@@ -64,7 +64,7 @@ export const AddSales = [
             },
             {
               "internalType": "uint256",
-              "name": "salesid",
+              "name": "stockid",
               "type": "uint256"
             },
             {
@@ -75,7 +75,7 @@ export const AddSales = [
                   "type": "string"
                 }
               ],
-              "internalType": "struct AddSales.Json",
+              "internalType": "struct AddStock.Json",
               "name": "json",
               "type": "tuple"
             },
@@ -95,7 +95,7 @@ export const AddSales = [
               "type": "bool"
             }
           ],
-          "internalType": "struct AddSales.Sales[]",
+          "internalType": "struct AddStock.Stock[]",
           "name": "",
           "type": "tuple[]"
         }
@@ -108,7 +108,7 @@ export const AddSales = [
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "salesid",
+          "name": "stockid",
           "type": "uint256"
         },
         {
@@ -127,7 +127,7 @@ export const AddSales = [
           "type": "string"
         }
       ],
-      "name": "addSales",
+      "name": "addStock",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -136,11 +136,11 @@ export const AddSales = [
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "salesid",
+          "name": "stockid",
           "type": "uint256"
         }
       ],
-      "name": "detailSales",
+      "name": "detailStock",
       "outputs": [
         {
           "components": [
@@ -151,7 +151,7 @@ export const AddSales = [
             },
             {
               "internalType": "uint256",
-              "name": "salesid",
+              "name": "stockid",
               "type": "uint256"
             },
             {
@@ -162,7 +162,7 @@ export const AddSales = [
                   "type": "string"
                 }
               ],
-              "internalType": "struct AddSales.Json",
+              "internalType": "struct AddStock.Json",
               "name": "json",
               "type": "tuple"
             },
@@ -182,7 +182,7 @@ export const AddSales = [
               "type": "bool"
             }
           ],
-          "internalType": "struct AddSales.Sales",
+          "internalType": "struct AddStock.Stock",
           "name": "",
           "type": "tuple"
         }

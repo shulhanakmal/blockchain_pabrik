@@ -10,6 +10,7 @@ import { ethers } from 'ethers';
 import { AddLogistics } from "../../../abi/logisticsRbs";
 import { AddLogistics as AddStockCane } from "../../../abi/logisticsSbsfc";
 import { AddLogistics  as AddStockRS } from "../../../abi/logisticsSbsfrs";
+import { AddStock } from "../../../abi/addStock";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
 
@@ -49,6 +50,7 @@ const DaftarLogistic = () => {
   const contractAddress = process.env.REACT_APP_ADDRESS_RBS;
   const contractAddressSBSFC = process.env.REACT_APP_ADDRESS_SBSFC;
   const contractAddressSBSFRS = process.env.REACT_APP_ADDRESS_SBSFRS;
+  const contractAddressSTOCK = process.env.REACT_APP_ADDRESS_STOCK;
 
   provider.engine.stop();
 
@@ -132,76 +134,103 @@ const DaftarLogistic = () => {
 
       showResults("Data berhasil Dimasukan");
 
-      //   const web3Modal = new Web3Modal();
-      //   const connection = await web3Modal.connect();
-      //   const provider = new ethers.providers.Web3Provider(connection);
-      //   const signer = provider.getSigner();
+        const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
+        const jsonLogistic = JSON.stringify(response.data.stock, null, 4).replace(/[",\\]]/g, "")
+        const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
 
-      //   // input logistik sobs
-      //   try{
-      //     const updateData = new FormData();
-      //     console.log("CEK ADDRESS MAL :", contractAddress);
-      //     let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
-      //     let transaction = await contract.addLogisticsRbs(response.data.data.id, response.data.data.date, response.data.data.buyer, response.data.data.sugar, response.data.data.volume, 'normal', dateString)
-      //       updateData.append('transaction', transaction.hash);
-      //       updateData.append('wallet', transaction.from);
-      //       setHash(transaction.hash);
-      //     await transaction.wait()
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
 
-      //     updateData.append('id', response.data.data.id);
-      //     updateData.append('flag', 'returnBulkSugar');
-      //     UserService.addLogisticsTransactionHash(updateData);
-      //   } catch(e) {
-      //     console.log(e);
-      //     setErr(true);
-      //   }
-      //   // end input sobs
+        // input logistik rbs
+        try{
+          const updateData = new FormData();
+          console.log("CEK ADDRESS MAL :", contractAddress);
+          let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
+          let transaction = await contract.addLogisticsRbs(response.data.data.id, json, 'normal', dateString)
+            updateData.append('transaction', transaction.hash);
+            updateData.append('wallet', transaction.from);
+            setHash(transaction.hash);
+          await transaction.wait()
 
-      //   // post ke blockchain data return ke stock (stok menambah dari return)
-      //   if(values.sugar === 'cane'){
-      //     try{
-      //       const txnCane = new FormData();
-      //       let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
-      //       let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
-      //         txnCane.append('transaction', transactionC.hash);
-      //         txnCane.append('wallet', transactionC.from);
-      //         setHash(transactionC.hash);
-      //       await transactionC.wait()
+          updateData.append('id', response.data.data.id);
+          updateData.append('flag', 'returnBulkSugar');
+          UserService.addLogisticsTransactionHash(updateData);
+        } catch(e) {
+          console.log(e);
+          setErr(true);
+        }
+        // end input rbs
 
-      //       txnCane.append('id', response.data.stock.id);
-      //       txnCane.append('flag', 'stockBulkSugarFromCane');
-      //       UserService.addLogisticsTransactionHash(txnCane);
-      //     } catch(e) {
-      //       console.log(e);
-      //       setErr(true);
-      //     }
-      //   } else {
-      //     try{
-      //       const txnRS = new FormData();
-      //       let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
-      //       let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, response.data.stock.date, response.data.stock.volume, 'normal', dateString)
-      //         txnRS.append('transaction', transactionRS.hash);
-      //         txnRS.append('wallet', transactionRS.from);
-      //         setHash(transactionRS.hash);
-      //       await transactionRS.wait()
+        // post ke blockchain data return ke stock (stok menambah dari return)
+        if(values.sugar === 'cane'){
+          try{
+            const txnCane = new FormData();
+            let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
+            let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, jsonLogistic, 'normal', dateString)
+              txnCane.append('transaction', transactionC.hash);
+              txnCane.append('wallet', transactionC.from);
+              setHash(transactionC.hash);
+            await transactionC.wait()
 
-      //       txnRS.append('id', response.data.stock.id);
-      //       txnRS.append('flag', 'stockBulkSugarFromRs');
-      //       UserService.addLogisticsTransactionHash(txnRS);
-      //     } catch(e) {
-      //       console.log(e);
-      //       setErr(true);
-      //     }
-      //   }
-      //   setHash("");
+            txnCane.append('id', response.data.stock.id);
+            txnCane.append('flag', 'stockBulkSugarFromCane');
+            UserService.addLogisticsTransactionHash(txnCane);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+        } else {
+          try{
+            const txnRS = new FormData();
+            let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
+            let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, jsonLogistic, 'normal', dateString)
+              txnRS.append('transaction', transactionRS.hash);
+              txnRS.append('wallet', transactionRS.from);
+              setHash(transactionRS.hash);
+            await transactionRS.wait()
 
-      //   if(catchErr) {
-      //     setLoading(false);
-      //     console.log(catchErr);
-      //   } else {
-      //     setLoading(false);
-      //     showResults("Dimasukkan");
-      //   }
+            txnRS.append('id', response.data.stock.id);
+            txnRS.append('flag', 'stockBulkSugarFromRs');
+            UserService.addLogisticsTransactionHash(txnRS);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+        }
+
+        // input stok
+        if(response.data.stok) {
+          try{
+            const updateDataStock = new FormData();
+            let contractStok = new ethers.Contract(contractAddressSTOCK, AddStock, signer)
+            let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
+              setHash(transactionStok.hash);
+              updateDataStock.append('transaction', transactionStok.hash);
+              updateDataStock.append('wallet', transactionStok.from);
+            await transactionStok.wait()
+
+            updateDataStock.append('id', response.data.stok.id);
+            updateDataStock.append('flag', 'Stock');
+            UserService.addStockTransactionHash(updateDataStock);
+            setHash("");
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+        }
+        // end input stok
+
+        setHash("");
+
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Data Berhasil Dimasukkan");
+        }
       },
         (error) => {
       }

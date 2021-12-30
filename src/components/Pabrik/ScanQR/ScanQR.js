@@ -106,13 +106,13 @@ export default class ScanQR extends Component {
                 <strong>Total Volume:</strong> {this.state.sugar === 'cane' ? this.state.sales.mount_sugar_sold_cane : this.state.sales.mount_sugar_rs} Kwintal
               </p>
               <p>
-                <strong>buy date :</strong> {this.state.sales.date}
+                <strong>buy date:</strong> {this.state.sales.date}
               </p>
               <p>
-                <strong>date processed :</strong> {this.state.sales.created_at}
+                <strong>date processed:</strong> {this.state.sales.created_at}
               </p>
               <p>
-                <strong>Blockchain Hash :</strong> -
+                <strong>Blockchain Hash:</strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + this.state.sales.transaction_hash} > {this.state.sales.transaction_hash} </a>
               </p>
 
               <hr
@@ -235,7 +235,7 @@ export default class ScanQR extends Component {
                           <strong>Date Process :</strong> {this.state.prosesProduk[index].created_at}
                         </p>
                         <p>
-                          <strong>Blockchain Hash :</strong> -
+                          <strong>Blockchain Hash :</strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + this.state.prosesProduk[index].transaction_hash} > {this.state.prosesProduk[index].transaction_hash} </a>
                         </p>
 
                         <hr
@@ -338,7 +338,7 @@ export default class ScanQR extends Component {
                           <strong>Date Process :</strong> {value.created_at}
                         </p>
                         <p>
-                          <strong>Blockchain Hash :</strong> -
+                          <strong>Blockchain Hash :</strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + value.transaction_hash} > {value.transaction_hash} </a>
                         </p>
 
                         <hr

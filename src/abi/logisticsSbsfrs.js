@@ -20,14 +20,16 @@ export const AddLogistics = [
           "type": "uint256"
         },
         {
-          "internalType": "string",
-          "name": "date",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "volume",
-          "type": "string"
+          "components": [
+            {
+              "internalType": "string",
+              "name": "json",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct AddLogisticsSbsfrs.Json",
+          "name": "json",
+          "type": "tuple"
         },
         {
           "internalType": "string",
@@ -66,14 +68,16 @@ export const AddLogistics = [
               "type": "uint256"
             },
             {
-              "internalType": "string",
-              "name": "date",
-              "type": "string"
-            },
-            {
-              "internalType": "string",
-              "name": "volume",
-              "type": "string"
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "json",
+                  "type": "string"
+                }
+              ],
+              "internalType": "struct AddLogisticsSbsfrs.Json",
+              "name": "json",
+              "type": "tuple"
             },
             {
               "internalType": "string",
@@ -109,12 +113,7 @@ export const AddLogistics = [
         },
         {
           "internalType": "string",
-          "name": "date",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "volume",
+          "name": "json",
           "type": "string"
         },
         {
@@ -128,9 +127,68 @@ export const AddLogistics = [
           "type": "string"
         }
       ],
-      "name": "addLogisticsSbsfrs",
+      "name": "addLogisticsSbsfc",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "sbsfrsid",
+          "type": "uint256"
+        }
+      ],
+      "name": "detailLogisticSBSFRS",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "walletAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "sbsfrsid",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "json",
+                  "type": "string"
+                }
+              ],
+              "internalType": "struct AddLogisticsSbsfrs.Json",
+              "name": "json",
+              "type": "tuple"
+            },
+            {
+              "internalType": "string",
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "created",
+              "type": "string"
+            },
+            {
+              "internalType": "bool",
+              "name": "init",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct AddLogisticsSbsfrs.LogisticsSbsfrs",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     }
   ]

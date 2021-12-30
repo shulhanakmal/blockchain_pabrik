@@ -5,15 +5,19 @@ pragma experimental ABIEncoderV2;
 contract AddProductionPrs {
 
     mapping (uint => ProductionPrs) prs;
+    mapping (uint => ProductionPrs) private productionMapping;
 
     struct ProductionPrs {
         address walletAddress;
         uint prsid;
-        string date;
-        string volume;
+        Json json;
         string status;
         string created;
         bool init;
+    }
+
+    struct Json {
+        string json;
     }
 
     ProductionPrs[] public arr;
@@ -21,8 +25,12 @@ contract AddProductionPrs {
     function getAllData() public view returns (ProductionPrs[] memory) {
         return arr;
     }
-    function addProductionPrs(uint prsid, string memory date, string memory volume, string memory status, string memory created) public {   
-        ProductionPrs memory _productionprs = ProductionPrs(msg.sender, prsid, date, volume, status, created, true);
+    function addProductionPrs(uint prsid, string memory json, string memory status, string memory created) public {
+        ProductionPrs memory _productionprs = ProductionPrs(msg.sender, prsid, Json(json), status, created, true);
+        productionMapping[_productionprs.prsid] = _productionprs;
         arr.push(_productionprs);
+    }
+    function detailProductionPRS(uint prsid) public view returns (ProductionPrs memory)  {
+        return (productionMapping[prsid]);
     }
 }

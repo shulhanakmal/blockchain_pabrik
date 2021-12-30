@@ -101,12 +101,56 @@ const DaftarSales = () => {
     const volume = values.volume;
     UserService.addSales(formData).then(
       async (response) => {
+        setLoading(true);
 
         console.log("CEK RESPONSE DATANYA MAL :", response);
 
+        const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
+        const jsonLogistickOut = JSON.stringify(response.data.logistik, null, 4).replace(/[",\\]]/g, "")
+
+        const web3Modal = new Web3Modal();
+        const connection = await web3Modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
+// input sales into blockchain
+          try{
+            const updateData = new FormData();
+            let contract = new ethers.Contract(contractAddress, AddSales, signer)
+            let transaction = await contract.addSales(response.data.data.id, json, 'normal', dateString)
+              updateData.append('transaction', transaction.hash);
+              updateData.append('wallet', transaction.from);
+              setHash(transaction.hash);
+            await transaction.wait()
+
+            updateData.append('id', response.data.data.id);
+            UserService.addSalesTransactionHash(updateData);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+// end sales
+
+// input logistik sobs into blockchain
+          try{
+            const updateDataL = new FormData();
+            let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
+            let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, jsonLogistickOut, 'normal', dateString)
+              updateDataL.append('transaction', transactionL.hash);
+              updateDataL.append('wallet', transactionL.from);
+              setHash(transactionL.hash);
+            await transactionL.wait()
+
+            updateDataL.append('id', response.data.logistik.id);
+            updateDataL.append('flag', 'stockOutBulkSugar');
+            UserService.addLogisticsTransactionHash(updateDataL);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+// end input sobs
+
         const salesId = response.data.data.id;
-        // const docNumber = response.data.data.no_do;
-        // const linkQRCode = "http://127.0.0.1:3000/detailProduk/" + product_id;
         const linkQRCode =
           process.env.REACT_APP_PROD_URL +
           "detailProduk/" +
@@ -129,60 +173,16 @@ const DaftarSales = () => {
 
         UserService.pushQRCodeImage(salesId, formDataQR);
 
-        showResults("Data berhasil dimasukan");
+        if(catchErr) {
+          setLoading(false);
+          console.log(catchErr);
+        } else {
+          setLoading(false);
+          showResults("Data berhasil dimasukan");
+        }
+        setHash("");
+        setLoading(false);
 
-        // setLoading(false);
-
-        // const web3Modal = new Web3Modal();
-        // const connection = await web3Modal.connect();
-        // const provider = new ethers.providers.Web3Provider(connection);
-        // const signer = provider.getSigner();
-
-        // // input sales
-        //   try{
-        //     const updateData = new FormData();
-        //     let contract = new ethers.Contract(contractAddress, AddSales, signer)
-        //     let transaction = await contract.addSales(response.data.data.id, response.data.data.date, response.data.data.no_do, response.data.data.buyer, response.data.data.price, sugar, volume, 'normal')
-        //       updateData.append('transaction', transaction.hash);
-        //       updateData.append('wallet', transaction.from);
-        //       setHash(transaction.hash);
-        //     await transaction.wait()
-
-        //     updateData.append('id', response.data.data.id);
-        //     UserService.addSalesTransactionHash(updateData);
-        //   } catch(e) {
-        //     console.log(e);
-        //     setErr(true);
-        //   }
-        // // end sales
-
-        // // input logistik sobs
-        //   try{
-        //     const updateDataL = new FormData();
-        //     let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
-        //     let transactionL = await contractL.addLogisticsSobs(response.data.logistik.id, response.data.logistik.date, response.data.logistik.volume, response.data.logistik.sugar, 'normal', dateString)
-        //       updateDataL.append('transaction', transactionL.hash);
-        //       updateDataL.append('wallet', transactionL.from);
-        //       setHash(transactionL.hash);
-        //     await transactionL.wait()
-
-        //     updateDataL.append('id', response.data.logistik.id);
-        //     updateDataL.append('flag', 'stockOutBulkSugar');
-        //     UserService.addLogisticsTransactionHash(updateDataL);
-        //   } catch(e) {
-        //     console.log(e);
-        //     setErr(true);
-        //   }
-        // // end input sobs
-
-        // if(catchErr) {
-        //   setLoading(false);
-        //   console.log(catchErr);
-        // } else {
-        //   setLoading(false);
-        //   showResults("Dimasukkan");
-        // }
-        // setHash("");
       },
       (error) => {
       }
@@ -198,33 +198,33 @@ const DaftarSales = () => {
       {(() => {
         if (loading === true) {
           return (
-            <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
-              <div className="sweet-loading">
-                <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
-                {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
-                <br></br>
-                <Loader color={color} loading={loading} css={override} size={150} />
-                <br></br>
-                <br></br>
-                <h5>Mohon Tunggu...</h5>
+            <>
+              <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+                <div className="sweet-loading">
+                  <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                  {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
+                  <br></br>
+                  <Loader color={color} loading={loading} css={override} size={150} />
+                  <br></br>
+                  <br></br>
+                  <h5>Mohon Tunggu...</h5>
+                </div>
               </div>
-            </div>
+              <div style={{ visibility: "hidden" }}>
+                {qr ? (
+                  <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+                ) : (
+                  <p>No QR code preview</p>
+                )}
+              </div>
+            </>
           )
         } else {
           return (
-            <>
             <DaftarSalesForm 
               onSubmit={handleSubmit} 
               onSelectDate={handleDate}
             />
-            <div style={{ visibility: "hidden" }}>
-              {qr ? (
-                <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
-              ) : (
-                <p>No QR code preview</p>
-              )}
-            </div>
-            </>
           )
         }
       })()}

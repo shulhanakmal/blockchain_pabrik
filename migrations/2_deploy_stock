@@ -1,5 +1,0 @@
-const AddStok = artifacts.require("AddStok");
-
-module.exports = function(deployer) {
- deployer.deploy(AddStok);
-};

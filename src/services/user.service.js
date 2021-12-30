@@ -265,6 +265,13 @@ class UserService {
   getDataForAddMitra(flag, dataId) {
     return axios.get(API_URL + "get-data-for-mitra/"+ flag + "/" + dataId, { headers: authHeader() });
   }
+
+  addStockTransactionHash(raw) {
+    return axios.post(API_URL + "add-transaction-hash-stock", raw, {
+      headers: authHeader(),
+    });
+  }
+
 }
 
 export default new UserService();

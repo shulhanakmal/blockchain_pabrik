@@ -43,43 +43,41 @@ const DaftarStockOutBulkSugarForm = (props) => {
               </CRow>
             </CCardHeader>
             <CCardBody>
-              <CForm action="" method="post">
-                <CFormGroup>
-                  <CLabel htmlFor="nf-date">Date</CLabel>
-                  <DatePicker
-                    selected={tgl}
-                    className="textInput pabrik"
-                    onChange={(date) => setStartDate(date)}
-                    maxDate={new Date()}
-                    dateFormat="dd/MM/yyyy"
-                    name="date"
-                    placeholderText="Select a date"
-                  />
-                </CFormGroup>
-                <CFormGroup>
-                  <CLabel htmlFor="nf-namaJenis">Sugar</CLabel>
-                  <Field
-                    className="textInput pabrik"
-                    name="sugar"
-                    component="select"
-                  >
-                    <option value="">Please Select Sugar</option>
-                    <option value="cane">Sugar Cane</option>
-                    <option value="rs">Raw Sugar</option>
-                  </Field>
-                </CFormGroup>
-                <CFormGroup>
-                  <CLabel htmlFor="nf-namaJenis">Volume (kwintal)</CLabel>
-                  <Field
-                    className="textInput pabrik number"
-                    name="volume"
-                    id="volume"
-                    component="input"
-                    type="number"
-                    placeholder="Input volume"
-                  />
-                </CFormGroup>
-              </CForm>
+              <CFormGroup>
+                <CLabel htmlFor="nf-date">Date</CLabel>
+                <DatePicker
+                  selected={tgl}
+                  className="textInput pabrik"
+                  onChange={(date) => setStartDate(date)}
+                  maxDate={new Date()}
+                  dateFormat="dd/MM/yyyy"
+                  name="date"
+                  placeholderText="Select a date"
+                />
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="nf-namaJenis">Sugar</CLabel>
+                <Field
+                  className="textInput pabrik"
+                  name="sugar"
+                  component="select"
+                >
+                  <option value="">Please Select Sugar</option>
+                  <option value="cane">Sugar Cane</option>
+                  <option value="rs">Raw Sugar</option>
+                </Field>
+              </CFormGroup>
+              <CFormGroup>
+                <CLabel htmlFor="nf-namaJenis">Volume (kwintal)</CLabel>
+                <Field
+                  className="textInput pabrik number"
+                  name="volume"
+                  id="volume"
+                  component="input"
+                  type="number"
+                  placeholder="Input volume"
+                />
+              </CFormGroup>
             </CCardBody>
             <CCardFooter>
               <CButton type="submit" size="sm" color="primary">

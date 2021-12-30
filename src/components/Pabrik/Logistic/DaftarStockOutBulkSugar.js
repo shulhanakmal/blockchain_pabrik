@@ -8,6 +8,7 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import { ethers } from 'ethers';
 import { AddLogistics } from "../../../abi/logisticsSobs";
+import { AddStock } from "../../../abi/addStock";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
 
@@ -75,6 +76,9 @@ const DaftarLogistic = () => {
     UserService.addLogistic(formData).then(
       async (response) => {
 
+        const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
+        const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
+
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
@@ -84,7 +88,7 @@ const DaftarLogistic = () => {
         try{
           const updateData = new FormData();
           let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
-          let transaction = await contract.addLogisticsSobs(response.data.data.id, response.data.data.date, response.data.data.volume, response.data.data.sugar, 'normal', dateString)
+          let transaction = await contract.addLogisticsSobs(response.data.data.id, json, 'normal', dateString)
             updateData.append('transaction', transaction.hash);
             updateData.append('wallet', transaction.from);
             setHash(transaction.hash);
@@ -100,12 +104,34 @@ const DaftarLogistic = () => {
         }
         // end input sobs
 
+        // input stok
+        if(response.data.stok) {
+          try{
+            const updateDataStock = new FormData();
+            let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
+            let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
+              setHash(transactionStok.hash);
+              updateDataStock.append('transaction', transactionStok.hash);
+              updateDataStock.append('wallet', transactionStok.from);
+            await transactionStok.wait()
+
+            updateDataStock.append('id', response.data.stok.id);
+            updateDataStock.append('flag', 'Stock');
+            UserService.addStockTransactionHash(updateDataStock);
+            setHash("");
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+        }
+        // end input stok
+
         if(catchErr) {
           setLoading(false);
           console.log(catchErr);
         } else {
           setLoading(false);
-          showResults("Dimasukkan");
+          showResults("Data Berhasil Dimasukkan");
         }
       },
       (error) => {
