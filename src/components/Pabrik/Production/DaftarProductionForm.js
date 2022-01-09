@@ -159,7 +159,7 @@ const DaftarProductionForm = (props) => {
               })()}
 
               {(() => {
-                if((props.PRSID || props.PRSID === 0) || (props.SFRSID || props.SFRSID === 0)) {
+                if((props.PRSID || props.PRSID === 0) || (props.SFRSID || props.SFRSID === 0) || (props.SCID || props.SCID === 0)) {
                   console.log('RAW SUGAR');
                   return(
                     <CFormGroup>

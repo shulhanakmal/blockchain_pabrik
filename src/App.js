@@ -31,6 +31,7 @@ import ListMitraPetani from "./components/ListMitraTani";
 import AddMitraTani from "./components/AddMitraTani";
 import DetailMitraTani from "./components/DetailMitraTani";
 import DetailMitraTaniView from "./components/Pabrik/ScanQR/MitraTani";
+import DetailReturn from "./components/Pabrik/Logistic/DetailReturn";
 import SummarySales from "./components/Pabrik/Sales/SummarySales";
 import EditSales from "./components/Pabrik/Sales/EditSales";
 import Sales from "./components/Pabrik/Sales/Sales";
@@ -165,6 +166,7 @@ class App extends Component {
         <Route path="/Detail-mitra-petani-view/:id" exact component={DetailMitraTaniView} />
         <Route path="/Add-mitra-petani" exact component={AddMitraTani} />
         <Route path="/detailProduk/:sugar/:salesDoc" exact component={GetIDScan} />
+        <Route path="/detailReturn/:dok" exact component={DetailReturn} />
       </Router>
     );
   }

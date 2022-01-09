@@ -343,10 +343,10 @@ export default class ListLogistic extends Component {
     ;
 
     const StockBulkSugarFromCane = [
-      { key: "date", label: "Date", _style: { width: "40%" } },
+      { key: "date", label: "Date"},
       // { key: "volume", label: "Volume", _style: { width: "30%" } },
-      { key: "product_id", label: "Product", _style: { width: "20%" } },
-      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
+      { key: "product_id", label: "Product"},
+      { key: "show_volume", label: "Volume"},
       {
         key: "show_details",
         label: "",
@@ -355,10 +355,10 @@ export default class ListLogistic extends Component {
       },
     ];
     const StockBulkSugarFromRS = [
-      { key: "date", label: "Date", _style: { width: "40%" } },
+      { key: "date", label: "Date"},
       // { key: "volume", label: "Volume", _style: { width: "30%" } },
-      { key: "product_id", label: "Product", _style: { width: "20%" } },
-      { key: "show_volume", label: "Volume", _style: { width: "30%" } },
+      { key: "product_id", label: "Product"},
+      { key: "show_volume", label: "Volume"},
       {
         key: "show_details",
         label: "",
@@ -367,9 +367,9 @@ export default class ListLogistic extends Component {
       },
     ];
     const StockOutBulkSugar = [
-      { key: "date", label: "Date", _style: { width: "35%" } },
-      { key: "volume", label: "Volume", _style: { width: "20%" } },
-      { key: "sugar", label: "Sugar", _style: { width: "35%" } },
+      { key: "date", label: "Date"},
+      { key: "volume", label: "Volume"},
+      { key: "sugar", label: "Sugar"},
       {
         key: "show_details",
         label: "",
@@ -379,9 +379,9 @@ export default class ListLogistic extends Component {
     ];
     // const sugarFromRS = [
     const ReturnBulkSugar = [
-      { key: "date", label: "Date", _style: { width: "35%" } },
-      { key: "volume", label: "Volume", _style: { width: "20%" } },
-      { key: "sugar", label: "Sugar", _style: { width: "35%" } },
+      { key: "date", label: "Date"},
+      { key: "volume", label: "Volume"},
+      { key: "sugar", label: "Sugar"},
       {
         key: "show_details",
         label: "",
@@ -499,12 +499,25 @@ export default class ListLogistic extends Component {
                                             );
                                           },
                                           show_details: (item) => {
-                                            return (
-                                              <td className="py-2">
-                                                {/* <CButton size="sm" color="info" to={`/Logistic/edit/sbsfc/${item.id}`}>Edit</CButton> */}
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFC(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
-                                              </td>
-                                            );
+                                            if(item.no_do) {
+                                              let nodo = item.no_do.replaceAll("/", "_")
+                                              return (
+                                                <td className="py-2" >
+                                                  {/* <CButton size="sm" color="info" to={`/Logistic/edit/return/${item.id}`}>Edit</CButton> */}
+                                                  <CRow>
+                                                    <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFC(item)} style={{ backgroundColor: "#e2602c" }} >Delete</CButton> {" "}
+                                                    <CButton size="sm" color="warning" className="ml-1" to={`detailReturn/${nodo}`} style={{ color: "white" }} >Check</CButton>
+                                                  </CRow>
+                                                </td>
+                                              );
+                                            } else {
+                                              return (
+                                                <td className="py-2">
+                                                  {/* <CButton size="sm" color="info" to={`/Logistic/edit/return/${item.id}`}>Edit</CButton> */}
+                                                  <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFC(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
+                                                </td>
+                                              );
+                                            }
                                           },
                                         }}
                                       />
@@ -568,12 +581,23 @@ export default class ListLogistic extends Component {
                                             );
                                           },
                                           show_details: (item) => {
-                                            return (
-                                              <td className="py-2">
-                                                {/* <CButton size="sm" color="info" to={`/Logistic/edit/sbsfrs/${item.id}`}>Edit</CButton> */}
-                                                <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFRS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
-                                              </td>
-                                            );
+                                            if(item.no_do) {
+                                              let dok = item.no_do.replaceAll("/", "_")
+                                              return (
+                                                <td className="py-2">
+                                                  {/* <CButton size="sm" color="info" to={`/Logistic/edit/return/${item.id}`}>Edit</CButton> */}
+                                                  <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFRS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
+                                                  <CButton size="sm" color="warning" className="ml-1" to={`detailReturn/${dok}`} style={{ color: "white" }} >Check</CButton>
+                                                </td>
+                                              );
+                                            } else {
+                                              return (
+                                                <td className="py-2">
+                                                  {/* <CButton size="sm" color="info" to={`/Logistic/edit/return/${item.id}`}>Edit</CButton> */}
+                                                  <CButton size="sm" color="danger" className="ml-1" onClick={() => this.deleteSBSFRS(item)}style={{ backgroundColor: "#e2602c" }}>Delete</CButton>
+                                                </td>
+                                              );
+                                            }
                                           },
                                         }}
                                       />

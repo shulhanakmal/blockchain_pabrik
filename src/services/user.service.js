@@ -272,6 +272,10 @@ class UserService {
     });
   }
 
+  getDetailReturn(dok) {
+    return axios.get(API_URL + "get-detail-return/"+ dok, { headers: authHeader() });
+  }
+
 }
 
 export default new UserService();

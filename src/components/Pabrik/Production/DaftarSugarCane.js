@@ -50,7 +50,7 @@ const DaftarProduction = () => {
 
   const [data, setData] = useState("");
   const [productId, setProductId] = useState("");
-  const [scId, setScId] = useState(null);
+  const [scId, setScId] = useState(0);
   const [AddMitra, setAddMitra] = useState(false);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
@@ -136,8 +136,8 @@ const DaftarProduction = () => {
     // setLoading(true);
 
     if(tanggal &&
-      Vbrix &&
-      Vtras &&
+      // Vbrix &&
+      // Vtras &&
       Vicumsa &&
       Vbjb &&
       Vka
@@ -147,8 +147,12 @@ const DaftarProduction = () => {
       formData.append('product',productId);
       formData.append('date',tanggal);
       // formData.append('lama_proses',milling.target.value);
-      formData.append('brix',Vbrix.target.value);
-      formData.append('trash',Vtras.target.value);
+      if(Vbrix) {
+        formData.append('brix',Vbrix.target.value);
+      }
+      if(Vtras) {
+        formData.append('trash',Vtras.target.value);
+      }
       formData.append('icumsa',Vicumsa.target.value);
       formData.append('bjb',Vbjb.target.value);
       formData.append('ka',Vka.target.value);
