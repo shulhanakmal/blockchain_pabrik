@@ -63,10 +63,10 @@ const DetailReturn = (props) => {
                         <CCardHeader>
                             <CRow>
                                 <CCol xs={9} md={10} lg={11} style={{ margin: "auto" }}>
-                                    <h4 style={{ margin: "auto" }}>Detail Farmer Partner</h4>
+                                    <h4 style={{ margin: "auto" }}>Detail Return</h4>
                                 </CCol>
                                 <CCol>
-                                    <CButton block color="dark" to="/List-mitra-petani">
+                                    <CButton block color="dark" to="/Logistic">
                                         <span style={{ color: "white" }}>X</span>
                                     </CButton>
                                 </CCol>
