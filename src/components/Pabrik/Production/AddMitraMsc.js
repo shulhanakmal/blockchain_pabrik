@@ -605,14 +605,6 @@ const AddMitraMsc = () => {
               }
               // end insert logistik
 
-              if(catchErr) {
-                setLoading(false);
-                console.log(catchErr);
-              } else {
-                setLoading(false);
-                showResults("Dimasukkan");
-              }
-
               // input stok
               if(response.data.stok) {
                 try{
@@ -634,6 +626,14 @@ const AddMitraMsc = () => {
                 }
               }
               // end input stok
+
+              if(catchErr) {
+                setLoading(false);
+                console.log(catchErr);
+              } else {
+                setLoading(false);
+                showResults("Data Berhasil Dimasukkan");
+              }
 
             } else {
               showResults("Data Tidak Berhasil Ditulis Ke Blockchain");

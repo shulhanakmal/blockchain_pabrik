@@ -9,6 +9,7 @@ import Web3Modal from "web3modal";
 import { ethers } from 'ethers';
 import { AddSales } from "../../../abi/sales";
 import { AddLogistics } from "../../../abi/logisticsSobs";
+import { AddStock } from "../../../abi/addStock";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
 
@@ -50,6 +51,7 @@ const DaftarSales = () => {
   const web3 = new Web3(provider);
   const contractAddress = process.env.REACT_APP_ADDRESS_SALES;
   const contractAddressLogistics = process.env.REACT_APP_ADDRESS_SOBS;
+  const contractAddressStock = process.env.REACT_APP_ADDRESS_STOCK;
 
   provider.engine.stop();
 
@@ -107,6 +109,7 @@ const DaftarSales = () => {
 
         const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
         const jsonLogistickOut = JSON.stringify(response.data.logistik, null, 4).replace(/[",\\]]/g, "")
+        const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
 
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
@@ -149,6 +152,25 @@ const DaftarSales = () => {
             setErr(true);
           }
 // end input sobs
+
+// input stok into blockchain
+          try{
+            const updateDataStok = new FormData();
+            let contractStok = new ethers.Contract(contractAddressStock, AddStock, signer)
+            let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
+              updateDataStok.append('transaction', transactionStok.hash);
+              updateDataStok.append('wallet', transactionStok.from);
+              setHash(transactionStok.hash);
+            await transactionStok.wait()
+
+            updateDataStok.append('id', response.data.stok.id);
+            updateDataStok.append('flag', 'Stock');
+            UserService.addStockTransactionHash(updateDataStok);
+          } catch(e) {
+            console.log(e);
+            setErr(true);
+          }
+// end input stok
 
         const salesId = response.data.data.id;
         const linkQRCode =

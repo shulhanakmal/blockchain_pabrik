@@ -127,7 +127,7 @@ export const AddLogistics = [
           "type": "string"
         }
       ],
-      "name": "addLogisticsSbsfc",
+      "name": "addLogisticsSbsfrs",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

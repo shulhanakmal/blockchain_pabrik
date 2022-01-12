@@ -163,7 +163,7 @@ const AddMitraMscForm = (props) => {
               }
             })()}
             <CFormGroup>
-                <CLabel htmlFor="selectBeanMultiple"> Volume Milled Sugar Cane </CLabel>
+                <CLabel htmlFor="selectBeanMultiple"> Volume (Kwintal) </CLabel>
                 <Field
                   id={index}
                   className="textInput pabrik"

@@ -22,6 +22,7 @@ import {
   CChartLine,
 } from '@coreui/react-chartjs'
 import UserService from "../../../services/user.service";
+import moment from 'moment';
 
 export default class Dashboard extends Component {
   constructor(props) {
@@ -76,9 +77,10 @@ export default class Dashboard extends Component {
   render() {
     const productionData = [
       // { key: "user", label: "User", _style: { width: "20%" } },
-      { key: "wallet", label: "Wallet", _style: { width: "25%" } },
-      { key: "jenis_transaksi", label: "transaksi", _style: { width: "20%" } },
-      { key: "transaksi_hash", label: "transaksi Hash", _style: { width: "25%" } },
+      { key: "wallet", label: "Wallet"},
+      { key: "jenis_transaksi", label: "transaksi"},
+      { key: "transaksi_hash", label: "transaksi Hash"},
+      { key: "created_at", label: "Created"},
       {
         key: "show_details",
         label: "",
@@ -88,9 +90,10 @@ export default class Dashboard extends Component {
     ];
     const logisticsData = [
       // { key: "user", label: "User", _style: { width: "20%" } },
-      { key: "wallet", label: "Wallet", _style: { width: "25%" } },
-      { key: "jenis_transaksi", label: "transaksi", _style: { width: "20%" } },
-      { key: "transaksi_hash", label: "transaksi Hash", _style: { width: "25%" } },
+      { key: "wallet", label: "Wallet"},
+      { key: "jenis_transaksi", label: "transaksi"},
+      { key: "transaksi_hash", label: "transaksi Hash"},
+      { key: "created_at", label: "Created"},
       {
         key: "show_details",
         label: "",
@@ -100,9 +103,10 @@ export default class Dashboard extends Component {
     ];
     const salesData = [
       // { key: "user", label: "User", _style: { width: "20%" } },
-      { key: "wallet", label: "Wallet", _style: { width: "25%" } },
-      { key: "jenis_transaksi", label: "transaksi", _style: { width: "20%" } },
-      { key: "transaksi_hash", label: "transaksi Hash", _style: { width: "25%" } },
+      { key: "wallet", label: "Wallet"},
+      { key: "jenis_transaksi", label: "transaksi"},
+      { key: "transaksi_hash", label: "transaksi Hash"},
+      { key: "created_at", label: "Created"},
       {
         key: "show_details",
         label: "",
@@ -200,8 +204,20 @@ export default class Dashboard extends Component {
                               items={this.state.content.productionData}
                               fields={productionData}
                               itemsPerPage={10}
+                              tableFilter
+                              cleaner
+                              itemsPerPageSelect
+                              hover
+                              sorter
                               pagination
                               scopedSlots={{
+                                created_at: (item) => {
+                                  return (
+                                    <td className="py-2" align="center">
+                                      {moment(item.created_at).format('DD/MM/YYYY HH:mm')}
+                                    </td>
+                                  );
+                                },
                                 show_details: (item) => {
                                   return (
                                     <td className="py-2" align="center">
@@ -282,8 +298,20 @@ export default class Dashboard extends Component {
                               items={this.state.content.logisticsData}
                               fields={logisticsData}
                               itemsPerPage={10}
+                              tableFilter
+                              cleaner
+                              itemsPerPageSelect
+                              hover
+                              sorter
                               pagination
                               scopedSlots={{
+                                created_at: (item) => {
+                                  return (
+                                    <td className="py-2" align="center">
+                                      {moment(item.created_at).format('DD/MM/YYYY HH:mm')}
+                                    </td>
+                                  );
+                                },
                                 show_details: (item) => {
                                   return (
                                     <td className="py-2" align="center">
@@ -341,8 +369,20 @@ export default class Dashboard extends Component {
                               items={this.state.content.salesData}
                               fields={salesData}
                               itemsPerPage={10}
+                              tableFilter
+                              cleaner
+                              itemsPerPageSelect
+                              hover
+                              sorter
                               pagination
                               scopedSlots={{
+                                created_at: (item) => {
+                                  return (
+                                    <td className="py-2" align="center">
+                                      {moment(item.created_at).format('DD/MM/YYYY HH:mm')}
+                                    </td>
+                                  );
+                                },
                                 show_details: (item) => {
                                   return (
                                     <td className="py-2" align="center">
