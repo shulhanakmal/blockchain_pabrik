@@ -33,4 +33,4 @@ contract AddSales {
     function detailSales(uint salesid) public view returns (Sales memory)  {
         return (salesMapping[salesid]);
     }
-}
+} 

@@ -33,4 +33,4 @@ contract AddProductionSfrs {
     function detailProductionSFRS(uint sfrsid) public view returns (ProductionSfrs memory)  {
         return (productionMapping[sfrsid]);
     }
-}
+} 

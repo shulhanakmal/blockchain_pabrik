@@ -33,4 +33,4 @@ contract AddProductionSfc {
     function detailProductionSFC(uint scid) public view returns (ProductionSfc memory)  {
         return (productionMapping[scid]);
     }
-}
+} 

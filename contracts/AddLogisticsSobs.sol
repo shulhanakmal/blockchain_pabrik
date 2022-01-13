@@ -33,4 +33,4 @@ contract AddLogisticsSobs {
     function detailLogisticSOBS(uint sobsid) public view returns (LogisticsSobs memory)  {
         return (logisticMapping[sobsid]);
     }
-}
+} 

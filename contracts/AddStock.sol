@@ -33,4 +33,4 @@ contract AddStock {
     function detailStock(uint stockid) public view returns (Stock memory)  {
         return (stockMapping[stockid]);
     }
-}
+} 

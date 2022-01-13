@@ -33,4 +33,4 @@ contract AddLogisticsSbsfc {
     function detailLogisticSBSFC(uint sbsfcid) public view returns (LogisticsSbsfc memory)  {
         return (logisticMapping[sbsfcid]);
     }
-}
+} 

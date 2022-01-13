@@ -33,4 +33,4 @@ contract AddLogisticsSbsfrs {
     function detailLogisticSBSFRS(uint sbsfrsid) public view returns (LogisticsSbsfrs memory)  {
         return (logisticMapping[sbsfrsid]);
     }
-}
+} 

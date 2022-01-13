@@ -33,4 +33,4 @@ contract AddProductionMsc {
     function detailProductionMSC(uint mscid) public view returns (ProductionMsc memory)  {
         return (productionMapping[mscid]);
     }
-}
+} 

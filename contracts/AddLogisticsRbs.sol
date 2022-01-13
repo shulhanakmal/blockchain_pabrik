@@ -33,4 +33,4 @@ contract AddLogisticsRbs {
     function detailLogisticRBS(uint rbsid) public view returns (LogisticsRbs memory)  {
         return (logisticMapping[rbsid]);
     }
-}
+} 
