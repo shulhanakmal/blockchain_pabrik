@@ -76,7 +76,7 @@ export default class ScanQR extends Component {
       return (
         <Fragment>
           <CRow>
-            <CCol xs="2" lg="5">
+            <CCol xs="2" lg="2">
               <h1
                 style={{
                   transform: "rotate(180deg)",
@@ -88,8 +88,23 @@ export default class ScanQR extends Component {
               >
                 <strong>Sales</strong>
               </h1>
+
             </CCol>
-            <CCol xs="10" lg="7">
+            <CCol xs="2" lg="3">
+              <CImg
+                  src={process.env.REACT_APP_BACKEND_URL +'images/scan/Image-01.png'}
+                  style={{
+                    textAlign: "center",
+                    transformOrigin: "20% 80%",
+                    height: "100px",
+                    width: "100px",
+                    marginTop: "40px",
+                  }}
+                  // className="d-block w-100"
+                  // alt={this.state.product.product_id}
+                />
+            </CCol>
+            <CCol xs="8" lg="7">
               <p>
                 <strong>Document Number:</strong> {this.state.sales.no_do}
               </p>
@@ -127,7 +142,7 @@ export default class ScanQR extends Component {
           </CRow>
 
           <CRow style={{ marginTop: "40px" }}>
-            <CCol xs="2" lg="5">
+            <CCol xs="2" lg="2">
               <h1
                 style={{
                   transform: "rotate(180deg)",
@@ -140,7 +155,21 @@ export default class ScanQR extends Component {
                 <strong>Process</strong>
               </h1>
             </CCol>
-            <CCol xs="10" lg="7">
+            <CCol xs="2" lg="3">
+              <CImg
+                  src={process.env.REACT_APP_BACKEND_URL +'images/scan/Image-02.png'}
+                  style={{
+                    textAlign: "center",
+                    transformOrigin: "20% 80%",
+                    height: "100px",
+                    width: "100px",
+                    marginTop: "40px",
+                  }}
+                  // className="d-block w-100"
+                  // alt={this.state.product.product_id}
+                />
+            </CCol>
+            <CCol xs="8" lg="7">
             {/* loop produk */}
             {(() => {
                 if (this.state.prosesProduk.length > 1) {
@@ -359,7 +388,7 @@ export default class ScanQR extends Component {
           </CRow>
 
           <CRow style={{ marginTop: "40px" }}>
-            <CCol xs="2" lg="5">
+            <CCol xs="2" lg="2">
               <h1
                 style={{
                   transform: "rotate(180deg)",
@@ -373,7 +402,21 @@ export default class ScanQR extends Component {
                 <strong>Product</strong>
               </h1>
             </CCol>
-            <CCol xs="10" lg="7">
+            <CCol xs="2" lg="3">
+              <CImg
+                  src={process.env.REACT_APP_BACKEND_URL +'images/scan/Image-04.png'}
+                  style={{
+                    textAlign: "center",
+                    transformOrigin: "20% 80%",
+                    height: "100px",
+                    width: "100px",
+                    marginTop: "40px",
+                  }}
+                  // className="d-block w-100"
+                  // alt={this.state.product.product_id}
+                />
+            </CCol>
+            <CCol xs="8" lg="7">
               {/* loop karena produk id bisa lebih dari 1 */}
               {(() => {
                 if (this.state.sales.get_detail.length > 0) {
