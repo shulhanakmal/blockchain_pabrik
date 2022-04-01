@@ -3,8 +3,8 @@ import authHeader from "./auth-header";
 import authHeaderImage from "./auth-header-image";
 
 // const API_URL = "http://209.97.160.154:90/api/v1/";
-// const API_URL = "http://127.0.0.1:8000/api/v2/";
-const API_URL = "http://209.97.160.154:8002/api/v2/";
+const API_URL = "http://127.0.0.1:8000/api/v2/";
+// const API_URL = "http://209.97.160.154:8002/api/v2/";
 
 class UserService {
   getPublicContent() {
@@ -237,6 +237,12 @@ class UserService {
 
   AddLokasiKebun(raw) {
     return axios.post(API_URL + "add-lokasi-kebun", raw, { 
+      headers: authHeader() 
+    });
+  }
+
+  EditLokasiKebun(lahanId, raw) {
+    return axios.post(API_URL + "edit-lokasi-kebun/" + lahanId, raw, { 
       headers: authHeader() 
     });
   }

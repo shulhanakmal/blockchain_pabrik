@@ -25,6 +25,7 @@ import ScanQR from "./components/Pabrik/ScanQR/ScanQR";
 import RequestData from "./components/RequestData";
 import ListRequestData from "./components/ListRequestData";
 import AddLokasiKebun from "./components/AddLokasiKebun";
+import EditLokasiKebun from "./components/EditLokasiKebun";
 import LokasiKebun from "./components/LokasiKebun";
 import DetailKebun from "./components/DetailKebun";
 import ListMitraPetani from "./components/ListMitraTani";
@@ -160,6 +161,7 @@ class App extends Component {
         <Route path="/List-request-data" exact component={ListRequestData} />
         <Route path="/List-lokasi-kebun" exact component={LokasiKebun} />
         <Route path="/Add-lokasi-kebun" exact component={AddLokasiKebun} />
+        <Route path="/Edit-kebun/:id" exact component={EditLokasiKebun} />
         <Route path="/Detail-kebun/:id" exact component={DetailKebun} />
         <Route path="/List-mitra-petani" exact component={ListMitraPetani} />
         <Route path="/Detail-mitra-petani/:id" exact component={DetailMitraTani} />

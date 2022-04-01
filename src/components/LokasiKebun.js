@@ -102,7 +102,8 @@ export default class LokasiKebun extends Component {
                                         dataControl: (item) => {
                                         return (
                                           <td className="py-2">
-                                            <CButton size="sm" color="info" to={`/Detail-kebun/${item.id}`} >Detail</CButton>
+                                            <CButton size="sm" color="info" to={`/Detail-kebun/${item.id}`} >Detail</CButton> {" "}
+                                            <CButton size="sm" color="primary" to={`/Edit-kebun/${item.id}`} >Edit</CButton>
                                           </td>
                                         );
                                         },
