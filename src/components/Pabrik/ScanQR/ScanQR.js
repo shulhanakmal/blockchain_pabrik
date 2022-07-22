@@ -563,7 +563,7 @@ export default class ScanQR extends Component {
             <CCol xs="10" lg="7">
               <CCol xs="12" lg="7">
                 <CImg
-                  src={'http://209.97.160.154:8002/' + this.state.sales.qrcode}
+                  src={'http://68.183.235.127:8004/' + this.state.sales.qrcode}
                   className="d-block w-100"
                   // alt={this.state.product.product_id}
                 />

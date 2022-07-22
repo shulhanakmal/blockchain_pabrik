@@ -153,46 +153,48 @@ const DetailReturn = (props) => {
                                 <CCol xs="8" lg="7">
                                     {/* loop produk */}
                                     {produksi && produksi.map((prod, index) => {
-                                        return (
-                                            <Fragment key={index}>
-                                                <p>
-                                                    <strong>Product :</strong> {prod.product_id}
-                                                </p>
-                                                <p>
-                                                    <strong>Production Date :</strong> {moment(prod.date).format('DD-MMM-YYYY')}
-                                                </p>
-                                                <p>
-                                                    <strong>Volume :</strong> {prod.volume}
-                                                </p>
-                                                <p>
-                                                    <strong>Icumsa :</strong> {prod.icumsa}
-                                                </p>
-                                                <p>
-                                                    <strong>Berat Jenis :</strong> {prod.bjb}
-                                                </p>
-                                                <p>
-                                                    <strong>Kadar Air :</strong> {prod.ka}
-                                                </p>
-                                                <p>
-                                                    <strong>Brix :</strong> {prod.brix}
-                                                </p>
-                                                <p>
-                                                    <strong>Trash :</strong> {prod.trash}
-                                                </p>
-                                                <p>
-                                                    <strong>Blockchain Hash :</strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + prod.transaction_hash} > {prod.transaction_hash} </a>
-                                                </p>
+                                        if(prod != null) {
+                                            return (
+                                                <Fragment key={index}>
+                                                    <p>
+                                                        <strong>Product :</strong> {prod.product_id}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Production Date :</strong> {moment(prod.date).format('DD-MMM-YYYY')}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Volume :</strong> {prod.volume}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Icumsa :</strong> {prod.icumsa}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Berat Jenis :</strong> {prod.bjb}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Kadar Air :</strong> {prod.ka}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Brix :</strong> {prod.brix}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Trash :</strong> {prod.trash}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Blockchain Hash :</strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + prod.transaction_hash} > {prod.transaction_hash} </a>
+                                                    </p>
 
-                                                <hr
-                                                style={{
-                                                    marginTop: "60px",
-                                                    color: "#ffffff",
-                                                    backgroundColor: "#ffffff",
-                                                    height: 2,
-                                                }}
-                                                />
-                                            </Fragment>
-                                        )
+                                                    <hr
+                                                    style={{
+                                                        marginTop: "60px",
+                                                        color: "#ffffff",
+                                                        backgroundColor: "#ffffff",
+                                                        height: 2,
+                                                    }}
+                                                    />
+                                                </Fragment>
+                                            )
+                                        }
                                     })}
                                     {/* end loop */}
                                 </CCol>
