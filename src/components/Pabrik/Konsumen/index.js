@@ -120,7 +120,7 @@ export default class Konsumen extends Component {
                     return (
                         <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
                             <div className="sweet-loading">
-                                <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                                <h5>Loading</h5><br></br>
                                 {/* <h5>{this.state.TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + this.state.TxnHash} target="_blank" >Detail</a>}</h5> */}
                                 <br></br>
                                     <Loader color={this.state.color} loading={this.state.loading} css={override} size={150} />

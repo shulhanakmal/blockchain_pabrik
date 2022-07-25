@@ -42,6 +42,7 @@ const DaftarLogistic = () => {
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
+  const [proses, setProses] = useState(null);
 
   const [productId, setProductId] = useState("");
 
@@ -142,6 +143,7 @@ const DaftarLogistic = () => {
         const signer = provider.getSigner();
 
         // input logistik rbs
+        setProses('Return Bulk Sugar');
         try{
           const updateData = new FormData();
           console.log("CEK ADDRESS MAL :", contractAddress);
@@ -163,6 +165,7 @@ const DaftarLogistic = () => {
 
         // post ke blockchain data return ke stock (stok menambah dari return)
         if(values.sugar === 'cane'){
+          setProses('Stock Bulk Sugar From Cane');
           try{
             const txnCane = new FormData();
             let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
@@ -180,6 +183,7 @@ const DaftarLogistic = () => {
             setErr(true);
           }
         } else {
+          setProses('Stock Bulk Sugar From Raw Sugar');
           try{
             const txnRS = new FormData();
             let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
@@ -200,6 +204,7 @@ const DaftarLogistic = () => {
 
         // input stok
         if(response.data.stok) {
+          setProses('Input Stok');
           try{
             const updateDataStock = new FormData();
             let contractStok = new ethers.Contract(contractAddressSTOCK, AddStock, signer)
@@ -243,7 +248,7 @@ const DaftarLogistic = () => {
           return (
             <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
               <div className="sweet-loading">
-                <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
                 {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
                 <br></br>
                 <Loader color={color} loading={loading} css={override} size={150} />

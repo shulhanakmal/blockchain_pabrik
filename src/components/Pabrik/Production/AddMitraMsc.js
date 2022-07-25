@@ -51,6 +51,7 @@ const AddMitraMsc = () => {
   const [catchErr, setErr] = useState(false);
   const [dataId, setDataId] = useState(id);
   const [jenis, setflag] = useState(flag);
+  const [proses, setProses] = useState(null);
 
   const [produkId, setProdukId] = useState("");
 
@@ -122,6 +123,7 @@ const AddMitraMsc = () => {
           async (response) => {
 
             if(jenis === 'sbsfc') {
+
               const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
               const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
 
@@ -131,6 +133,7 @@ const AddMitraMsc = () => {
               const signer = provider.getSigner();
 
               // input logistik sbsfc
+              setProses('Stock Bulk Sugar From Cane');
               try{
                 const updateData = new FormData();
                 let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
@@ -152,6 +155,7 @@ const AddMitraMsc = () => {
 
               // input stok
                 if(response.data.stok) {
+                  setProses('Input Stok');
                   try{
                     const updateDataStock = new FormData();
                     let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
@@ -191,6 +195,7 @@ const AddMitraMsc = () => {
                 const signer = provider.getSigner();
 
                 // input logistik sbsfrs
+                setProses('Stock Bulk Sugar From Raw Sugar');
                 try{
                   const updateData = new FormData();
                   let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddSBSFRS, signer)
@@ -212,6 +217,7 @@ const AddMitraMsc = () => {
 
               // input stok
                 if(response.data.stok) {
+                  setProses('Input Stok');
                   try{
                     const updateDataStock = new FormData();
                     let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
@@ -276,10 +282,13 @@ const AddMitraMsc = () => {
               const akun = accounts[0];
 
               // input production msc
+              setProses('Milled Sugar Cane');
               try{
                 const updateData = new FormData();
                 let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddMSC, signer)
-                let transaction = await contract.addProductionMsc(response.data.data.id, json, 'normal', dateString)
+                let transaction = await contract.addProductionMsc(response.data.data.id, json, 'normal', dateString, {
+                  gasLimit: 5500000,
+                })
                   updateData.append('transaction', transaction.hash);
                   updateData.append('wallet', transaction.from);
                   setHash(transaction.hash);
@@ -296,10 +305,13 @@ const AddMitraMsc = () => {
               // end input msc
 
               // input sugar cane
+              setProses('Sugar Cane');
               try{
                 const updateDataInput = new FormData();
                 let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddSFC, signer)
-                let transactionSC = await contractSC.addProductionSfc(response.data.input.id, jsonInput, 'normal', dateString)
+                let transactionSC = await contractSC.addProductionSfc(response.data.input.id, jsonInput, 'normal', dateString, {
+                  gasLimit: 5500000,
+                })
                   updateDataInput.append('transaction', transactionSC.hash);
                   updateDataInput.append('wallet', transactionSC.from);
                   setHash(transactionSC.hash);
@@ -316,10 +328,13 @@ const AddMitraMsc = () => {
               // end input sugar cane
 
               // input logistik cane
+              setProses('Stack Bulk Sugar From Cane');
               try{
                 const updateDataLogistik = new FormData();
                 let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
-                let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, jsonLogistik, 'normal', dateString)
+                let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, jsonLogistik, 'normal', dateString, {
+                  gasLimit: 5500000,
+                })
                   setHash(transactionL.hash);
                   updateDataLogistik.append('transaction', transactionL.hash);
                   updateDataLogistik.append('wallet', transactionL.from);
@@ -338,9 +353,12 @@ const AddMitraMsc = () => {
               // input stok
               if(response.data.stok) {
                 try{
+                  setProses('Input Stok');
                   const updateDataStock = new FormData();
                   let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                  let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
+                  let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString, {
+                    gasLimit: 5500000,
+                  })
                     setHash(transactionStok.hash);
                     updateDataStock.append('transaction', transactionStok.hash);
                     updateDataStock.append('wallet', transactionStok.from);
@@ -366,6 +384,7 @@ const AddMitraMsc = () => {
               }
 
             } else if(jenis === 'prs') {
+
               console.log('cek response submit nih', response);
 
               const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
@@ -379,6 +398,7 @@ const AddMitraMsc = () => {
               const signer = provider.getSigner();
 
               // input production prs
+              setProses('Processed Raw Sugar');
                 try{
                   const updateData = new FormData();
                   let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, AddPRS, signer)
@@ -399,6 +419,7 @@ const AddMitraMsc = () => {
               // end insert prs
 
               // insert sugar rs
+              setProses('Sugar From Raw Sugar');
                 try{
                   const updateDataRS = new FormData();
                   let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddSFRS, signer)
@@ -419,6 +440,7 @@ const AddMitraMsc = () => {
               // end insert sugar rs
 
               // insert logistik
+              setProses('Stock Bulk Sugar From Raw Sugar');
                 try{
                   const updateDataL = new FormData();
                   let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddSBSFRS, signer)
@@ -440,6 +462,7 @@ const AddMitraMsc = () => {
 
               // input stok
               if(response.data.stok) {
+                setProses('Input Stok');
                 try{
                   const updateDataStock = new FormData();
                   let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
@@ -482,6 +505,7 @@ const AddMitraMsc = () => {
               const akun = accounts[0];
 
               // input production sc
+              setProses('Sugar Cane');
                 try{
                   const updateData = new FormData();
                   let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddSFC, signer)
@@ -502,6 +526,7 @@ const AddMitraMsc = () => {
               // end input sc
 
               // input logistik cane
+              setProses('Stock Bulk Sugar From Cane');
                 try{
                   const updateDataL = new FormData();
                   let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
@@ -523,6 +548,7 @@ const AddMitraMsc = () => {
 
               // input stok
               if(response.data.stok) {
+                setProses('Input Stock');
                 try{
                   const updateDataStock = new FormData();
                   let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
@@ -566,6 +592,7 @@ const AddMitraMsc = () => {
               const akun = accounts[0];
 
               // input sugar rs
+              setProses('Sugar From Raw Sugar');
               try{
                 const updateDataRS = new FormData();
                 let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddSFRS, signer)
@@ -586,6 +613,7 @@ const AddMitraMsc = () => {
               // end input sugar rs
 
               // input logistik
+              setProses('Stock Bulk Sugar From Raw Sugar');
               try{
                 const updateDataL = new FormData();
                 let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddSBSFRS, signer)
@@ -607,6 +635,7 @@ const AddMitraMsc = () => {
 
               // input stok
               if(response.data.stok) {
+                setProses('Input Stok');
                 try{
                   const updateDataStock = new FormData();
                   let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
@@ -660,13 +689,15 @@ const AddMitraMsc = () => {
           return (
             <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
               <div className="sweet-loading">
-                <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
                 {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
                 <br></br>
                 <Loader color={color} loading={loading} css={override} size={150} />
                 <br></br>
                 <br></br>
                 <h5>Mohon Tunggu...</h5>
+                <br></br>
+
               </div>
             </div>
           )

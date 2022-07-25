@@ -46,6 +46,7 @@ const DaftarSales = () => {
   const [account, setAccount] = useState( '' );
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
+  const [proses, setProses] = useState(null);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -117,6 +118,7 @@ const DaftarSales = () => {
         const signer = provider.getSigner();
 
 // input sales into blockchain
+        setProses('Sales');
           try{
             const updateData = new FormData();
             let contract = new ethers.Contract(contractAddress, AddSales, signer)
@@ -135,6 +137,7 @@ const DaftarSales = () => {
 // end sales
 
 // input logistik sobs into blockchain
+        setProses('Stock Out Bulk Sugar');
           try{
             const updateDataL = new FormData();
             let contractL = new ethers.Contract(contractAddressLogistics, AddLogistics, signer)
@@ -154,6 +157,7 @@ const DaftarSales = () => {
 // end input sobs
 
 // input stok into blockchain
+        setProses('Input Stok');
           try{
             const updateDataStok = new FormData();
             let contractStok = new ethers.Contract(contractAddressStock, AddStock, signer)
@@ -223,7 +227,7 @@ const DaftarSales = () => {
             <>
               <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
                 <div className="sweet-loading">
-                  <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                  <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
                   {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
                   <br></br>
                   <Loader color={color} loading={loading} css={override} size={150} />

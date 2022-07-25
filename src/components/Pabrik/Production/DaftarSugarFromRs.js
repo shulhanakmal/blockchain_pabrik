@@ -253,7 +253,7 @@ const DaftarProduction = () => {
           return (
             <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
               <div className="sweet-loading">
-                <h5>Transaksi akan ditulis ke Blockchain</h5><br></br>
+                <h5>Loading</h5><br></br>
                 {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
                 <br></br>
                 <Loader color={color} loading={loading} css={override} size={150} />
