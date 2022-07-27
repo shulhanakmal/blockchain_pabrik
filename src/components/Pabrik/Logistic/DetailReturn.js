@@ -230,15 +230,27 @@ const DetailReturn = (props) => {
                                     />
                                 </CCol>
                                 <CCol xs="8" lg="7">
-                                    <p>
-                                        <strong><b> Date Return :</b></strong> {moment(rbs.date).format('DD-MMM-YYYY')}
-                                    </p>
-                                    <p>
-                                        <strong><b> Volume :</b></strong> {rbs.volume}
-                                    </p>
-                                    <p>
-                                        <strong><b> Blockchain Hash :</b></strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + rbs.transaction_hash} > {rbs.transaction_hash} </a>
-                                    </p>
+                                    {rbs && rbs.map((r, index) => {
+                                        if(r != null) {
+                                            return (
+                                                <Fragment key={index}>
+                                                    <hr></hr>
+                                                    <p>
+                                                        <strong>Return #{index+1}</strong>
+                                                    </p>
+                                                    <p>
+                                                        <strong><b> Date Return :</b></strong> {moment(r.date).format('DD-MMM-YYYY')}
+                                                    </p>
+                                                    <p>
+                                                        <strong><b> Volume :</b></strong> {r.volume}
+                                                    </p>
+                                                    <p>
+                                                        <strong><b> Blockchain Hash :</b></strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + r.transaction_hash} > {r.transaction_hash} </a>
+                                                    </p>
+                                                </Fragment>
+                                            )
+                                        }
+                                    })}
                                 </CCol>
                             </CRow>
 
