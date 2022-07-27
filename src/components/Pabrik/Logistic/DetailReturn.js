@@ -245,6 +245,9 @@ const DetailReturn = (props) => {
                                                         <strong><b> Volume :</b></strong> {r.volume}
                                                     </p>
                                                     <p>
+                                                        <strong><b> Return Product :</b></strong> {r.product_id}
+                                                    </p>
+                                                    <p>
                                                         <strong><b> Blockchain Hash :</b></strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + r.transaction_hash} > {r.transaction_hash} </a>
                                                     </p>
                                                 </Fragment>
