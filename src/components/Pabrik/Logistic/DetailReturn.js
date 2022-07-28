@@ -231,13 +231,13 @@ const DetailReturn = (props) => {
                                 </CCol>
                                 <CCol xs="8" lg="7">
                                     {rbs && rbs.map((r, index) => {
-                                        if(r != null) {
+                                        if(r != null && r.transaction_hash != null) {
                                             return (
                                                 <Fragment key={index}>
                                                     <hr></hr>
-                                                    <p>
-                                                        <strong>Return #{index+1}</strong>
-                                                    </p>
+                                                    {/* <p>
+                                                        <strong>Return</strong>
+                                                    </p> */}
                                                     <p>
                                                         <strong><b> Date Return :</b></strong> {moment(r.date).format('DD-MMM-YYYY')}
                                                     </p>
