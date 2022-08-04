@@ -13,6 +13,19 @@ import { AddLogistics  as AddStockRS } from "../../../abi/logisticsSbsfrs";
 import { AddStock } from "../../../abi/addStock";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
+import { Redirect } from "react-router-dom";
+import moment from 'moment';
+import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCardFooter,
+  CButton,
+  CRow,
+  CCol,
+} from "@coreui/react";
 
 require("dotenv").config();
 
@@ -43,6 +56,8 @@ const DaftarLogistic = () => {
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
   const [proses, setProses] = useState(null);
+  const [redirect, setRedirect] = useState(null);
+  const [data, setData] = useState(null);
 
   const [productId, setProductId] = useState("");
 
@@ -79,7 +94,7 @@ const DaftarLogistic = () => {
         }
 
         if(response.data.data.length === 0) {
-          var product_id = "Re-" + year + month + date + '01';
+          var product_id = "Return-" + year + month + date + '01';
           setProductId(product_id);
         } else {
           // setProductId(resultIDBatch)
@@ -140,100 +155,143 @@ const DaftarLogistic = () => {
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
+        const {chainId} = await provider.getNetwork();
         const signer = provider.getSigner();
 
+        await UserService.getProsesBlockchain('rbs', response.data.data.id).then(
+          (response) => {
+            console.log("datanya nih", response.data.data);
+            setData(response.data.data);
+          },
+          (error) => {}
+        );
+
         // input logistik rbs
-        setProses('Return Bulk Sugar');
-        try{
-          const updateData = new FormData();
-          console.log("CEK ADDRESS MAL :", contractAddress);
-          let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
-          let transaction = await contract.addLogisticsRbs(response.data.data.id, json, 'normal', dateString)
-            updateData.append('transaction', transaction.hash);
-            updateData.append('wallet', transaction.from);
-            setHash(transaction.hash);
-          await transaction.wait()
-
-          updateData.append('id', response.data.data.id);
-          updateData.append('flag', 'returnBulkSugar');
-          UserService.addLogisticsTransactionHash(updateData);
-        } catch(e) {
-          console.log(e);
-          setErr(true);
-        }
-        // end input rbs
-
-        // post ke blockchain data return ke stock (stok menambah dari return)
-        if(values.sugar === 'cane'){
-          setProses('Stock Bulk Sugar From Cane');
+        if(chainId === parseInt(process.env.REACT_APP_CHAIN_ID)) {
+          setProses('Return Bulk Sugar');
           try{
-            const txnCane = new FormData();
-            let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
-            let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, jsonLogistic, 'normal', dateString)
-              txnCane.append('transaction', transactionC.hash);
-              txnCane.append('wallet', transactionC.from);
-              setHash(transactionC.hash);
-            await transactionC.wait()
+            const updateData = new FormData();
+            console.log("CEK ADDRESS MAL :", contractAddress);
+            let contract = new ethers.Contract(contractAddress, AddLogistics, signer)
+            let transaction = await contract.addLogisticsRbs(response.data.data.id, json, 'normal', dateString, {
+              gasPrice: 7909680,
+            })
+              updateData.append('transaction', transaction.hash);
+              updateData.append('wallet', transaction.from);
+              setHash(transaction.hash);
+            await transaction.wait()
 
-            txnCane.append('id', response.data.stock.id);
-            txnCane.append('flag', 'stockBulkSugarFromCane');
-            UserService.addLogisticsTransactionHash(txnCane);
+            updateData.append('id', response.data.data.id);
+            updateData.append('flag', 'returnBulkSugar');
+            UserService.addLogisticsTransactionHash(updateData);
           } catch(e) {
             console.log(e);
             setErr(true);
+          }
+          // end input rbs
+
+          await UserService.getProsesBlockchain('rbs', response.data.data.id).then(
+            (response) => {
+              console.log("datanya nih", response.data.data);
+              setData(response.data.data);
+            },
+            (error) => {}
+          );
+
+          // post ke blockchain data return ke stock (stok menambah dari return)
+          if(values.sugar === 'cane'){
+            setProses('Stock Bulk Sugar From Cane');
+            try{
+              const txnCane = new FormData();
+              let contractC = new ethers.Contract(contractAddressSBSFC, AddStockCane, signer)
+              let transactionC = await contractC.addLogisticsSbsfc(response.data.stock.id, jsonLogistic, 'normal', dateString)
+                txnCane.append('transaction', transactionC.hash);
+                txnCane.append('wallet', transactionC.from);
+                setHash(transactionC.hash);
+              await transactionC.wait()
+
+              txnCane.append('id', response.data.stock.id);
+              txnCane.append('flag', 'stockBulkSugarFromCane');
+              UserService.addLogisticsTransactionHash(txnCane);
+            } catch(e) {
+              console.log(e);
+              setErr(true);
+            }
+
+          } else {
+            setProses('Stock Bulk Sugar From Raw Sugar');
+            try{
+              const txnRS = new FormData();
+              let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
+              let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, jsonLogistic, 'normal', dateString)
+                txnRS.append('transaction', transactionRS.hash);
+                txnRS.append('wallet', transactionRS.from);
+                setHash(transactionRS.hash);
+              await transactionRS.wait()
+
+              txnRS.append('id', response.data.stock.id);
+              txnRS.append('flag', 'stockBulkSugarFromRs');
+              UserService.addLogisticsTransactionHash(txnRS);
+            } catch(e) {
+              console.log(e);
+              setErr(true);
+            }
+          }
+
+          await UserService.getProsesBlockchain('rbs', response.data.data.id).then(
+            (response) => {
+              console.log("datanya nih", response.data.data);
+              setData(response.data.data);
+            },
+            (error) => {}
+          );
+
+          // input stok
+          if(response.data.stok) {
+            setProses('Input Stok');
+            try{
+              const updateDataStock = new FormData();
+              let contractStok = new ethers.Contract(contractAddressSTOCK, AddStock, signer)
+              let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
+                setHash(transactionStok.hash);
+                updateDataStock.append('transaction', transactionStok.hash);
+                updateDataStock.append('wallet', transactionStok.from);
+              await transactionStok.wait()
+
+              updateDataStock.append('id', response.data.stok.id);
+              updateDataStock.append('flag', 'Stock');
+              UserService.addStockTransactionHash(updateDataStock);
+              setHash("");
+            } catch(e) {
+              console.log(e);
+              setErr(true);
+            }
+          }
+
+          await UserService.getProsesBlockchain('rbs', response.data.data.id).then(
+            (response) => {
+              console.log("datanya nih", response.data.data);
+              setData(response.data.data);
+            },
+            (error) => {}
+          );
+          // end input stok
+
+          setHash("");
+
+          if(catchErr) {
+            setLoading(false);
+            console.log(catchErr);
+          } else {
+            setLoading(false);
+            showResults("Data Berhasil Dimasukkan");
           }
         } else {
-          setProses('Stock Bulk Sugar From Raw Sugar');
-          try{
-            const txnRS = new FormData();
-            let contractRS = new ethers.Contract(contractAddressSBSFRS, AddStockRS, signer)
-            let transactionRS = await contractRS.addLogisticsSbsfrs(response.data.stock.id, jsonLogistic, 'normal', dateString)
-              txnRS.append('transaction', transactionRS.hash);
-              txnRS.append('wallet', transactionRS.from);
-              setHash(transactionRS.hash);
-            await transactionRS.wait()
-
-            txnRS.append('id', response.data.stock.id);
-            txnRS.append('flag', 'stockBulkSugarFromRs');
-            UserService.addLogisticsTransactionHash(txnRS);
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        }
-
-        // input stok
-        if(response.data.stok) {
-          setProses('Input Stok');
-          try{
-            const updateDataStock = new FormData();
-            let contractStok = new ethers.Contract(contractAddressSTOCK, AddStock, signer)
-            let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
-              setHash(transactionStok.hash);
-              updateDataStock.append('transaction', transactionStok.hash);
-              updateDataStock.append('wallet', transactionStok.from);
-            await transactionStok.wait()
-
-            updateDataStock.append('id', response.data.stok.id);
-            updateDataStock.append('flag', 'Stock');
-            UserService.addStockTransactionHash(updateDataStock);
-            setHash("");
-          } catch(e) {
-            console.log(e);
-            setErr(true);
-          }
-        }
-        // end input stok
-
-        setHash("");
-
-        if(catchErr) {
           setLoading(false);
-          console.log(catchErr);
-        } else {
-          setLoading(false);
-          showResults("Data Berhasil Dimasukkan");
+          alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+          setRedirect(true);
         }
+
       },
         (error) => {
       }
@@ -241,33 +299,106 @@ const DaftarLogistic = () => {
 
   };
 
-  return (
-    <Fragment>
-      {(() => {
-        if (loading === true) {
-          return (
-            <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
-              <div className="sweet-loading">
-                <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
-                {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
-                <br></br>
-                <Loader color={color} loading={loading} css={override} size={150} />
-                <br></br>
-                <br></br>
-                <h5>Mohon Tunggu...</h5>
-              </div>
-            </div>
-          )
-        } else {
-          return (
-            <DaftarReturnBulkSugarForm 
-              onSubmit={handleSubmit}
-              onSelectDate={handleDate}
-            />
-          )
-        }
-      })()}
-    </Fragment>
-  );
+  if(redirect) {
+    return <Redirect to="/Logistic" />
+  } else {
+    return (
+      <Fragment>
+        {(() => {
+          if (loading === true) {
+            return (
+              <Fragment>
+                <CCard color="secondary">
+                  <CRow>
+                    <CCol md="7">
+                      <div>
+                        <VerticalTimeline layout={'1-column-left'}>
+
+                          {data && data.map((value, index) => {
+                            if(value.Data && value.Data.transaction_hash){
+                              return (
+                                <VerticalTimelineElement key={index}
+                                  className="vertical-timeline-element--work"
+                                  contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                  contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
+                                  date={moment(value.Data.updated_at).format('DD, MMMM, YYYY HH:mm')}
+                                  iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                  // icon={cil3d}
+                                >
+                                  <p>
+                                    {value.flag}
+                                  </p>
+                                  <hr></hr>
+                                  <i>{value.Data.transaction_hash}</i>
+                                  <br></br>
+                                </VerticalTimelineElement>
+                              );
+                            } else {
+                              return (
+                                <VerticalTimelineElement key={index}
+                                    className="vertical-timeline-element--work"
+                                    contentStyle={{ background: 'grey', color: '#fff' }}
+                                    contentArrowStyle={{ borderRight: '7px solid  grey' }}
+                                    // date="03 Agustus 2022 : 15:34"
+                                    iconStyle={{ background: 'grey', color: '#fff' }}
+                                    // icon={cil3d}
+                                >
+                                  <p>
+                                    {value.flag}
+                                  </p>
+                                </VerticalTimelineElement>
+                              );
+                            }
+                          })}
+                          <VerticalTimelineElement
+                            iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
+                            // icon={<StarIcon />}
+                          />
+                        </VerticalTimeline>
+                      </div>
+                    </CCol>
+
+                    <CCol md="5">
+                      <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+                        <div className="sweet-loading">
+                          <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
+                          {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
+                          <br></br>
+                          <Loader color={color} loading={loading} css={override} size={150} />
+                          <br></br>
+                          <br></br>
+                          <h5>Mohon Tunggu...</h5>
+                          <br></br>
+
+                        </div>
+                      </div>
+                    </CCol>
+                  </CRow>
+                </CCard>
+              </Fragment>
+              // <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+              //   <div className="sweet-loading">
+              //     <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
+              //     {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
+              //     <br></br>
+              //     <Loader color={color} loading={loading} css={override} size={150} />
+              //     <br></br>
+              //     <br></br>
+              //     <h5>Mohon Tunggu...</h5>
+              //   </div>
+              // </div>
+            )
+          } else {
+            return (
+              <DaftarReturnBulkSugarForm 
+                onSubmit={handleSubmit}
+                onSelectDate={handleDate}
+              />
+            )
+          }
+        })()}
+      </Fragment>
+    );
+  }
 };
 export default DaftarLogistic;

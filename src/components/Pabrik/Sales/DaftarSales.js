@@ -12,8 +12,20 @@ import { AddLogistics } from "../../../abi/logisticsSobs";
 import { AddStock } from "../../../abi/addStock";
 import { css } from "@emotion/react";
 import Loader from "react-spinners/DotLoader";
-
+import { Redirect } from "react-router-dom";
 import QRcode from "qrcode.react";
+import moment from 'moment';
+import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCardFooter,
+  CButton,
+  CRow,
+  CCol,
+} from "@coreui/react";
 
 require("dotenv").config();
 
@@ -47,6 +59,8 @@ const DaftarSales = () => {
   const [tanggal, setDate] = useState("");
   const [catchErr, setErr] = useState(false);
   const [proses, setProses] = useState(null);
+  const [redirect, setRedirect] = useState(null);
+  const [data, setData] = useState(null);
 
   const provider = new HDWalletProvider(process.env.REACT_APP_MNEMONIC,'https://ropsten.infura.io/v3/'+process.env.REACT_APP_INFURA_PROJECT_ID);
   const web3 = new Web3(provider);
@@ -115,14 +129,26 @@ const DaftarSales = () => {
         const web3Modal = new Web3Modal();
         const connection = await web3Modal.connect();
         const provider = new ethers.providers.Web3Provider(connection);
+        const {chainId} = await provider.getNetwork();
         const signer = provider.getSigner();
 
+        await UserService.getProsesBlockchain('sales', response.data.data.id).then(
+          (response) => {
+            console.log("datanya nih", response.data.data);
+            setData(response.data.data);
+          },
+          (error) => {}
+        );
+
 // input sales into blockchain
-        setProses('Sales');
+        if(chainId === parseInt(process.env.REACT_APP_CHAIN_ID)) {
+          setProses('Sales');
           try{
             const updateData = new FormData();
             let contract = new ethers.Contract(contractAddress, AddSales, signer)
-            let transaction = await contract.addSales(response.data.data.id, json, 'normal', dateString)
+            let transaction = await contract.addSales(response.data.data.id, json, 'normal', dateString, {
+              gasPrice: 7909680,
+            })
               updateData.append('transaction', transaction.hash);
               updateData.append('wallet', transaction.from);
               setHash(transaction.hash);
@@ -135,6 +161,14 @@ const DaftarSales = () => {
             setErr(true);
           }
 // end sales
+
+          await UserService.getProsesBlockchain('sales', response.data.data.id).then(
+            (response) => {
+              console.log("datanya nih", response.data.data);
+              setData(response.data.data);
+            },
+            (error) => {}
+          );
 
 // input logistik sobs into blockchain
         setProses('Stock Out Bulk Sugar');
@@ -156,6 +190,14 @@ const DaftarSales = () => {
           }
 // end input sobs
 
+          await UserService.getProsesBlockchain('sales', response.data.data.id).then(
+            (response) => {
+              console.log("datanya nih", response.data.data);
+              setData(response.data.data);
+            },
+            (error) => {}
+          );
+
 // input stok into blockchain
         setProses('Input Stok');
           try{
@@ -176,38 +218,51 @@ const DaftarSales = () => {
           }
 // end input stok
 
-        const salesId = response.data.data.id;
-        const linkQRCode =
-          process.env.REACT_APP_PROD_URL +
-          "detailProduk/" +
-          sugar +
-          "/" +
-          salesId;
-        await handleChange(linkQRCode);
+          await UserService.getProsesBlockchain('sales', response.data.data.id).then(
+            (response) => {
+              console.log("datanya nih", response.data.data);
+              setData(response.data.data);
+            },
+            (error) => {}
+          );
 
-        const canvas = document.getElementById("myqr");
-        let imageBlob = await new Promise((resolve) =>
-          canvas.toBlob(resolve, "image/png")
-        );
+          const salesId = response.data.data.id;
+          const linkQRCode =
+            process.env.REACT_APP_PROD_URL +
+            "detailProduk/" +
+            sugar +
+            "/" +
+            salesId;
+          await handleChange(linkQRCode);
 
-        let formDataQR = new FormData();
-        formDataQR.append("files_qr", imageBlob, "" + salesId + ".png");
-        console.log("gambar qr", imageBlob, "" + salesId + ".png");
-        formDataQR.append("fileName_qr", "" + salesId + ".png");
+          const canvas = document.getElementById("myqr");
+          let imageBlob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/png")
+          );
 
-        downloadQR(salesId);
+          let formDataQR = new FormData();
+          formDataQR.append("files_qr", imageBlob, "" + salesId + ".png");
+          console.log("gambar qr", imageBlob, "" + salesId + ".png");
+          formDataQR.append("fileName_qr", "" + salesId + ".png");
 
-        UserService.pushQRCodeImage(salesId, formDataQR);
+          downloadQR(salesId);
 
-        if(catchErr) {
+          UserService.pushQRCodeImage(salesId, formDataQR);
+
+          if(catchErr) {
+            setLoading(false);
+            console.log(catchErr);
+          } else {
+            setLoading(false);
+            showResults("Data berhasil dimasukan");
+          }
+          setHash("");
           setLoading(false);
-          console.log(catchErr);
         } else {
           setLoading(false);
-          showResults("Data berhasil dimasukan");
+          alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+          setRedirect(true);
         }
-        setHash("");
-        setLoading(false);
 
       },
       (error) => {
@@ -219,42 +274,122 @@ const DaftarSales = () => {
     getWallet();
   }, []);
 
-  return (
-    <Fragment>
-      {(() => {
-        if (loading === true) {
-          return (
-            <>
-              <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
-                <div className="sweet-loading">
-                  <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
-                  {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
-                  <br></br>
-                  <Loader color={color} loading={loading} css={override} size={150} />
-                  <br></br>
-                  <br></br>
-                  <h5>Mohon Tunggu...</h5>
+  if(redirect) {
+    return <Redirect to='/Sales' />
+  } else {
+    return (
+      <Fragment>
+        {(() => {
+          if (loading === true) {
+            return (
+              <Fragment>
+                <CCard color="secondary">
+                  <CRow>
+                    <CCol md="7">
+                      <div>
+                        <VerticalTimeline layout={'1-column-left'}>
+
+                          {data && data.map((value, index) => {
+                            if(value.Data && value.Data.transaction_hash){
+                              return (
+                                <VerticalTimelineElement key={index}
+                                  className="vertical-timeline-element--work"
+                                  contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                  contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
+                                  date={moment(value.Data.updated_at).format('DD, MMMM, YYYY HH:mm')}
+                                  iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                  // icon={cil3d}
+                                >
+                                  <p>
+                                    {value.flag}
+                                  </p>
+                                  <hr></hr>
+                                  <i>{value.Data.transaction_hash}</i>
+                                  <br></br>
+                                </VerticalTimelineElement>
+                              );
+                            } else {
+                              return (
+                                <VerticalTimelineElement key={index}
+                                    className="vertical-timeline-element--work"
+                                    contentStyle={{ background: 'grey', color: '#fff' }}
+                                    contentArrowStyle={{ borderRight: '7px solid  grey' }}
+                                    // date="03 Agustus 2022 : 15:34"
+                                    iconStyle={{ background: 'grey', color: '#fff' }}
+                                    // icon={cil3d}
+                                >
+                                  <p>
+                                    {value.flag}
+                                  </p>
+                                </VerticalTimelineElement>
+                              );
+                            }
+                          })}
+                          <VerticalTimelineElement
+                            iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
+                            // icon={<StarIcon />}
+                          />
+                        </VerticalTimeline>
+                      </div>
+                    </CCol>
+
+                    <CCol md="5">
+                      <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+                        <div className="sweet-loading">
+                          <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
+                          {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
+                          <br></br>
+                          <Loader color={color} loading={loading} css={override} size={150} />
+                          <br></br>
+                          <br></br>
+                          <h5>Mohon Tunggu...</h5>
+                          <br></br>
+
+                        </div>
+                      </div>
+                    </CCol>
+                  </CRow>
+                </CCard>
+                <div style={{ visibility: "hidden" }}>
+                  {qr ? (
+                    <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+                  ) : (
+                    <p>No QR code preview</p>
+                  )}
                 </div>
-              </div>
-              <div style={{ visibility: "hidden" }}>
-                {qr ? (
-                  <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
-                ) : (
-                  <p>No QR code preview</p>
-                )}
-              </div>
-            </>
-          )
-        } else {
-          return (
-            <DaftarSalesForm 
-              onSubmit={handleSubmit} 
-              onSelectDate={handleDate}
-            />
-          )
-        }
-      })()}
-      </Fragment>
-  );
+              </Fragment>
+              // <>
+              //   <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+              //     <div className="sweet-loading">
+              //       <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
+              //       {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
+              //       <br></br>
+              //       <Loader color={color} loading={loading} css={override} size={150} />
+              //       <br></br>
+              //       <br></br>
+              //       <h5>Mohon Tunggu...</h5>
+              //     </div>
+              //   </div>
+              //   <div style={{ visibility: "hidden" }}>
+              //     {qr ? (
+              //       <QRcode id="myqr" value={qr} size={320} includeMargin={true} />
+              //     ) : (
+              //       <p>No QR code preview</p>
+              //     )}
+              //   </div>
+              // </>
+            )
+          } else {
+            return (
+              <DaftarSalesForm 
+                onSubmit={handleSubmit} 
+                onSelectDate={handleDate}
+              />
+            )
+          }
+        })()}
+        </Fragment>
+    );
+  }
 };
 export default DaftarSales;

@@ -3,8 +3,8 @@ import authHeader from "./auth-header";
 import authHeaderImage from "./auth-header-image";
 
 // const API_URL = "http://209.97.160.154:90/api/v1/";
-// const API_URL = "http://127.0.0.1:8000/api/v2/";
-const API_URL = "http://68.183.235.127:8004/api/v2/";
+const API_URL = "http://127.0.0.1:8000/api/v2/";
+// const API_URL = "http://68.183.235.127:8004/api/v2/";
 // const API_URL = "http://209.97.160.154:8002/api/v2/";
 
 class UserService {
@@ -279,8 +279,12 @@ class UserService {
     });
   }
 
-  getDetailReturn(dok) {
-    return axios.get(API_URL + "get-detail-return/"+ dok, { headers: authHeader() });
+  getDetailReturn(dok, stokProductId) {
+    return axios.get(API_URL + "get-detail-return/"+ dok+"/"+stokProductId, { headers: authHeader() });
+  }
+
+  getProsesBlockchain(flag, productId) {
+    return axios.get(API_URL + "getProsesBlockchain/"+flag+"/"+ productId, { headers: authHeader() });
   }
 
 }

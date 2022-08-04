@@ -30,6 +30,7 @@ import showResults from "../../showResults/showResults";
 
 const DetailReturn = (props) => {
     const { dok } = useParams();
+    const { stokProductId } = useParams();
     const [collapse, setCollapse] = useState(false)
     const [sales, setSales] = useState([]);
     const [produksi, setProduksi] = useState([]);
@@ -43,7 +44,7 @@ const DetailReturn = (props) => {
     }, []);
 
     const getData = () => {
-        UserService.getDetailReturn(dok).then(
+        UserService.getDetailReturn(dok, stokProductId).then(
         (response) => {
             console.log("cek response", response)
             setSales(response.data.sales);
@@ -96,7 +97,7 @@ const DetailReturn = (props) => {
                                     <strong>Document Number:</strong> {sales.no_do}
                                 </p>
                                 <p>
-                                    <strong>Sugar:</strong> {sales.mount_sugar_sold_cane === 0 ? 'Raw Sugar' : 'Cane Sugar'}
+                                    <strong>Sugar:</strong> {sales.mount_sugar_sold_cane === "0.00" ? 'Raw Sugar' : 'Cane Sugar'}
                                 </p>
                                 <p>
                                     <strong>Buyer:</strong> {sales.buyer}
@@ -105,7 +106,7 @@ const DetailReturn = (props) => {
                                     <strong>Price:</strong> Rp. {sales.price}
                                 </p>
                                 <p>
-                                    <strong>Total Volume:</strong> {sales.mount_sugar_sold_cane === 0 ? sales.mount_sugar_sold_rs : sales.mount_sugar_sold_cane}
+                                    <strong>Total Volume:</strong> {sales.mount_sugar_sold_cane === "0.00" ? sales.mount_sugar_sold_rs : sales.mount_sugar_sold_cane} Kwintal
                                 </p>
                                 <p>
                                     <strong>Blockchain Hash:</strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + sales.transaction_hash} > {sales.transaction_hash} </a>
@@ -230,30 +231,36 @@ const DetailReturn = (props) => {
                                     />
                                 </CCol>
                                 <CCol xs="8" lg="7">
-                                    {rbs && rbs.map((r, index) => {
-                                        if(r != null && r.transaction_hash != null) {
+                                    {(() => {
+                                        if(rbs != null) {
                                             return (
-                                                <Fragment key={index}>
+                                                <Fragment>
                                                     <hr></hr>
                                                     {/* <p>
                                                         <strong>Return</strong>
                                                     </p> */}
                                                     <p>
-                                                        <strong><b> Date Return :</b></strong> {moment(r.date).format('DD-MMM-YYYY')}
+                                                        <strong><b> Date Return :</b></strong> {moment(rbs.date).format('DD-MMM-YYYY')}
                                                     </p>
                                                     <p>
-                                                        <strong><b> Volume :</b></strong> {r.volume}
+                                                        <strong><b> Volume :</b></strong> {rbs.volume}
                                                     </p>
                                                     <p>
-                                                        <strong><b> Return Product :</b></strong> {r.product_id}
+                                                        <strong><b> Return Product :</b></strong> {rbs.product_id}
                                                     </p>
-                                                    <p>
-                                                        <strong><b> Blockchain Hash :</b></strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + r.transaction_hash} > {r.transaction_hash} </a>
-                                                    </p>
+                                                    {(() => {
+                                                        if(rbs.transaction_hash){
+                                                            return(
+                                                                <p>
+                                                                    <strong><b> Blockchain Hash :</b></strong> <a size="sm" style={{ color:"#ffffff" }} target="_blank" href={"https://ropsten.etherscan.io/tx/" + rbs.transaction_hash} > {rbs.transaction_hash} </a>
+                                                                </p>
+                                                            )
+                                                        }
+                                                    })()}
                                                 </Fragment>
                                             )
                                         }
-                                    })}
+                                    })()}
                                 </CCol>
                             </CRow>
 

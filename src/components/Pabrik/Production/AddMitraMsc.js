@@ -16,7 +16,20 @@ import { AddLogistics as AddSBSFC } from "../../../abi/logisticsSbsfc";
 import { AddLogistics as AddSBSFRS } from "../../../abi/logisticsSbsfrs";
 import { AddStock } from "../../../abi/addStock";
 import { css } from "@emotion/react";
+import { Redirect } from "react-router-dom";
 import Loader from "react-spinners/DotLoader";
+import {
+  CCard,
+  CCardBody,
+  CCardHeader,
+  CCardFooter,
+  CButton,
+  CRow,
+  CCol,
+} from "@coreui/react";
+import moment from 'moment';
+import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
+import 'react-vertical-timeline-component/style.min.css';
 
 require("dotenv").config();
 
@@ -52,6 +65,9 @@ const AddMitraMsc = () => {
   const [dataId, setDataId] = useState(id);
   const [jenis, setflag] = useState(flag);
   const [proses, setProses] = useState(null);
+  const [redirect, setRedirect] = useState(false);
+  const [redirectLogistik, setRedirectLogistik] = useState(false);
+  const [data, setData] = useState(null);
 
   const [produkId, setProdukId] = useState("");
 
@@ -130,76 +146,90 @@ const AddMitraMsc = () => {
               const web3Modal = new Web3Modal();
               const connection = await web3Modal.connect();
               const provider = new ethers.providers.Web3Provider(connection);
+              const {chainId} = await provider.getNetwork();
               const signer = provider.getSigner();
 
+              await UserService.getProsesBlockchain('sbsfc', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
+
               // input logistik sbsfc
-              setProses('Stock Bulk Sugar From Cane');
-              try{
-                const updateData = new FormData();
-                let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
-                let transaction = await contract.addLogisticsSbsfc(response.data.data.id, json, 'normal', dateString)
-                  updateData.append('transaction', transaction.hash);
-                  updateData.append('wallet', transaction.from);
-                  setHash(transaction.hash);
-                await transaction.wait()
+              if(chainId === parseInt(process.env.REACT_APP_CHAIN_ID)) {
+                setProses('Stock Bulk Sugar From Cane');
+                try{
+                  const updateData = new FormData();
+                  let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
+                  let transaction = await contract.addLogisticsSbsfc(response.data.data.id, json, 'normal', dateString, {
+                    gasPrice: 7909680,
+                  })
+                    updateData.append('transaction', transaction.hash);
+                    updateData.append('wallet', transaction.from);
+                    setHash(transaction.hash);
+                  await transaction.wait()
 
-                updateData.append('id', response.data.data.id);
-                updateData.append('flag', 'stockBulkSugarFromCane');
-                UserService.addLogisticsTransactionHash(updateData);
-                setHash("");
-              } catch(e) {
-                console.log(e);
-                setErr(true);
-              }
-              // end input sbsfc
-
-              // input stok
-                if(response.data.stok) {
-                  setProses('Input Stok');
-                  try{
-                    const updateDataStock = new FormData();
-                    let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                    let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
-                      setHash(transactionStok.hash);
-                      updateDataStock.append('transaction', transactionStok.hash);
-                      updateDataStock.append('wallet', transactionStok.from);
-                    await transactionStok.wait()
-
-                    updateDataStock.append('id', response.data.stok.id);
-                    updateDataStock.append('flag', 'Stock');
-                    UserService.addStockTransactionHash(updateDataStock);
-                    setHash("");
-                  } catch(e) {
-                    console.log(e);
-                    setErr(true);
-                  }
+                  updateData.append('id', response.data.data.id);
+                  updateData.append('flag', 'stockBulkSugarFromCane');
+                  UserService.addLogisticsTransactionHash(updateData);
+                  setHash("");
+                } catch(e) {
+                  console.log(e);
+                  setErr(true);
                 }
-              // end input stok
 
-              if(catchErr) {
-                setLoading(false);
-                console.log(catchErr);
+                await UserService.getProsesBlockchain('sbsfc', response.data.data.product_id).then(
+                  (response) => {
+                    console.log("datanya nih", response.data.data);
+                    setData(response.data.data);
+                  },
+                  (error) => {}
+                );
+
+                if(catchErr) {
+                  setLoading(false);
+                  console.log(catchErr);
+                } else {
+                  setLoading(false);
+                  showResults("Data Berhasil Dimasukkan");
+                  setRedirectLogistik(true);
+                }
               } else {
                 setLoading(false);
-                showResults("Data Berhasil Dimasukkan");
+                alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+                setRedirectLogistik(true);
               }
 
             } else if(jenis === 'sbsfrs') {
 
-                const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
-                const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
+              const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
+              const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
 
-                const web3Modal = new Web3Modal();
-                const connection = await web3Modal.connect();
-                const provider = new ethers.providers.Web3Provider(connection);
-                const signer = provider.getSigner();
+              const web3Modal = new Web3Modal();
+              const connection = await web3Modal.connect();
+              const provider = new ethers.providers.Web3Provider(connection);
+              const {chainId} = await provider.getNetwork();
+              const signer = provider.getSigner();
 
-                // input logistik sbsfrs
+              await UserService.getProsesBlockchain('sbsfrs', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
+
+              // input logistik sbsfrs
+              if(chainId === parseInt(process.env.REACT_APP_CHAIN_ID)) {
                 setProses('Stock Bulk Sugar From Raw Sugar');
                 try{
                   const updateData = new FormData();
                   let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddSBSFRS, signer)
-                  let transaction = await contract.addLogisticsSbsfrs(response.data.data.id, json, 'normal', dateString)
+                  let transaction = await contract.addLogisticsSbsfrs(response.data.data.id, json, 'normal', dateString,{
+                    gasPrice: 7909680,
+                  })
                     updateData.append('transaction', transaction.hash);
                     updateData.append('wallet', transaction.from);
                     setHash(transaction.hash);
@@ -215,28 +245,13 @@ const AddMitraMsc = () => {
                 }
                 // end input sbsfrs
 
-              // input stok
-                if(response.data.stok) {
-                  setProses('Input Stok');
-                  try{
-                    const updateDataStock = new FormData();
-                    let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                    let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
-                      setHash(transactionStok.hash);
-                      updateDataStock.append('transaction', transactionStok.hash);
-                      updateDataStock.append('wallet', transactionStok.from);
-                    await transactionStok.wait()
-
-                    updateDataStock.append('id', response.data.stok.id);
-                    updateDataStock.append('flag', 'Stock');
-                    UserService.addStockTransactionHash(updateDataStock);
-                    setHash("");
-                  } catch(e) {
-                    console.log(e);
-                    setErr(true);
-                  }
-                }
-              // end input stok
+                await UserService.getProsesBlockchain('sbsfrs', response.data.data.product_id).then(
+                  (response) => {
+                    console.log("datanya nih", response.data.data);
+                    setData(response.data.data);
+                  },
+                  (error) => {}
+                );
 
                 if(catchErr) {
                   setLoading(false);
@@ -244,7 +259,13 @@ const AddMitraMsc = () => {
                 } else {
                   setLoading(false);
                   showResults("Data Berhasil Dimasukkan");
+                  setRedirectLogistik(true);
                 }
+              } else {
+                setLoading(false);
+                alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+                setRedirectLogistik(true);
+              }
 
             } else {
 
@@ -271,116 +292,128 @@ const AddMitraMsc = () => {
               const jsonStok = JSON.stringify(response.data.stok, null, 4).replace(/[",\\]]/g, "")
 
               console.log('cek responsenya', response);
+
+              await UserService.getProsesBlockchain('msc', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
               
               // insert to blockchain
               const web3Modal = new Web3Modal();
               const connection = await web3Modal.connect();
               const provider = new ethers.providers.Web3Provider(connection);
+              const {chainId} = await provider.getNetwork();
               const signer = provider.getSigner();
 
-              const accounts = await window.ethereum.enable();
-              const akun = accounts[0];
-
               // input production msc
-              setProses('Milled Sugar Cane');
-              try{
-                const updateData = new FormData();
-                let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddMSC, signer)
-                let transaction = await contract.addProductionMsc(response.data.data.id, json, 'normal', dateString, {
-                  gasLimit: 5500000,
-                })
-                  updateData.append('transaction', transaction.hash);
-                  updateData.append('wallet', transaction.from);
-                  setHash(transaction.hash);
-                await transaction.wait()
-
-                updateData.append('id', response.data.data.id);
-                updateData.append('flag', 'milledSugarCane');
-                UserService.addProdcutionTransactionHash(updateData);
-                setHash("");
-              } catch(e) {
-                console.log(e);
-                setErr(true);
-              }
-              // end input msc
-
-              // input sugar cane
-              setProses('Sugar Cane');
-              try{
-                const updateDataInput = new FormData();
-                let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddSFC, signer)
-                let transactionSC = await contractSC.addProductionSfc(response.data.input.id, jsonInput, 'normal', dateString, {
-                  gasLimit: 5500000,
-                })
-                  updateDataInput.append('transaction', transactionSC.hash);
-                  updateDataInput.append('wallet', transactionSC.from);
-                  setHash(transactionSC.hash);
-                await transactionSC.wait()
-
-                updateDataInput.append('id', response.data.input.id);
-                updateDataInput.append('flag', 'sugarCane');
-                UserService.addProdcutionTransactionHash(updateDataInput);
-                setHash("");
-              } catch(e) {
-                console.log(e);
-                setErr(true);
-              }
-              // end input sugar cane
-
-              // input logistik cane
-              setProses('Stack Bulk Sugar From Cane');
-              try{
-                const updateDataLogistik = new FormData();
-                let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
-                let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, jsonLogistik, 'normal', dateString, {
-                  gasLimit: 5500000,
-                })
-                  setHash(transactionL.hash);
-                  updateDataLogistik.append('transaction', transactionL.hash);
-                  updateDataLogistik.append('wallet', transactionL.from);
-                await transactionL.wait()
-
-                updateDataLogistik.append('id', response.data.logistik.id);
-                updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
-                UserService.addLogisticsTransactionHash(updateDataLogistik);
-                setHash("");
-              } catch(e) {
-                console.log(e);
-                setErr(true);
-              }
-              // end input logistik cane
-
-              // input stok
-              if(response.data.stok) {
+              if(chainId === parseInt(process.env.REACT_APP_CHAIN_ID)) {
+                setProses('Milled Sugar Cane');
                 try{
-                  setProses('Input Stok');
-                  const updateDataStock = new FormData();
-                  let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                  let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString, {
-                    gasLimit: 5500000,
+                  const updateData = new FormData();
+                  let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_MSC, AddMSC, signer)
+                  let transaction = await contract.addProductionMsc(response.data.data.id, json, 'normal', dateString, {
+                    gasPrice: 7909680,
                   })
-                    setHash(transactionStok.hash);
-                    updateDataStock.append('transaction', transactionStok.hash);
-                    updateDataStock.append('wallet', transactionStok.from);
-                  await transactionStok.wait()
+                    updateData.append('transaction', transaction.hash);
+                    updateData.append('wallet', transaction.from);
+                    setHash(transaction.hash);
+                  await transaction.wait()
 
-                  updateDataStock.append('id', response.data.stok.id);
-                  updateDataStock.append('flag', 'Stock');
-                  UserService.addStockTransactionHash(updateDataStock);
+                  updateData.append('id', response.data.data.id);
+                  updateData.append('flag', 'milledSugarCane');
+                  UserService.addProdcutionTransactionHash(updateData);
                   setHash("");
                 } catch(e) {
                   console.log(e);
                   setErr(true);
                 }
-              }
-              // end input stok
+                // end input msc
 
-              if(catchErr) {
-                setLoading(false);
-                console.log(catchErr);
+                await UserService.getProsesBlockchain('msc', response.data.data.product_id).then(
+                  (response) => {
+                      console.log("datanya nih", response.data.data);
+                      setData(response.data.data);
+                  },
+                  (error) => {}
+                );
+  
+                // input sugar cane
+                setProses('Sugar Cane');
+                try{
+                  const updateDataInput = new FormData();
+                  let contractSC = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddSFC, signer)
+                  let transactionSC = await contractSC.addProductionSfc(response.data.input.id, jsonInput, 'normal', dateString, {
+                    gasPrice: 7909680,
+                  })
+                    updateDataInput.append('transaction', transactionSC.hash);
+                    updateDataInput.append('wallet', transactionSC.from);
+                    setHash(transactionSC.hash);
+                  await transactionSC.wait()
+  
+                  updateDataInput.append('id', response.data.input.id);
+                  updateDataInput.append('flag', 'sugarCane');
+                  UserService.addProdcutionTransactionHash(updateDataInput);
+                  setHash("");
+                } catch(e) {
+                  console.log(e);
+                  setErr(true);
+                }
+                // end input sugar cane
+
+                await UserService.getProsesBlockchain('msc', response.data.data.product_id).then(
+                  (response) => {
+                      console.log("datanya nih", response.data.data);
+                      setData(response.data.data);
+                  },
+                  (error) => {}
+                );
+
+                // input logistik cane
+                setProses('Stock Bulk Sugar From Cane');
+                try{
+                  const updateDataLogistik = new FormData();
+                  let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFC, AddSBSFC, signer)
+                  let transactionL = await contractL.addLogisticsSbsfc(response.data.logistik.id, jsonLogistik, 'normal', dateString, {
+                    gasPrice: 7909680,
+                  })
+                    setHash(transactionL.hash);
+                    updateDataLogistik.append('transaction', transactionL.hash);
+                    updateDataLogistik.append('wallet', transactionL.from);
+                  await transactionL.wait()
+
+                  updateDataLogistik.append('id', response.data.logistik.id);
+                  updateDataLogistik.append('flag', 'stockBulkSugarFromCane');
+                  UserService.addLogisticsTransactionHash(updateDataLogistik);
+                  setHash("");
+                } catch(e) {
+                  console.log(e);
+                  setErr(true);
+                }
+                // end input logistik cane
+
+                await UserService.getProsesBlockchain('msc', response.data.data.product_id).then(
+                  (response) => {
+                      console.log("datanya nih", response.data.data);
+                      setData(response.data.data);
+                  },
+                  (error) => {}
+                );
+
+                if(catchErr) {
+                  setLoading(false);
+                  console.log(catchErr);
+                } else {
+                  setLoading(false);
+                  showResults("Data Berhasil Dimasukkan");
+                  setRedirect(true);
+                }
               } else {
                 setLoading(false);
-                showResults("Data Berhasil Dimasukkan");
+                alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+                setRedirect(true);
               }
 
             } else if(jenis === 'prs') {
@@ -395,14 +428,26 @@ const AddMitraMsc = () => {
               const web3Modal = new Web3Modal();
               const connection = await web3Modal.connect();
               const provider = new ethers.providers.Web3Provider(connection);
+              const {chainId} = await provider.getNetwork();
               const signer = provider.getSigner();
 
+              await UserService.getProsesBlockchain('prs', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
+
               // input production prs
-              setProses('Processed Raw Sugar');
+              if(chainId === parseInt(process.env.REACT_APP_CHAIN_ID)) {
+                setProses('Processed Raw Sugar');
                 try{
                   const updateData = new FormData();
                   let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_PRS, AddPRS, signer)
-                  let transaction = await contract.addProductionPrs(response.data.data.id, json, 'normal', dateString)
+                  let transaction = await contract.addProductionPrs(response.data.data.id, json, 'normal', dateString, {
+                    gasPrice: 7909680,
+                  })
                     updateData.append('transaction', transaction.hash);
                     updateData.append('wallet', transaction.from);
                     setHash(transaction.hash);
@@ -416,80 +461,88 @@ const AddMitraMsc = () => {
                   console.log(e);
                   setErr(true);
                 }
-              // end insert prs
+                // end insert prs
 
-              // insert sugar rs
-              setProses('Sugar From Raw Sugar');
-                try{
-                  const updateDataRS = new FormData();
-                  let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddSFRS, signer)
-                  let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, jsonInput, 'normal', dateString)
-                    updateDataRS.append('transaction', transactionRS.hash);
-                    updateDataRS.append('wallet', transactionRS.from);
-                    setHash(transactionRS.hash);
-                  await transactionRS.wait()
+                await UserService.getProsesBlockchain('prs', response.data.data.product_id).then(
+                  (response) => {
+                    console.log("datanya nih", response.data.data);
+                    setData(response.data.data);
+                  },
+                  (error) => {}
+                );
 
-                  updateDataRS.append('id', response.data.input.id);
-                  updateDataRS.append('flag', 'sugarFromRs');
-                  UserService.addProdcutionTransactionHash(updateDataRS);
-                  setHash("");
-                } catch (e) {
-                  console.log(e);
-                  setErr(true);
+                // insert sugar rs
+                  setProses('Sugar From Raw Sugar');
+                  try{
+                    const updateDataRS = new FormData();
+                    let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddSFRS, signer)
+                    let transactionRS = await contractRS.addProductionSfrs(response.data.input.id, jsonInput, 'normal', dateString)
+                      updateDataRS.append('transaction', transactionRS.hash);
+                      updateDataRS.append('wallet', transactionRS.from);
+                      setHash(transactionRS.hash);
+                    await transactionRS.wait()
+
+                    updateDataRS.append('id', response.data.input.id);
+                    updateDataRS.append('flag', 'sugarFromRs');
+                    UserService.addProdcutionTransactionHash(updateDataRS);
+                    setHash("");
+                  } catch (e) {
+                    console.log(e);
+                    setErr(true);
+                  }
+                // end insert sugar rs
+
+                await UserService.getProsesBlockchain('prs', response.data.data.product_id).then(
+                  (response) => {
+                    console.log("datanya nih", response.data.data);
+                    setData(response.data.data);
+                  },
+                  (error) => {}
+                );
+
+                // insert logistik
+                  setProses('Stock Bulk Sugar From Raw Sugar');
+                  try{
+                    const updateDataL = new FormData();
+                    let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddSBSFRS, signer)
+                    let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, jsonLogistik, 'normal', dateString)
+                      updateDataL.append('transaction', transactionL.hash);
+                      updateDataL.append('wallet', transactionL.from);
+                      setHash(transactionL.hash);
+                    await transactionL.wait()
+
+                    updateDataL.append('id', response.data.logistik.id);
+                    updateDataL.append('flag', 'stockBulkSugarFromRs');
+                    UserService.addLogisticsTransactionHash(updateDataL);
+                    setHash("");
+                  } catch (e) {
+                    console.log(e);
+                    setErr(true);
+                  }
+                // end insert logistik
+
+                await UserService.getProsesBlockchain('prs', response.data.data.product_id).then(
+                  (response) => {
+                    console.log("datanya nih", response.data.data);
+                    setData(response.data.data);
+                  },
+                  (error) => {}
+                );
+
+                if(catchErr) {
+                  setLoading(false);
+                  console.log(catchErr);
+                } else {
+                  setLoading(false);
+                  showResults("Data Berhasil Dimasukkan");
+                  setRedirect(true);
                 }
-              // end insert sugar rs
-
-              // insert logistik
-              setProses('Stock Bulk Sugar From Raw Sugar');
-                try{
-                  const updateDataL = new FormData();
-                  let contractL = new ethers.Contract(process.env.REACT_APP_ADDRESS_SBSFRS, AddSBSFRS, signer)
-                  let transactionL = await contractL.addLogisticsSbsfrs(response.data.logistik.id, jsonLogistik, 'normal', dateString)
-                    updateDataL.append('transaction', transactionL.hash);
-                    updateDataL.append('wallet', transactionL.from);
-                    setHash(transactionL.hash);
-                  await transactionL.wait()
-
-                  updateDataL.append('id', response.data.logistik.id);
-                  updateDataL.append('flag', 'stockBulkSugarFromRs');
-                  UserService.addLogisticsTransactionHash(updateDataL);
-                  setHash("");
-                } catch (e) {
-                  console.log(e);
-                  setErr(true);
-                }
-              // end insert logistik
-
-              // input stok
-              if(response.data.stok) {
-                setProses('Input Stok');
-                try{
-                  const updateDataStock = new FormData();
-                  let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                  let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
-                    setHash(transactionStok.hash);
-                    updateDataStock.append('transaction', transactionStok.hash);
-                    updateDataStock.append('wallet', transactionStok.from);
-                  await transactionStok.wait()
-
-                  updateDataStock.append('id', response.data.stok.id);
-                  updateDataStock.append('flag', 'Stock');
-                  UserService.addStockTransactionHash(updateDataStock);
-                  setHash("");
-                } catch(e) {
-                  console.log(e);
-                  setErr(true);
-                }
-              }
-              // end input stok
-
-              if(catchErr) {
-                setLoading(false);
-                console.log(catchErr);
               } else {
                 setLoading(false);
-                showResults("Data Berhasil Dimasukkan");
+                alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+                setRedirect(true);
               }
+
             } else if(jenis === 'sc') {
 
               const json = JSON.stringify(response.data.data, null, 4).replace(/[",\\]]/g, "")
@@ -501,15 +554,22 @@ const AddMitraMsc = () => {
               const provider = new ethers.providers.Web3Provider(connection);
               const signer = provider.getSigner();
 
-              const accounts = await window.ethereum.enable();
-              const akun = accounts[0];
+              await UserService.getProsesBlockchain('sc', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
 
               // input production sc
               setProses('Sugar Cane');
                 try{
                   const updateData = new FormData();
                   let contract = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFC, AddSFC, signer)
-                  let transaction = await contract.addProductionSfc(response.data.data.id, json, 'normal', dateString)
+                  let transaction = await contract.addProductionSfc(response.data.data.id, json, 'normal', dateString, {
+                    gasPrice: 7909680,
+                  })
                     updateData.append('transaction', transaction.hash);
                     updateData.append('wallet', transaction.from);
                     setHash(transaction.hash);
@@ -524,6 +584,14 @@ const AddMitraMsc = () => {
                   setErr(true);
                 }
               // end input sc
+
+              await UserService.getProsesBlockchain('sc', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
 
               // input logistik cane
               setProses('Stock Bulk Sugar From Cane');
@@ -546,28 +614,13 @@ const AddMitraMsc = () => {
                 }
               // end input logistic sc
 
-              // input stok
-              if(response.data.stok) {
-                setProses('Input Stock');
-                try{
-                  const updateDataStock = new FormData();
-                  let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                  let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
-                    setHash(transactionStok.hash);
-                    updateDataStock.append('transaction', transactionStok.hash);
-                    updateDataStock.append('wallet', transactionStok.from);
-                  await transactionStok.wait()
-
-                  updateDataStock.append('id', response.data.stok.id);
-                  updateDataStock.append('flag', 'Stock');
-                  UserService.addStockTransactionHash(updateDataStock);
-                  setHash("");
-                } catch(e) {
-                  console.log(e);
-                  setErr(true);
-                }
-              }
-              // end input stok
+              await UserService.getProsesBlockchain('sc', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
 
               if(catchErr) {
                 setLoading(false);
@@ -588,15 +641,21 @@ const AddMitraMsc = () => {
               const provider = new ethers.providers.Web3Provider(connection);
               const signer = provider.getSigner();
 
-              const accounts = await window.ethereum.enable();
-              const akun = accounts[0];
+              await UserService.getProsesBlockchain('sfrs', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
 
-              // input sugar rs
               setProses('Sugar From Raw Sugar');
               try{
                 const updateDataRS = new FormData();
                 let contractRS = new ethers.Contract(process.env.REACT_APP_ADDRESS_SFRS, AddSFRS, signer)
-                let transaction = await contractRS.addProductionSfrs(response.data.data.id, json, 'normal', dateString)
+                let transaction = await contractRS.addProductionSfrs(response.data.data.id, json, 'normal', dateString, {
+                  gasPrice: 7909680,
+                })
                   updateDataRS.append('transaction', transaction.hash);
                   updateDataRS.append('wallet', transaction.from);
                   setHash(transaction.hash);
@@ -610,7 +669,14 @@ const AddMitraMsc = () => {
                 console.log(e);
                 setErr(true);
               }
-              // end input sugar rs
+
+              await UserService.getProsesBlockchain('sfrs', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
 
               // input logistik
               setProses('Stock Bulk Sugar From Raw Sugar');
@@ -633,28 +699,13 @@ const AddMitraMsc = () => {
               }
               // end insert logistik
 
-              // input stok
-              if(response.data.stok) {
-                setProses('Input Stok');
-                try{
-                  const updateDataStock = new FormData();
-                  let contractStok = new ethers.Contract(process.env.REACT_APP_ADDRESS_STOCK, AddStock, signer)
-                  let transactionStok = await contractStok.addStock(response.data.stok.id, jsonStok, 'normal', dateString)
-                    setHash(transactionStok.hash);
-                    updateDataStock.append('transaction', transactionStok.hash);
-                    updateDataStock.append('wallet', transactionStok.from);
-                  await transactionStok.wait()
-
-                  updateDataStock.append('id', response.data.stok.id);
-                  updateDataStock.append('flag', 'Stock');
-                  UserService.addStockTransactionHash(updateDataStock);
-                  setHash("");
-                } catch(e) {
-                  console.log(e);
-                  setErr(true);
-                }
-              }
-              // end input stok
+              await UserService.getProsesBlockchain('sfrs', response.data.data.product_id).then(
+                (response) => {
+                  console.log("datanya nih", response.data.data);
+                  setData(response.data.data);
+                },
+                (error) => {}
+              );
 
               if(catchErr) {
                 setLoading(false);
@@ -682,50 +733,112 @@ const AddMitraMsc = () => {
 
   }  
 
-  return (
-    <Fragment>
-      {(() => {
-        if (loading === true) {
-          return (
-            <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
-              <div className="sweet-loading">
-                <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
-                {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
-                <br></br>
-                <Loader color={color} loading={loading} css={override} size={150} />
-                <br></br>
-                <br></br>
-                <h5>Mohon Tunggu...</h5>
-                <br></br>
+  if(redirect) {
+    return <Redirect to="/Production" />;
+  } else if(redirectLogistik){
+    return <Redirect to="/Logistic" />;
+  } else {
+    return (
+      <Fragment>
+        {(() => {
+          if (loading === true) {
+            return (
+              <Fragment>
+                <CCard color="secondary">
+                  <CRow>
+                    <CCol md="7">
+                      <div>
+                        <VerticalTimeline layout={'1-column-left'}>
 
-              </div>
-            </div>
-          )
-        } else {
-          return (
-            <AddMitraMscForm 
-              onSubmit={handleSubmit}
-              FLAG={flag}
-            />
-          )
-          // if(flag === 'prs' || flag === 'sfrs') {
-          //   return (
-          //     <AddMitraMscForm 
-          //       onSubmit={handleSubmit}
-          //       FLAG={flag}
-          //     />
-          //   )
-          // } else {
-          //   return (
-          //     <AddMitraMscForm 
-          //       onSubmit={handleSubmit}
-          //       FLAG={flag}
-          //     />
-          //   )
-          // }
-        }
-      })()}
-    </Fragment>
-  );
+                          {data && data.map((value, index) => {
+                            if(value.Data && value.Data.transaction_hash){
+                              return (
+                                <VerticalTimelineElement key={index}
+                                  className="vertical-timeline-element--work"
+                                  contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                  contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
+                                  date={moment(value.Data.updated_at).format('DD, MMMM, YYYY HH:mm')}
+                                  iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                  // icon={cil3d}
+                                >
+                                  <p>
+                                    {value.flag}
+                                  </p>
+                                  <hr></hr>
+                                  <i>{value.Data.transaction_hash}</i>
+                                  <br></br>
+                                </VerticalTimelineElement>
+                              );
+                            } else {
+                              return (
+                                <VerticalTimelineElement key={index}
+                                    className="vertical-timeline-element--work"
+                                    contentStyle={{ background: 'grey', color: '#fff' }}
+                                    contentArrowStyle={{ borderRight: '7px solid  grey' }}
+                                    // date="03 Agustus 2022 : 15:34"
+                                    iconStyle={{ background: 'grey', color: '#fff' }}
+                                    // icon={cil3d}
+                                >
+                                  <p>
+                                    {value.flag}
+                                  </p>
+                                </VerticalTimelineElement>
+                              );
+                            }
+                          })}
+                          <VerticalTimelineElement
+                            iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
+                            // icon={<StarIcon />}
+                          />
+                        </VerticalTimeline>
+                      </div>
+                    </CCol>
+
+                    <CCol md="5">
+                      <div style={{textAlign : 'center', verticalAlign : 'middle', paddingTop : "150px"}}>
+                        <div className="sweet-loading">
+                          <h5>Transaksi <b>{proses}</b> akan ditulis ke Blockchain</h5><br></br>
+                          {/* <h5>{TxnHash === "" ? "" : <a href={"https://ropsten.etherscan.io/tx/" + TxnHash} target="_blank" >Detail</a>}</h5> */}
+                          <br></br>
+                          <Loader color={color} loading={loading} css={override} size={150} />
+                          <br></br>
+                          <br></br>
+                          <h5>Mohon Tunggu...</h5>
+                          <br></br>
+
+                        </div>
+                      </div>
+                    </CCol>
+                  </CRow>
+                </CCard>
+              </Fragment>
+            )
+          } else {
+            return (
+              <AddMitraMscForm 
+                onSubmit={handleSubmit}
+                FLAG={flag}
+              />
+            )
+            // if(flag === 'prs' || flag === 'sfrs') {
+            //   return (
+            //     <AddMitraMscForm 
+            //       onSubmit={handleSubmit}
+            //       FLAG={flag}
+            //     />
+            //   )
+            // } else {
+            //   return (
+            //     <AddMitraMscForm 
+            //       onSubmit={handleSubmit}
+            //       FLAG={flag}
+            //     />
+            //   )
+            // }
+          }
+        })()}
+      </Fragment>
+    );
+  }
 };
 export default AddMitraMsc;

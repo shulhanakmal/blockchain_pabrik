@@ -5,6 +5,7 @@ import "./App.css";
 import Header from "./components/Header/Header";
 import HalamanUtama from "./components/Pabrik/HalamanUtama/HalamanUtama";
 import Stock from "./components/Pabrik/Stok/Stock";
+import ProsesBlockchain from "./components/Pabrik/Detail/ProsesBlockchain";
 import SummaryProduction from "./components/Pabrik/Production/SummaryProduction";
 import ListProduction from "./components/Pabrik/Production/ListProduction";
 import EditProduction from "./components/Pabrik/Production/EditProduction";
@@ -80,23 +81,6 @@ class App extends Component {
     const { currentUser } = this.state;
     const { isLoggedIn } = this.props;
 
-    // if (!isLoggedIn) {
-    //   history.push("/login");
-    // } else {
-    //   const user = JSON.parse(localStorage.getItem('user'));
-    //   if(user !== null) {
-    //     const exampleJWT = user.token;
-    //     function getPayload(jwt){
-    //       return atob(jwt.split(".")[1])
-    //     }
-    //     const payload = getPayload(exampleJWT);
-    //     if (payload.exp < Date.now() / 1000) {
-    //       localStorage.removeItem("user");
-    //       history.push("/login");
-    //     }
-    //   }
-    // }
-
     return (
       <Router history={history}>
         {/* {currentUser && (
@@ -168,7 +152,8 @@ class App extends Component {
         <Route path="/Detail-mitra-petani-view/:id" exact component={DetailMitraTaniView} />
         <Route path="/Add-mitra-petani" exact component={AddMitraTani} />
         <Route path="/detailProduk/:sugar/:salesDoc" exact component={GetIDScan} />
-        <Route path="/detailReturn/:dok" exact component={DetailReturn} />
+        <Route path="/detailReturn/:dok/:stokProductId" exact component={DetailReturn} />
+        <Route path="/ProsesBlockchain/:flag/:productId" exact component={ProsesBlockchain} />
       </Router>
     );
   }
