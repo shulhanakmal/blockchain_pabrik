@@ -376,6 +376,7 @@ export default class ListLogistic extends Component {
         this.setState({
           TxnHash: '',
         });
+        alert("Data Berhasil Dimasukkan");
       } catch(e) {
         console.log(e);
         this.setState({
@@ -401,7 +402,6 @@ export default class ListLogistic extends Component {
         loading: false,
         proses: '',
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
     UserService.getListLogistic().then(
@@ -461,6 +461,7 @@ export default class ListLogistic extends Component {
         this.setState({
           TxnHash: "",
         });
+        alert("Data Berhasil Dimasukkan");
       } catch(e) {
         console.log(e);
         this.setState({
@@ -486,7 +487,6 @@ export default class ListLogistic extends Component {
         loading: false,
         proses: '',
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
     UserService.getListLogistic().then(
@@ -546,6 +546,7 @@ export default class ListLogistic extends Component {
         this.setState({
           TxnHash: '',
         });
+        alert("Data Berhasil Dimasukkan");
       } catch(e) {
         console.log(e);
         this.setState({
@@ -571,7 +572,6 @@ export default class ListLogistic extends Component {
         loading: false,
         proses: '',
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
     UserService.getListLogistic().then(
@@ -631,6 +631,7 @@ export default class ListLogistic extends Component {
         this.setState({
           TxnHash: '',
         });
+        alert("Data Berhasil Dimasukkan");
       } catch(e) {
         console.log(e);
         this.setState({
@@ -656,7 +657,6 @@ export default class ListLogistic extends Component {
         loading: false,
         proses: '',
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
     UserService.getListLogistic().then(

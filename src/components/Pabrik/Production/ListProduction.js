@@ -129,6 +129,7 @@ export default class ListProduction extends Component {
         this.setState({
           TxnHash: '',
         });
+        alert("Data Berhasil Dimasukkan");
       } catch(e) {
         console.log(e);
         this.setState({
@@ -152,10 +153,9 @@ export default class ListProduction extends Component {
       this.setState({
         loading: false,
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
-    UserService.getListProduction().then((response) => {
+    await UserService.getListProduction().then((response) => {
       this.setState({
         content: response.data,
       });
@@ -197,6 +197,7 @@ export default class ListProduction extends Component {
         this.setState({
           TxnHash: '',
         });
+        alert("Data Berhasil Dimasukkan");
       } catch (e) {
         console.log(e);
         this.setState({
@@ -220,10 +221,9 @@ export default class ListProduction extends Component {
       this.setState({
         loading: false,
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
-    UserService.getListProduction().then((response) => {
+    await UserService.getListProduction().then((response) => {
       this.setState({
         content: response.data,
       });
@@ -265,6 +265,7 @@ export default class ListProduction extends Component {
         this.setState({
           TxnHash: "",
         });
+        alert("Data Berhasil Dimasukkan");
       } catch(e) {
         console.log(e);
         this.setState({
@@ -288,10 +289,9 @@ export default class ListProduction extends Component {
       this.setState({
         loading: false,
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
-    UserService.getListProduction().then((response) => {
+    await UserService.getListProduction().then((response) => {
       this.setState({
         content: response.data,
       });
@@ -333,6 +333,7 @@ export default class ListProduction extends Component {
         this.setState({
           TxnHash: "",
         });
+        alert("Data Berhasil Dimasukkan");
       } catch (e) {
         this.setState({
           err: true,
@@ -351,10 +352,9 @@ export default class ListProduction extends Component {
       this.setState({
         loading: false,
       });
-      alert("Data Berhasil Dimasukkan");
     }
 
-    UserService.getListProduction().then((response) => {
+    await UserService.getListProduction().then((response) => {
       this.setState({
         content: response.data,
       });

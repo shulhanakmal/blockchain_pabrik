@@ -175,19 +175,18 @@ export default class Sales extends Component {
       loading: false,
     });
 
-    if(this.state.err) {
-      this.setState({
-        loading: false,
-      });
-      console.log(this.state.err);
-    } else if(chainId != parseInt(process.env.REACT_APP_CHAIN_ID)){
-      alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
-    } else {
-      this.setState({
-        loading: false,
-      });
-      alert("Data Berhasil Dimasukkan");
-    }
+    // if(this.state.err) {
+    //   this.setState({
+    //     loading: false,
+    //   });
+    //   console.log(this.state.err);
+    // } else if(chainId != parseInt(process.env.REACT_APP_CHAIN_ID)){
+    //   alert('Anda tidak terhubung ke jaringan ethereum ropsten, harap hubungkan metamask ke jaringan ethereum ropsten');
+    // } else {
+    //   this.setState({
+    //     loading: false,
+    //   });
+    // }
 
     UserService.getSales().then((response)  => {
       this.setState({
