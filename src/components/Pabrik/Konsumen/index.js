@@ -68,7 +68,7 @@ export default class Konsumen extends Component {
                         console.log("cek responsenya nih mal: ", response);
 
                         if(response.data.success) {
-                            if(response.data.sales.mount_sugar_sold_cane === 0) {
+                            if(response.data.sales.mount_sugar_sold_cane === '0.00') {
                                 this.setState({
                                     link: 'detailProduk/rs/' + response.data.sales.id,
                                 });
