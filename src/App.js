@@ -43,6 +43,9 @@ import DaftarSales from "./components/Pabrik/Sales/DaftarSales";
 import ListUser from "./components/Pabrik/UserManagement/ListUser";
 import AddUser from "./components/Pabrik/UserManagement/AddUser";
 import Login from "./components/login.component";
+import Farmer from "./components/Farmer";
+import FarmerTrace from "./components/FarmerTrace";
+import GetTracePetani from "./components/getTracePetani";
 import { logout } from "./actions/auth";
 import { clearMessage } from "./actions/message";
 import { history } from './helpers/history';
@@ -154,6 +157,9 @@ class App extends Component {
         <Route path="/detailProduk/:sugar/:salesDoc" exact component={GetIDScan} />
         <Route path="/detailReturn/:dok/:stokProductId" exact component={DetailReturn} />
         <Route path="/ProsesBlockchain/:flag/:productId" exact component={ProsesBlockchain} />
+        <Route path="/Farmer" exact component={Farmer} />
+        <Route path="/Farmer/Trace/:petaniId" exact component={FarmerTrace} />
+        <Route path="/detailTracePetani/:PetaniId/:SalesId/:ProductId" exact component={GetTracePetani} />
       </Router>
     );
   }

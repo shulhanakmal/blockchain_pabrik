@@ -3,8 +3,8 @@ import authHeader from "./auth-header";
 import authHeaderImage from "./auth-header-image";
 
 // const API_URL = "http://209.97.160.154:90/api/v1/";
-const API_URL = "http://127.0.0.1:8000/api/v2/";
-// const API_URL = "http://68.183.235.127:8004/api/v2/";
+// const API_URL = "http://127.0.0.1:8000/api/v2/";
+const API_URL = "http://68.183.235.127:8004/api/v2/";
 // const API_URL = "http://209.97.160.154:8002/api/v2/";
 
 class UserService {
@@ -285,6 +285,14 @@ class UserService {
 
   getProsesBlockchain(flag, productId) {
     return axios.get(API_URL + "getProsesBlockchain/"+flag+"/"+ productId, { headers: authHeader() });
+  }
+
+  TraceTransaksiPetani(petaniId) {
+    return axios.get(API_URL + "tracePetaniTransaksi/"+petaniId, { headers: authHeader() });
+  }
+
+  getTraceSales(petaniId, salesId, productId) {
+    return axios.get(API_URL + "getTraceSales/"+petaniId+"/"+salesId+"/"+productId, { headers: authHeader() });
   }
 
 }
